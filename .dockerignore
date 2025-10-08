@@ -1,0 +1,9 @@
+.git
+.vscode
+.DS_Store
+*.log
+**/bin
+**/obj
+roue-web/node_modules
+roue-web/dist
+postman

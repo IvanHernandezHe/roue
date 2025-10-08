@@ -1,0 +1,107 @@
+name: roue
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: roue-postgres
+    environment:
+      POSTGRES_USER: roue
+      POSTGRES_PASSWORD: roue
+      POSTGRES_DB: roue
+      TZ: America/Monterrey
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U roue -d roue"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    # <-- PUBLICA el puerto de Postgres al host
+    ports:
+      - "5432:5432"
+
+  api:
+    build:
+      context: .
+      dockerfile: src/Roue.API/Dockerfile
+    container_name: roue-api
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      # Asegura bind en todas las interfaces
+      ASPNETCORE_URLS: http://0.0.0.0:8080
+
+      Database__Provider: Postgres
+      Database__Host: postgres
+      Database__Port: "5432"
+      Database__Database: roue
+      Database__Username: roue
+      Database__Password: roue
+      Database__SslMode: Disable
+      Database__SeedOnStart: "true"
+      Database__ResetOnStart: "false"
+
+      Payments__Provider: Stripe
+      Stripe__ApiKey:
+      Stripe__PublishableKey:
+      # With frontend decoupled, Stripe should return to the web app origin
+      Stripe__ReturnUrlBase: http://localhost:4200
+
+      # (opcionales / redundantes, puedes limpiarlos si no se usan)
+      DATABASE_HOST: postgres
+      DATABASE_PORT: "5432"
+      DATABASE_NAME: roue
+      DATABASE_USERNAME: roue
+      DATABASE_PASSWORD: roue
+      DATABASE_SSLMODE: Disable
+      SEED_DB: "true"
+      RESET_DB: "false"
+    # <-- PUBLICA el puerto del API al host
+    ports:
+      - "8080:8080"
+
+  web:
+    build:
+      context: ./roue-web
+      dockerfile: Dockerfile
+      target: dev
+    container_name: roue-web
+    depends_on:
+      api:
+        condition: service_started
+    environment:
+      NODE_ENV: development
+      NG_CLI_ANALYTICS: "false"
+    # Si usas `ng serve` dentro del contenedor (solo en dev):
+    profiles:
+      - dev
+    ports:
+      - "4200:4200"
+    # IMPORTANTE: asegúrate que el comando de arranque exponga 0.0.0.0
+    # (en tu Dockerfile o CMD):
+    # CMD ["bash","-lc","npm run start -- --host 0.0.0.0 --port 4200"]
+
+  api-tests:
+    build:
+      context: .
+      dockerfile: src/Roue.API/Dockerfile
+      target: test-runner
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      ASPNETCORE_ENVIRONMENT: Testing
+    profiles:
+      - test
+
+  web-tests:
+    build:
+      context: ./roue-web
+      dockerfile: Dockerfile
+      target: test-runner
+    profiles:
+      - test
+
+volumes:
+  pgdata:
