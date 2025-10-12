@@ -145,7 +145,7 @@ public sealed class OrdersController : ControllerBase
         }
         await _audit.LogAsync("order.checkout_initiated", subjectType: nameof(Order), subjectId: result.OrderId.ToString(), metadata: new { result.Total, result.Subtotal, result.Discount });
         _ = _webhooks.SendAsync("order.created", new { orderId = result.OrderId, total = result.Total, currency = result.Currency }, HttpContext.RequestAborted);
-        return CreatedAtAction(nameof(GetMine), new { }, new { result.OrderId, result.Subtotal, result.Discount, result.Shipping, result.Total, result.Currency, CheckoutUrl = checkoutUrl });
+        return CreatedAtAction(nameof(GetMine), new { }, new { result.OrderId, result.Subtotal, result.Discount, result.Shipping, result.Total, result.Currency, result.Cashback, CheckoutUrl = checkoutUrl });
     }
 
     [HttpPost("quote")]
@@ -160,7 +160,13 @@ public sealed class OrdersController : ControllerBase
             var errors = validation.Errors.Select(e => e.ErrorMessage).ToArray();
             return BadRequest(new { errors });
         }
-        try { var quote = await _svc.QuoteAsync(qLines, req.DiscountCode, HttpContext.RequestAborted); return Ok(quote); }
+        Guid? userId = null;
+        if (User?.Identity?.IsAuthenticated ?? false)
+        {
+            var authUser = await _users.GetUserAsync(User);
+            if (authUser is not null) userId = authUser.Id;
+        }
+        try { var quote = await _svc.QuoteAsync(qLines, req.DiscountCode, userId, HttpContext.RequestAborted); return Ok(quote); }
         catch (Exception ex) { return BadRequest(ex.Message); }
     }
 

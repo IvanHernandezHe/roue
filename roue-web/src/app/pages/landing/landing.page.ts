@@ -12,118 +12,259 @@ import { ProductCardComponent } from '../../shared/components/product-card/produ
   standalone: true,
   imports: [RouterLink, NgFor, NgIf, AsyncPipe, SlicePipe, ProductCardComponent, FormsModule, LucideAngularModule],
   styles: [`
-    /* Hero */
+    :host { display: block; }
+
     .hero {
       position: relative;
-      background: linear-gradient(180deg, #f8f9fa, #ffffff);
+      overflow: hidden;
+      border-radius: clamp(24px, 5vw, 40px);
+      background:
+        radial-gradient(540px 420px at 90% -15%, color-mix(in srgb, var(--brand-primary) 24%, #ffffff) 0%, transparent 72%),
+        radial-gradient(420px 320px at -10% 10%, rgba(255, 132, 95, .12), transparent 65%),
+        linear-gradient(160deg, var(--brand-cream) 0%, #ffffff 55%, color-mix(in srgb, var(--brand-primary) 12%, #ffffff) 100%);
+    }
+    .hero::after {
+      content: "";
+      position: absolute;
+      width: clamp(160px, 26vw, 320px);
+      height: clamp(160px, 26vw, 320px);
+      border-radius: 40px;
+      right: clamp(-60px, -6vw, -20px);
+      bottom: clamp(-60px, -6vw, -20px);
+      background: color-mix(in srgb, var(--brand-primary) 22%, #ffffff);
+      opacity: .35;
+      transform: rotate(6deg);
     }
     .hero-img {
       width: 100%;
       max-width: 520px;
-      height: auto;
-      object-fit: cover;
+      border-radius: clamp(22px, 4vw, 32px);
+      background: rgba(255,255,255,.86);
+      padding: clamp(1rem, 3vw, 1.6rem);
+      box-shadow: 0 24px 60px rgba(15, 26, 67, .18);
     }
-    .search-panel {
-      background: #fff;
-      border: 1px solid rgba(0,0,0,.08);
-      border-radius: .75rem;
-      padding: 1rem;
-      box-shadow: 0 4px 16px rgba(0,0,0,.04);
-    }
-    .pill {
-      border-radius: .75rem;
-      background: #fff;
-      border: 1px solid rgba(0,0,0,.08);
-      padding: .85rem 1rem;
-      text-align: center;
-      font-weight: 600;
-    }
-    .pill small { display: block; font-weight: 400; color: #6c757d; }
-    .section-title { font-weight: 700; }
+    .hero-copy { position: relative; z-index: 1; }
 
-    /* Simple image carousel (no text, auto-slide) */
-    /* Responsive height: smaller on mobile to keep panoramic proportion */
+    .search-panel {
+      border-radius: var(--brand-radius-lg);
+      border: 1.5px solid color-mix(in srgb, var(--brand-primary) 10%, var(--brand-border));
+      background: rgba(255,255,255,.9);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 28px 64px rgba(15, 26, 67, .12);
+    }
+    :host-context([data-bs-theme="dark"]) .search-panel {
+      background: rgba(12, 19, 38, .92);
+      border-color: rgba(92,108,148,.35);
+      box-shadow: 0 32px 80px rgba(4, 10, 24, .7);
+    }
+
     .simple-carousel {
-      position: relative; overflow: hidden; border-radius: 0; height: 40vh; max-height: 420px;
-      contain: layout paint; isolation: isolate; overscroll-behavior: contain; /* evita desbordes visuales */
-      overflow-x: clip; /* recorte duro en navegadores modernos */
+      position: relative;
+      overflow: hidden;
+      height: clamp(32vh, 58vh, 72vh);
+      max-height: 720px;
+      border-radius: 0;
+      isolation: isolate;
+      contain: layout paint;
+      overflow-x: clip;
       overflow-clip-margin: content-box;
     }
     .simple-track {
-      display: flex; width: 100%; height: 100%; transform: translate3d(0,0,0);
-      transition: transform 600ms ease; will-change: transform; backface-visibility: hidden;
-      margin: 0; padding: 0; gap: 0;
+      display: flex;
+      width: 100%;
+      height: 100%;
+      transition: transform 620ms cubic-bezier(.22,1,.34,1);
+      will-change: transform;
     }
-    .simple-item { flex: 0 0 100%; height: 100%; backface-visibility: hidden; }
-    .simple-item img { width: 100%; height: 100%; object-fit: cover; object-position: center; display: block; transform: translateZ(0); clip-path: inset(0); }
-    .simple-progress { position: absolute; left: 8px; right: 8px; bottom: 8px; display: flex; gap: 6px; z-index: 2; }
-    .simple-progress .bar { flex: 1; height: 3px; background: rgba(255,255,255,.35); border-radius: 999px; overflow: hidden; }
-    .simple-progress .fill { display: block; height: 100%; background: #fff; width: 0%; transition: width 120ms linear; }
-    .simple-carousel[data-paused="true"] .simple-progress .fill { background: rgba(255,255,255,.7); }
-    .simple-carousel[data-paused="true"] { cursor: pointer; }
-    @media (min-width: 576px) { .simple-carousel { height: 50vh; max-height: 520px; } }
-    @media (min-width: 768px) { .simple-carousel { height: 60vh; max-height: 600px; } }
-    @media (min-width: 992px) { .simple-carousel { height: 75vh; max-height: 720px; } }
-    /* Removed keyframes-based scroll to avoid left-edge flicker on loop */
-
-    /* Generic boxes */
-    .feature { border-radius: .75rem; border: 1px solid rgba(0,0,0,.08); background: #fff; }
-    .category-tile { border-radius: .75rem; overflow: hidden; position: relative; background: #f8f9fa; min-height: 160px; }
-    .category-tile a { position: absolute; inset: 0; }
-    .category-tile h5 { position: absolute; left: 1rem; bottom: 1rem; margin: 0; }
-    .trust-logos img { max-height: 28px; opacity: .9; }
-
-    .service-card { border-radius: .75rem; border: 1px solid rgba(0,0,0,.08); background: #fff; padding: 1rem; height: 100%; }
-    /* Brand logos: colored, uniform size, justified; links with subtle hover */
-    .brand-logos a { display: inline-flex; align-items: center; justify-content: center; width: 120px; height: 42px; border-radius: .5rem; border: 1px solid rgba(0,0,0,.06); background: #fff; box-shadow: 0 1px 6px rgba(0,0,0,.06); transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease; }
-    .brand-logos a:hover, .brand-logos a:focus-visible { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,.12); border-color: color-mix(in srgb, var(--jdm-red) 35%, #000 0%); outline: none; }
-    .brand-logos img {
-      height: 42px;
-      width: 120px;
-      object-fit: contain;
-      filter: none;
-      opacity: 1;
+    .simple-item { flex: 0 0 100%; height: 100%; }
+    .simple-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      filter: saturate(109%);
+    }
+    .simple-progress {
+      position: absolute;
+      left: clamp(12px, 4vw, 42px);
+      right: clamp(12px, 4vw, 42px);
+      bottom: clamp(12px, 4vw, 36px);
+      display: flex;
+      gap: 8px;
+      z-index: 4;
+    }
+    .simple-progress .bar {
+      flex: 1;
+      height: 4px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.45);
+      overflow: hidden;
+    }
+    .simple-progress .fill {
       display: block;
+      height: 100%;
+      width: 0%;
+      background: rgba(255,255,255,.92);
+      transition: width 150ms linear;
     }
-    .brand-logos img:hover { filter: none; opacity: 1; }
-    .cashback { border-radius: .75rem; background: linear-gradient(135deg, #111 0%, #1e1e1e 60%, #2a2a2a 100%); color: #fff; overflow: hidden; }
-    .coupon-card { border-radius: .75rem; border: 2px dashed #e0e0e0; background: #fff; }
-    .info-split { border-radius: .75rem; border: 1px solid rgba(0,0,0,.08); background: #fff; }
+    .simple-carousel[data-paused="true"] .fill { background: rgba(255,255,255,.7); }
 
-    /* Floating FABs */
-    .floating-fabs { position: fixed; right: 16px; bottom: 16px; z-index: 1050; display: flex; flex-direction: column; gap: 10px; }
-    .fab { width: clamp(44px, 9vw, 56px); height: clamp(44px, 9vw, 56px); border-radius: 999px; display: inline-flex; align-items: center; justify-content: center; box-shadow: 0 8px 20px rgba(0,0,0,.22); color: #fff; text-decoration: none; border: none; position: relative; }
-    .fab svg { width: 60%; height: 60%; display: block; }
-    .fab-help { background: var(--jdm-red); }
-    .fab-call { background: #0d6efd; }
-    .fab-wa { background: #25D366; }
-    .fab:hover { filter: brightness(1.05); transform: translateY(-1px); }
-    .fab:active { transform: translateY(0); }
-    /* Hover label */
+    .value-grid .feature {
+      padding: 1.4rem;
+      text-align: left;
+    }
+    .value-grid .feature small { color: var(--brand-muted); }
+
+    .category-tile {
+      min-height: 180px;
+      background: linear-gradient(150deg, rgba(255,255,255,.9), rgba(246,248,255,.95));
+    }
+    .category-tile h5 {
+      position: absolute;
+      left: 1.4rem;
+      bottom: 1.4rem;
+      margin: 0;
+      font-family: var(--font-display);
+      letter-spacing: .05em;
+    }
+    .category-tile span {
+      position: absolute;
+      top: clamp(1.2rem, 3vw, 1.6rem);
+      left: clamp(1.2rem, 3vw, 1.6rem);
+      font-size: .85rem;
+      font-weight: 600;
+      color: var(--brand-muted);
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .brand-logos a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: clamp(120px, 16vw, 150px);
+      height: clamp(38px, 5vw, 48px);
+      border-radius: calc(var(--brand-radius-sm) + 6px);
+      border: 1.5px solid var(--brand-border);
+      background: rgba(255,255,255,.92);
+      box-shadow: 0 16px 32px rgba(15, 26, 67, .08);
+      transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease;
+    }
+    .brand-logos a:hover,
+    .brand-logos a:focus-visible {
+      transform: translateY(-3px);
+      box-shadow: 0 24px 40px rgba(15, 26, 67, .18);
+      border-color: var(--brand-primary);
+      outline: none;
+    }
+    .brand-logos img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .cashback {
+      border-radius: var(--brand-radius-lg);
+      background: linear-gradient(125deg, var(--brand-primary-dark), var(--brand-primary));
+      color: #fff;
+      box-shadow: 0 32px 62px rgba(15, 82, 186, .32);
+    }
+    .cashback .btn-light {
+      background: rgba(255,255,255,.92);
+      border: none;
+      color: var(--brand-primary);
+    }
+    .cashback .btn-light:hover,
+    .cashback .btn-light:focus {
+      background: #fff;
+      color: var(--brand-primary-dark);
+      box-shadow: 0 10px 24px rgba(15, 82, 186, .28);
+    }
+
+    .floating-fabs { right: 24px; bottom: 24px; }
+    .fab {
+      width: clamp(48px, 9vw, 58px);
+      height: clamp(48px, 9vw, 58px);
+      border-radius: 20px;
+      background: var(--brand-primary);
+      color: #fff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 22px 42px rgba(15, 82, 186, .25);
+      border: none;
+      transition: transform .18s ease, box-shadow .18s ease;
+      position: relative;
+    }
+    .fab svg { width: 60%; height: 60%; }
+    .fab:hover,
+    .fab:focus-visible {
+      transform: translateY(-2px);
+      box-shadow: 0 28px 54px rgba(15, 82, 186, .38);
+    }
     .fab::after {
       content: attr(data-label);
-      position: absolute; right: calc(100% + 8px); top: 50%; transform: translateY(6px); opacity: 0;
-      background: rgba(0,0,0,.85); color: #fff; font-size: .78rem; padding: .28rem .5rem; border-radius: .5rem;
-      white-space: nowrap; pointer-events: none; transition: opacity .15s ease, transform .15s ease;
+      position: absolute;
+      right: calc(100% + 8px);
+      top: 50%;
+      transform: translateY(4px);
+      opacity: 0;
+      background: rgba(17, 18, 23, .85);
+      color: #fff;
+      font-size: .72rem;
+      padding: .3rem .55rem;
+      border-radius: .65rem;
+      white-space: nowrap;
+      pointer-events: none;
+      transition: opacity .18s ease, transform .18s ease;
     }
-    .fab:hover::after, .fab:focus-visible::after { opacity: 1; transform: translateY(-50%); }
+    .fab:hover::after,
+    .fab:focus-visible::after {
+      opacity: 1;
+      transform: translateY(-50%);
+    }
+    .fab-call { background: color-mix(in srgb, var(--brand-primary) 65%, #1cc7ff); }
+    .fab-wa { background: #24c568; }
 
-    /* Responsive tweaks */
-    @media (min-width: 992px) {
-      .search-panel { padding: 1.25rem 1.5rem; }
+    .pill {
+      min-height: 88px;
+      justify-content: center;
+      gap: .25rem;
+    }
+    .pill small { color: var(--brand-muted); }
+
+    @media (max-width: 991.98px) {
+      .hero { border-radius: 0; }
+      .hero::after { display: none; }
     }
 
-    /* Dark theme adaptations */
-    :host-context([data-bs-theme="dark"]) .hero { background: linear-gradient(180deg, #141414, #0e0e0e); }
-    :host-context([data-bs-theme="dark"]) .search-panel { background: #111; border-color: #2a2a2a; box-shadow: 0 8px 28px rgba(0,0,0,.5); }
-    :host-context([data-bs-theme="dark"]) .pill { background: #121212; border-color: #2a2a2a; color: #e6e6e6; }
-    :host-context([data-bs-theme="dark"]) .feature { background: #111; border-color: #2a2a2a; }
-    :host-context([data-bs-theme="dark"]) .category-tile { background: #141414; border-color: #2a2a2a; }
-    :host-context([data-bs-theme="dark"]) .service-card { background: #111; border-color: #2a2a2a; }
-    :host-context([data-bs-theme="dark"]) .coupon-card { background: #111; border-color: #2a2a2a; }
-    :host-context([data-bs-theme="dark"]) .info-split { background: #111; border-color: #2a2a2a; }
-    :host-context([data-bs-theme="dark"]) .simple-progress .bar { background: rgba(0,0,0,.35); }
-    :host-context([data-bs-theme="dark"]) .simple-progress .fill { background: rgba(255,255,255,.9); }
+    :host-context([data-bs-theme="dark"]) .hero {
+      background:
+        radial-gradient(520px 420px at 90% -15%, rgba(15, 82, 186, .3), transparent 70%),
+        radial-gradient(420px 320px at -10% 10%, rgba(255, 119, 82, .22), transparent 65%),
+        linear-gradient(160deg, rgba(8,12,23,.95) 0%, rgba(10,15,30,.92) 60%, rgba(9,18,42,.88) 100%);
+    }
+    :host-context([data-bs-theme="dark"]) .hero-img {
+      background: rgba(12,18,34,.92);
+      box-shadow: 0 28px 70px rgba(4, 10, 24, .75);
+    }
+    :host-context([data-bs-theme="dark"]) .category-tile {
+      background: linear-gradient(150deg, rgba(13,18,38,.94), rgba(9,14,30,.9));
+    }
+    :host-context([data-bs-theme="dark"]) .brand-logos a {
+      background: rgba(11,16,30,.92);
+      border-color: rgba(92,108,148,.35);
+    }
+    :host-context([data-bs-theme="dark"]) .brand-logos a:hover,
+    :host-context([data-bs-theme="dark"]) .brand-logos a:focus-visible {
+      border-color: rgba(255,255,255,.45);
+    }
+    :host-context([data-bs-theme="dark"]) .simple-progress .bar {
+      background: rgba(14,17,29,.55);
+    }
+    :host-context([data-bs-theme="dark"]) .simple-progress .fill {
+      background: rgba(255,255,255,.82);
+    }
   `],
   template: `
   <!-- Image carousel just below navbar -->
@@ -148,9 +289,10 @@ import { ProductCardComponent } from '../../shared/components/product-card/produ
     <div class="container">
       <div class="row align-items-center g-4">
         <!-- Left: Title + search -->
-        <div class="col-12 col-lg-7">
+        <div class="col-12 col-lg-7 hero-copy">
+          <span class="section-eyebrow">Experiencia Roue</span>
           <h1 class="display-6 fw-bold mb-3 drift-in">Encuentra tu llanta ideal</h1>
-          <p class="text-muted mb-3">Busca por palabra clave o filtra por marca, año y precio.</p>
+          <p class="text-muted mb-3">Busca por palabra clave o filtra por marca, año y precio. Recibe asesoría personalizada y recompensas en cada compra.</p>
 
           <div class="search-panel">
             <div class="row g-2">
@@ -183,7 +325,7 @@ import { ProductCardComponent } from '../../shared/components/product-card/produ
             </div>
           </div>
 
-          <div class="row g-2 mt-3">
+          <div class="row g-3 mt-3">
             <div class="col-4">
               <div class="pill sticker-red">20%<small>OFF</small></div>
             </div>
@@ -207,24 +349,27 @@ import { ProductCardComponent } from '../../shared/components/product-card/produ
   
 
   <!-- Value props (secondary strip) -->
-  <section class="container mb-4">
-    <div class="row g-3 text-center">
+  <section class="container mb-4 value-grid">
+    <div class="row g-3">
       <div class="col-12 col-md-4">
         <div class="feature p-4 h-100">
-          <div class="fw-bold">4x3 en marcas selectas</div>
-          <small class="text-muted">Promociones por tiempo limitado</small>
+          <div class="section-eyebrow mb-2">Promociones</div>
+          <div class="fw-bold fs-5">4x3 en marcas selectas</div>
+          <small>Promociones por tiempo limitado</small>
         </div>
       </div>
       <div class="col-12 col-md-4">
         <div class="feature p-4 h-100">
-          <div class="fw-bold">Instalación a domicilio</div>
-          <small class="text-muted">Agenda en tu horario</small>
+          <div class="section-eyebrow mb-2">Servicio</div>
+          <div class="fw-bold fs-5">Instalación a domicilio</div>
+          <small>Agenda en tu horario</small>
         </div>
       </div>
       <div class="col-12 col-md-4">
         <div class="feature p-4 h-100">
-          <div class="fw-bold">Recompensas en cada compra</div>
-          <small class="text-muted">Acumula y canjea puntos</small>
+          <div class="section-eyebrow mb-2">Cashback</div>
+          <div class="fw-bold fs-5">Recompensas en cada compra</div>
+          <small>Acumula y canjea puntos</small>
         </div>
       </div>
     </div>
@@ -232,12 +377,15 @@ import { ProductCardComponent } from '../../shared/components/product-card/produ
 
   <!-- Popular tires -->
   <section class="container mb-5">
-    <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-2 mb-3">
-      <h2 class="h4 m-0 section-title">Llantas populares</h2>
+    <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-3">
+      <div>
+        <span class="section-eyebrow">Catálogo destacado</span>
+        <h2 class="h4 m-0 section-title">Llantas populares</h2>
+      </div>
       <div class="d-flex align-items-center gap-2 w-100 w-lg-auto">
         <input #q class="form-control" placeholder="Buscar marca, modelo o SKU" (input)="onSearch(q.value)"/>
         <button class="btn btn-outline-secondary" (click)="onSearch('')">Limpiar</button>
-        <a class="btn btn-sm btn-outline-dark" routerLink="/shop">Ver todo</a>
+        <a class="btn btn-light fw-semibold" routerLink="/shop">Ver todo</a>
       </div>
     </div>
     <div class="row g-3">
@@ -252,27 +400,37 @@ import { ProductCardComponent } from '../../shared/components/product-card/produ
 
   <!-- Categories / quick links -->
   <section class="container mb-5">
+    <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-3">
+      <div>
+        <span class="section-eyebrow">Explora por tipo</span>
+        <h2 class="h4 m-0 section-title">Categorías principales</h2>
+      </div>
+    </div>
     <div class="row g-3">
       <div class="col-6 col-md-3">
-        <div class="category-tile p-3 border">
+        <div class="category-tile">
+          <span>01</span>
           <h5>Autos</h5>
           <a routerLink="/shop" aria-label="Llantas para autos"></a>
         </div>
       </div>
       <div class="col-6 col-md-3">
-        <div class="category-tile p-3 border">
+        <div class="category-tile">
+          <span>02</span>
           <h5>SUV</h5>
           <a routerLink="/shop" aria-label="Llantas para SUV"></a>
         </div>
       </div>
       <div class="col-6 col-md-3">
-        <div class="category-tile p-3 border">
+        <div class="category-tile">
+          <span>03</span>
           <h5>Camioneta</h5>
           <a routerLink="/shop" aria-label="Llantas para camioneta"></a>
         </div>
       </div>
       <div class="col-6 col-md-3">
-        <div class="category-tile p-3 border">
+        <div class="category-tile">
+          <span>04</span>
           <h5>Performance</h5>
           <a routerLink="/shop" aria-label="Llantas performance"></a>
         </div>
@@ -316,10 +474,11 @@ import { ProductCardComponent } from '../../shared/components/product-card/produ
     <div class="row g-3 align-items-stretch">
       <div class="col-12 col-lg-7">
         <div class="cashback p-4 h-100 d-flex flex-column flex-lg-row align-items-center gap-3">
-          <img src="https://dummyimage.com/96x96/333/ffffff&text=$" alt="Cashback" class="rounded bg-body" style="width:96px;height:96px;object-fit:cover;"/>
+          <img src="https://dummyimage.com/96x96/0f52ba/ffffff&text=%" alt="Cashback" class="rounded-circle bg-body" style="width:92px;height:92px;object-fit:cover;"/>
           <div class="flex-fill">
+            <div class="section-eyebrow text-white-50 mb-1">Cashback inteligente</div>
             <div class="h4 m-0">Obtén 5% de cashback</div>
-            <p class="m-0 text-white-50">Regístrate y recibe saldo para tu próxima compra.</p>
+            <p class="m-0" style="color: rgba(255,255,255,.75);">Regístrate y recibe saldo personalizado en tus compras por categoría.</p>
           </div>
           <a routerLink="/perfil" class="btn btn-light text-dark fw-semibold">Crear cuenta</a>
         </div>
@@ -388,7 +547,12 @@ import { ProductCardComponent } from '../../shared/components/product-card/produ
 
   <!-- Brands -->
   <section class="container mb-5 brand-logos" aria-labelledby="brands-title">
-    <h2 id="brands-title" class="h4 mb-3">Marcas</h2>
+    <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-3">
+      <div>
+        <span class="section-eyebrow">Confianza</span>
+        <h2 id="brands-title" class="h4 m-0 section-title">Marcas aliadas</h2>
+      </div>
+    </div>
     <ng-container *ngIf="brandLogos.length; else brandLogosEmpty">
       <div class="d-flex flex-wrap gap-4 align-items-center justify-content-center justify-content-lg-between">
         <a

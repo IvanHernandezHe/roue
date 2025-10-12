@@ -7,67 +7,276 @@ import { ApiService } from '../../core/api.service';
 import { CartStore } from '../../state/cart.store';
 import { AuthStore } from '../../state/auth.store';
 import { WishlistStore } from '../../state/wishlist.store';
+import { ProductAssetsService } from '../../core/product-assets.service';
+import { switchMap } from 'rxjs';
 
 @Component({
   standalone: true,
   imports: [NgIf, NgFor, CurrencyPipe, RouterLink, LucideAngularModule],
   styles: [`
-    :host { --viewer-h: clamp(360px, 52vh, 560px); }
-    /* Breadcrumbs */
-    .crumb { font-size: .9rem; color: #6c757d; }
-    .crumb a { color: inherit; text-decoration: none; font-weight: 600; }
-    .crumb a:hover { color: var(--jdm-red); text-decoration: underline; }
-    .crumb .sep { margin: 0 .5rem; color: #c0c0c0; }
-    /* Media group: rail + viewer */
-    .media-wrap { display: flex; align-items: stretch; gap: .4rem; }
-    .rail { display: none; }
-    @media (min-width: 768px) { .rail { display: flex; flex-direction: column; gap: .25rem; width: 80px; } }
-    /* Thumbnails */
-    .thumb { width: 72px; height: 72px; object-fit: cover; border-radius: .5rem; cursor: pointer; border: 2px solid transparent; background: #fff; transition: transform .12s ease, border-color .12s ease; }
-    .thumb.active { border-color: var(--jdm-red); box-shadow: 0 0 0 2px rgba(0,0,0,.1) inset; border-width: 3px; }
-    .thumb:hover { transform: translateY(-1px); }
-    .thumbs { display: flex; gap: .25rem; overflow-x: auto; padding-bottom: .25rem; }
-    @media (max-width: 767.98px) { .thumb { width: 56px; height: 56px; } }
+    :host { display: block; --viewer-h: clamp(360px, 52vh, 560px); }
 
-    /* Carousel viewer (self-contained, compatible with global overlays) */
-    .simple-carousel { position: relative; overflow: hidden; border-radius: .75rem; border: 1px solid rgba(0,0,0,.08); background: #fff; height: var(--viewer-h); }
-    /* Remove global overlay for product viewer */
-    .simple-carousel.plain::after { display: none !important; background: none !important; content: none !important; }
-    .simple-track { display: flex; width: 100%; height: 100%; transition: transform 600ms ease; will-change: transform; }
-    .simple-item { flex: 0 0 100%; height: 100%; }
-    .simple-item img { width: 100%; height: 100%; display: block; object-fit: contain; background: #fff; }
-    .simple-progress { position: absolute; left: 8px; right: 8px; bottom: 8px; display: flex; gap: 6px; z-index: 2; }
-    .simple-progress .bar { flex: 1; height: 3px; background: rgba(0,0,0,.12); border-radius: 999px; overflow: hidden; }
-    .simple-progress .fill { display: block; height: 100%; background: var(--jdm-red); width: 0%; transition: width 100ms linear; }
+    .crumb {
+      font-size: .88rem;
+      color: var(--brand-muted);
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      flex-wrap: wrap;
+    }
+    .crumb a {
+      color: inherit;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .crumb a:hover { color: var(--brand-primary); text-decoration: underline; }
+    .crumb .sep { color: color-mix(in srgb, var(--brand-muted) 65%, #ffffff); }
+
+    .detail-layout {
+      display: grid;
+      gap: 2.2rem;
+    }
+    @media (min-width: 992px) {
+      .detail-layout {
+        grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr);
+        gap: 3rem;
+      }
+    }
+
+    .media-shell {
+      display: flex;
+      gap: .75rem;
+      align-items: stretch;
+    }
+    .rail {
+      display: none;
+      flex-direction: column;
+      gap: .35rem;
+      width: 86px;
+    }
+    @media (min-width: 768px) { .rail { display: flex; } }
+    .thumbs {
+      display: flex;
+      gap: .35rem;
+      overflow-x: auto;
+      padding-bottom: .25rem;
+    }
+    .thumb {
+      width: 74px;
+      height: 74px;
+      border-radius: 16px;
+      border: 2px solid transparent;
+      background: var(--brand-cloud);
+      box-shadow: var(--shadow-soft);
+      cursor: pointer;
+      transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+    }
+    .thumb:hover { transform: translateY(-2px); box-shadow: var(--shadow-hover); }
+    .thumb.active {
+      border-color: var(--brand-primary);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand-primary) 20%, transparent);
+    }
+    .thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: inherit;
+    }
     @media (max-width: 767.98px) {
+      .thumb { width: 60px; height: 60px; }
+    }
+
+    .simple-carousel {
+      position: relative;
+      overflow: hidden;
+      border-radius: clamp(18px, 3vw, 26px);
+      border: 1.5px solid var(--brand-border);
+      background: radial-gradient(120% 120% at 50% 0%, rgba(15,82,186,.08), rgba(255,255,255,.95));
+      height: var(--viewer-h);
+      box-shadow: var(--shadow-soft);
+    }
+    .simple-carousel.plain::after { display: none !important; }
+    .simple-track {
+      display: flex;
+      width: 100%;
+      height: 100%;
+      transition: transform 620ms cubic-bezier(.22,1,.32,1);
+    }
+    .simple-item { flex: 0 0 100%; height: 100%; }
+    .simple-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      padding: clamp(1.6rem, 4vw, 2.2rem);
+    }
+    .simple-progress {
+      position: absolute;
+      left: clamp(12px, 4vw, 42px);
+      right: clamp(12px, 4vw, 42px);
+      bottom: clamp(12px, 4vw, 36px);
+      display: flex;
+      gap: 6px;
+      z-index: 2;
+    }
+    .simple-progress .bar {
+      flex: 1;
+      height: 3px;
+      background: rgba(17,18,23,.18);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .simple-progress .fill {
+      display: block;
+      height: 100%;
+      background: var(--brand-primary);
+      width: 0%;
+      transition: width 160ms linear;
+    }
+    @media (max-width: 767.98px) {
+      .media-shell { flex-direction: column; }
       .simple-carousel { height: auto; }
       .simple-item img { height: auto; }
     }
 
-    /* Specs card matching general look */
-    .specs { border-radius: .75rem; border: 1px solid rgba(0,0,0,.08); background: #fff; }
-    .specs .table { margin: 0; --bs-table-color: inherit; font-size: .95rem; border-collapse: separate; border-spacing: 0; }
-    .specs .table th { width: 34%; color: #6c757d; font-weight: 600; background: rgba(0,0,0,.02); }
-    .specs .table > :not(caption) > * > * { padding: .65rem .75rem; }
-    .specs .table tr td, .specs .table tr th { border-top: 1px solid rgba(0,0,0,.06); }
-    .specs .table tr:first-child td, .specs .table tr:first-child th { border-top: none; }
-    /* Neutralize Bootstrap striped accent to use our own backgrounds */
-    .specs .table.table-striped > tbody > tr:nth-of-type(odd) > * { --bs-table-accent-bg: transparent; }
-    .specs .table tbody tr:nth-child(odd) td { background: #fafafa; }
-    .specs .table tbody tr:nth-child(even) td { background: #ffffff; }
+    .detail-card {
+      border-radius: var(--brand-radius-lg);
+      border: 1.5px solid var(--brand-border);
+      background: rgba(255,255,255,.94);
+      box-shadow: var(--shadow-soft);
+      padding: clamp(1.6rem, 3vw, 2rem);
+      display: grid;
+      gap: 1.2rem;
+    }
+    .product-title {
+      font-family: var(--font-display);
+      letter-spacing: .02em;
+      font-size: clamp(1.65rem, 3vw, 2.2rem);
+    }
+    .price-row {
+      display: flex;
+      align-items: baseline;
+      gap: 1rem;
+    }
+    .price-amount {
+      font-family: var(--font-display);
+      font-size: clamp(1.8rem, 3vw, 2.4rem);
+      color: var(--brand-primary);
+    }
+    .badge-stock {
+      display: inline-flex;
+      align-items: center;
+      gap: .35rem;
+      padding: .35rem .9rem;
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--brand-primary) 12%, #ffffff);
+      border: 1.5px solid color-mix(in srgb, var(--brand-primary) 35%, #ffffff);
+      font-weight: 600;
+      letter-spacing: .04em;
+    }
 
-    /* Dark theme adjustments */
-    :host-context([data-bs-theme="dark"]) .specs { background: #0f0f0f; border-color: #2a2a2a; }
-    :host-context([data-bs-theme="dark"]) .specs .table th { color: #b3bac5; background: #161616; }
-    :host-context([data-bs-theme="dark"]) .specs .table td { color: #e6e6e6; }
-    :host-context([data-bs-theme="dark"]) .specs .table tr td, :host-context([data-bs-theme="dark"]) .specs .table tr th { border-color: #222; }
-    :host-context([data-bs-theme="dark"]) .specs .table tbody tr:nth-child(odd) td { background: #121212; }
-    :host-context([data-bs-theme="dark"]) .specs .table tbody tr:nth-child(even) td { background: #0e0e0e; }
+    .qty-group {
+      display: inline-flex;
+      border-radius: var(--brand-radius-sm);
+      border: 1.5px solid var(--brand-border);
+      overflow: hidden;
+      background: var(--brand-cloud);
+    }
+    .qty-btn {
+      width: 42px;
+      height: 42px;
+      border: none;
+      background: transparent;
+      font-weight: 600;
+      color: var(--brand-ink);
+    }
+    .qty-btn:hover:not(:disabled) { background: color-mix(in srgb, var(--brand-primary) 12%, #ffffff); color: var(--brand-primary); }
+    .qty-input {
+      width: 58px;
+      border: none;
+      text-align: center;
+      font-weight: 600;
+      background: transparent;
+    }
 
-    .qty { width: 100px; }
-    .product-title { font-family: var(--font-display); letter-spacing: .02em; }
-    .btn-ico { display: inline-flex; align-items: center; gap: .5rem; }
-    .btn-ico lucide-icon { flex: 0 0 auto; }
+    .cta-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .75rem;
+    }
+    .btn-ico {
+      display: inline-flex;
+      align-items: center;
+      gap: .55rem;
+    }
+
+    .specs-card {
+      border-radius: var(--brand-radius-lg);
+      border: 1.5px solid var(--brand-border);
+      background: rgba(255,255,255,.96);
+      box-shadow: var(--shadow-soft);
+      padding: clamp(1.5rem, 3vw, 1.9rem);
+    }
+    .specs-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      font-size: .95rem;
+    }
+    .specs-table th {
+      width: 32%;
+      color: var(--brand-muted);
+      font-weight: 600;
+      padding: .65rem .75rem;
+      background: color-mix(in srgb, var(--brand-primary) 6%, #ffffff);
+    }
+    .specs-table td {
+      padding: .65rem .75rem;
+      border-left: 1px solid transparent;
+      border-right: 1px solid transparent;
+      border-bottom: 1px solid color-mix(in srgb, var(--brand-border) 80%, #ffffff);
+    }
+    .specs-table tr:first-child th,
+    .specs-table tr:first-child td { border-top: none; }
+    .specs-table tr:nth-child(odd) td { background: rgba(244,246,252,.7); }
+
+    @media (prefers-reduced-motion: reduce) {
+      .thumb:hover,
+      .post-card:hover,
+      .service-card:hover { transform: none !important; }
+    }
+
+    :host-context([data-bs-theme='dark']) .simple-carousel {
+      background: radial-gradient(120% 120% at 50% 0%, rgba(15,82,186,.28), rgba(8,12,24,.92));
+      border-color: rgba(92,108,148,.45);
+      box-shadow: 0 30px 72px rgba(4,10,24,.8);
+    }
+    :host-context([data-bs-theme='dark']) .thumb {
+      background: rgba(10,16,32,.94);
+      border-color: rgba(92,108,148,.35);
+    }
+    :host-context([data-bs-theme='dark']) .thumb.active {
+      border-color: rgba(255,255,255,.48);
+      box-shadow: 0 0 0 3px rgba(255,255,255,.14);
+    }
+    :host-context([data-bs-theme='dark']) .detail-card,
+    :host-context([data-bs-theme='dark']) .specs-card {
+      background: rgba(10,16,32,.94);
+      border-color: rgba(92,108,148,.4);
+      box-shadow: 0 32px 70px rgba(4,10,24,.75);
+      color: #e7e9f2;
+    }
+    :host-context([data-bs-theme='dark']) .specs-table th {
+      color: rgba(231,233,242,.82);
+      background: rgba(15,82,186,.22);
+    }
+    :host-context([data-bs-theme='dark']) .specs-table td {
+      background: rgba(12,18,36,.88);
+      border-bottom-color: rgba(92,108,148,.35);
+    }
+    :host-context([data-bs-theme='dark']) .metric {
+      background: rgba(12,18,36,.9);
+      border-color: rgba(255,255,255,.24);
+    }
   `],
   template: `
   <section class="container my-4" *ngIf="product; else loading">
@@ -78,76 +287,101 @@ import { WishlistStore } from '../../state/wishlist.store';
       <span class="sep">›</span>
       <span>{{ title() }}</span>
     </nav>
-    <div class="row g-4 align-items-start">
-      <!-- Media group: rail + viewer (same column to remove extra gutter) -->
-      <div class="col-12 col-md-8">
-        <div class="media-wrap">
-          <div class="rail" aria-label="Miniaturas">
-            <img *ngFor="let src of images(); let i = index" [src]="src" class="thumb" [class.active]="i===idx()" (click)="select(i)" (mouseenter)="preview(i)" (mouseleave)="endPreview()" [attr.aria-selected]="i===idx()" alt="Vista {{i+1}}"/>
+    <div class="detail-layout mt-4">
+      <div>
+        <div class="media-shell">
+          <div class="rail" *ngIf="images().length > 1" aria-label="Miniaturas">
+            <div class="thumb"
+              *ngFor="let src of images(); let i = index"
+              [class.active]="i===idx()"
+              (click)="select(i)"
+              (mouseenter)="preview(i)"
+              (mouseleave)="endPreview()"
+              [attr.aria-selected]="i===idx()"
+              role="button"
+              tabindex="0"
+              (keyup.enter)="select(i)">
+              <img [src]="src" alt="Vista {{i+1}} de {{ title() }}"/>
+            </div>
           </div>
           <div class="flex-fill">
-            <div #viewerEl class="simple-carousel plain" [attr.data-paused]="paused() ? 'true' : null" (pointerenter)="pause()" (pointerleave)="resume()" aria-roledescription="Carrusel" aria-label="Imágenes del producto">
+            <div #viewerEl
+                 class="simple-carousel plain"
+                 [attr.data-paused]="paused() ? 'true' : null"
+                 (pointerenter)="pause()"
+                 (pointerleave)="resume()"
+                 aria-roledescription="Carrusel"
+                 aria-label="Imágenes del producto">
               <div class="simple-track" [style.transform]="trackTransform()">
                 <div class="simple-item" *ngFor="let src of images(); let i = index">
                   <img [src]="src" [alt]="title() + ' imagen ' + (i+1)" (load)="imageLoaded()"/>
                 </div>
               </div>
               <div class="simple-progress">
-                <span class="bar" *ngFor="let s of images(); let i = index"><i class="fill" [style.width.%]="progress(i)"></i></span>
+                <span class="bar" *ngFor="let s of images(); let i = index">
+                  <i class="fill" [style.width.%]="progress(i)"></i>
+                </span>
               </div>
             </div>
-            <!-- Thumbs (mobile) -->
-            <div class="thumbs d-md-none mt-2" aria-label="Miniaturas móviles">
-              <img *ngFor="let src of images(); let i = index" [src]="src" class="thumb" [class.active]="i===idx()" (click)="select(i)" (mouseenter)="preview(i)" (mouseleave)="endPreview()" alt="Vista {{i+1}}"/>
+            <div class="thumbs d-md-none mt-3" aria-label="Miniaturas móviles">
+              <div class="thumb"
+                *ngFor="let src of images(); let i = index"
+                [class.active]="i===idx()"
+                (click)="select(i)"
+                (mouseenter)="preview(i)"
+                (mouseleave)="endPreview()"
+                role="button"
+                tabindex="0"
+                (keyup.enter)="select(i)">
+                <img [src]="src" alt="Vista {{i+1}} de {{ title() }}"/>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Right: info / price / actions -->
-      <div #panelEl class="col-12 col-md-4 col-lg-4">
-        <div class="d-flex align-items-center justify-content-between mb-2">
-          <h2 class="mb-0 product-title">{{ title() }}</h2>
-          <picture>
-            <source [attr.srcset]="product.brandLogoUrl || '/assets/brand/roue-mark2.svg'" type="image/svg+xml" />
-            <img src="/favicon.ico" width="100" height="48" alt="marca" />
-          </picture>
-        </div>
-        <div class="text-muted small">SKU {{ product!.sku }}</div>
-        <hr/>
-        <div class="d-flex align-items-center gap-3 mb-2">
-          <h3 class="m-0 text-primary">{{ product!.price | currency:'MXN' }}</h3>
-          <span class="badge bg-warning text-dark" *ngIf="savingsPct()>0">¡Ahorre {{ savingsPct() }}%!</span>
-        </div>
-        <div class="text-muted mb-3">IVA Incluido</div>
-        <div class="d-flex align-items-center gap-2 flex-wrap mb-3">
-          <div class="d-flex align-items-center gap-2">
-            <label class="text-muted">Cantidad</label>
-            <div class="input-group qty">
-              <button class="btn btn-outline-secondary" type="button" (click)="dec()">−</button>
-              <input class="form-control text-center" [value]="qty()" readonly />
-              <button class="btn btn-outline-secondary" type="button" (click)="inc()" [disabled]="product!.stock && qty()>=product!.stock!">+</button>
-            </div>
+      <div #panelEl>
+        <div class="detail-card">
+          <span class="section-eyebrow text-muted">Ficha técnica</span>
+          <h2 class="product-title mb-1">{{ title() }}</h2>
+          <div class="text-muted small">SKU {{ product!.sku }}</div>
+          <div class="price-row">
+            <div class="price-amount">{{ product!.price | currency:'MXN' }}</div>
+            <span class="badge-stock">{{ product!.stock ? (product!.stock + ' disponibles') : 'Consultar inventario' }}</span>
           </div>
-          <div class="text-muted" *ngIf="product!.stock!==undefined">En Stock: {{ product!.stock }}</div>
-        </div>
-        <div class="d-flex flex-wrap gap-2 mb-3">
-          <button class="btn btn-warning fw-bold btn-ico" (click)="addToCart()">
-            <lucide-icon name="shopping-cart" size="18" [strokeWidth]="2.5" aria-hidden="true"></lucide-icon>
-            <span>Añadir al carrito</span>
-          </button>
-          <button class="btn btn-primary btn-ico" (click)="buyNow()">
-            <lucide-icon name="credit-card" size="18" [strokeWidth]="2.5" aria-hidden="true"></lucide-icon>
-            <span>Comprar ahora</span>
-          </button>
-          <button class="btn btn-outline-secondary btn-ico" *ngIf="auth.isAuthenticated()" (click)="saveForLater()">
-            <lucide-icon name="heart" size="18" [strokeWidth]="2.5" aria-hidden="true"></lucide-icon>
-            <span>Guardar</span>
-          </button>
+          <p class="text-muted mb-2">Llanta {{ product!.brand }} {{ product!.modelName }} en medida {{ product!.size }} lista para tu vehículo.</p>
+          <div class="small text-muted">Categoría {{ product!.category || 'general' }}</div>
+
+          <div class="d-flex align-items-center gap-3 flex-wrap">
+            <div class="d-flex align-items-center gap-2">
+              <label class="text-muted">Cantidad</label>
+              <div class="qty-group">
+                <button class="qty-btn" type="button" (click)="dec()" [disabled]="qty()<=1">−</button>
+                <input class="qty-input" type="number" [value]="qty()" readonly aria-live="polite">
+                <button class="qty-btn" type="button" (click)="inc()" [disabled]="product!.stock && qty()>=product!.stock!">+</button>
+              </div>
+            </div>
+            <div class="text-muted" *ngIf="product!.stock!==undefined">En stock: {{ product!.stock }}</div>
+          </div>
+
+          <div class="cta-group">
+            <button class="btn btn-primary btn-lg fw-semibold btn-ico" (click)="addToCart()">
+              <lucide-icon name="shopping-cart" size="18" [strokeWidth]="2.5" aria-hidden="true"></lucide-icon>
+              <span>Añadir al carrito</span>
+            </button>
+            <button class="btn btn-light btn-lg text-dark fw-semibold btn-ico" (click)="buyNow()">
+              <lucide-icon name="credit-card" size="18" [strokeWidth]="2.5" aria-hidden="true"></lucide-icon>
+              <span>Comprar ahora</span>
+            </button>
+            <button class="btn btn-outline-secondary btn-lg btn-ico" *ngIf="auth.isAuthenticated()" (click)="saveForLater()">
+              <lucide-icon name="heart" size="18" [strokeWidth]="2.5" aria-hidden="true"></lucide-icon>
+              <span>Guardar</span>
+            </button>
+          </div>
         </div>
 
-        <div #specsEl class="specs mt-3">
-          <table class="table table-sm table-striped align-middle">
+        <div #specsEl class="specs-card mt-3">
+          <table class="specs-table">
             <tbody>
               <tr><th class="w-25">Marca</th><td class="text-uppercase">{{ product!.brand }}</td></tr>
               <tr><th>Modelo</th><td>{{ product!.modelName }}</td></tr>
@@ -187,6 +421,7 @@ export class ProductDetailPage implements OnInit, OnDestroy, AfterViewInit {
   private host = inject(ElementRef<HTMLElement>);
   auth = inject(AuthStore);
   private wishlist = inject(WishlistStore);
+  private assets = inject(ProductAssetsService);
   product?: Product;
   idx = signal(0);
   qty = signal(1);
@@ -215,11 +450,13 @@ export class ProductDetailPage implements OnInit, OnDestroy, AfterViewInit {
 
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id')!;
-    this.api.getProduct(id).subscribe(p => {
-      this.product = p;
-      if (p.images && p.images.length) this.images.set(p.images);
-      setTimeout(() => this.equalizeHeights(), 0);
-    });
+    this.api.getProduct(id)
+      .pipe(switchMap(p => this.assets.enrichProduct(p)))
+      .subscribe(p => {
+        this.product = p;
+        if (p.images && p.images.length) this.images.set(p.images);
+        setTimeout(() => this.equalizeHeights(), 0);
+      });
     this.startAutoplay();
   }
   ngAfterViewInit() { setTimeout(() => this.equalizeHeights(), 0); }

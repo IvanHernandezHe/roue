@@ -75,6 +75,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IProductQueryService, ProductQueryService>();
         services.AddScoped<IAddressService, AddressService>();
         services.AddScoped<IDiscountsService, DiscountsService>();
+        services.AddScoped<ICashbackService, CashbackService>();
         services.AddScoped<IOrdersService, OrdersService>();
         services.AddScoped<IAuditQueryService, AuditQueryService>();
         services.AddScoped<IInventoryAdminService, InventoryAdminService>();

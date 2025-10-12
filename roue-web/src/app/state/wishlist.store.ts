@@ -3,7 +3,8 @@ import { WishlistService, WishItem } from '../core/wishlist.service';
 import { CartStore } from './cart.store';
 import { ToastService } from '../core/toast.service';
 import { ApiService } from '../core/api.service';
-import { forkJoin, of } from 'rxjs';
+import { ProductAssetsService } from '../core/product-assets.service';
+import { forkJoin, switchMap } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class WishlistStore {
@@ -11,6 +12,7 @@ export class WishlistStore {
   #toast = inject(ToastService);
   #cart = inject(CartStore);
   #productsApi = inject(ApiService);
+  #assets = inject(ProductAssetsService);
   #imgLookupPending = new Set<string>();
 
   #items = signal<WishItem[] | null>(null);
@@ -64,14 +66,16 @@ export class WishlistStore {
     for (const w of list) {
       if ((w as any).imageUrl || this.#imgLookupPending.has(w.productId)) continue;
       this.#imgLookupPending.add(w.productId);
-      this.#productsApi.getProduct(w.productId).subscribe({
-        next: (p) => {
-          const img = p.images && p.images.length ? p.images[0] : null;
-          this.#items.update(curr => (curr || []).map(x => x.productId === w.productId ? { ...x, imageUrl: img, stock: p.stock ?? (x as any).stock ?? null } : x));
-          this.#imgLookupPending.delete(w.productId);
-        },
-        error: () => { this.#imgLookupPending.delete(w.productId); }
-      });
+      this.#productsApi.getProduct(w.productId)
+        .pipe(switchMap(p => this.#assets.enrichProduct(p)))
+        .subscribe({
+          next: (p) => {
+            const img = p.images && p.images.length ? p.images[0] : null;
+            this.#items.update(curr => (curr || []).map(x => x.productId === w.productId ? { ...x, imageUrl: img, stock: p.stock ?? (x as any).stock ?? null } : x));
+            this.#imgLookupPending.delete(w.productId);
+          },
+          error: () => { this.#imgLookupPending.delete(w.productId); }
+        });
     }
   }
 }

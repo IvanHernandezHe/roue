@@ -5,6 +5,8 @@ import { AuthStore } from './auth.store';
 import { ToastService } from '../core/toast.service';
 import { DiscountsService, DiscountInfo } from '../core/discounts.service';
 import { ApiService } from '../core/api.service';
+import { ProductAssetsService } from '../core/product-assets.service';
+import { switchMap } from 'rxjs';
 
 export interface CartItem {
   productId: string;
@@ -43,6 +45,7 @@ export class CartStore {
   #toast = inject(ToastService);
   #discounts = inject(DiscountsService);
   #productsApi = inject(ApiService);
+  #assets = inject(ProductAssetsService);
   #imgLookupPending = new Set<string>();
 
   constructor() {
@@ -249,16 +252,18 @@ export class CartStore {
     for (const i of list) {
       if (i.imageUrl || this.#imgLookupPending.has(i.productId)) continue;
       this.#imgLookupPending.add(i.productId);
-      this.#productsApi.getProduct(i.productId).subscribe({
-        next: (p) => {
-          const img = p.images && p.images.length ? p.images[0] : null;
-          if (img) {
-            this.#items.update(curr => curr.map(x => x.productId === i.productId ? { ...x, imageUrl: img, stock: p.stock ?? x.stock } : x));
-          }
-          this.#imgLookupPending.delete(i.productId);
-        },
-        error: () => { this.#imgLookupPending.delete(i.productId); }
-      });
+      this.#productsApi.getProduct(i.productId)
+        .pipe(switchMap(p => this.#assets.enrichProduct(p)))
+        .subscribe({
+          next: (p) => {
+            const img = p.images && p.images.length ? p.images[0] : null;
+            if (img) {
+              this.#items.update(curr => curr.map(x => x.productId === i.productId ? { ...x, imageUrl: img, stock: p.stock ?? x.stock } : x));
+            }
+            this.#imgLookupPending.delete(i.productId);
+          },
+          error: () => { this.#imgLookupPending.delete(i.productId); }
+        });
     }
   }
 

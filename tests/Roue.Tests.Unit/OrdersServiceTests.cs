@@ -7,6 +7,7 @@ using Roue.Infrastructure.Services;
 using Roue.Infrastructure.Inventory;
 using Xunit;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging.Abstractions;
 
 public class OrdersServiceTests
 {
@@ -26,7 +27,8 @@ public class OrdersServiceTests
         using var db = CreateDb();
         var inventory = new InventoryService(db);
         var shipping = new Roue.Infrastructure.Services.DefaultShippingCalculator(new ConfigurationBuilder().Build());
-        var sut = new OrdersService(db, inventory, shipping);
+        var cashback = new CashbackService(db, NullLogger<CashbackService>.Instance);
+        var sut = new OrdersService(db, inventory, shipping, cashback);
 
         // Seed product
         var brand = new Roue.Domain.Products.Brand("Brand");
@@ -37,12 +39,14 @@ public class OrdersServiceTests
         await db.SaveChangesAsync();
 
         var items = new List<CheckoutLineDto> { new(p.Id, 2) };
-        var quote = await sut.QuoteAsync(items, null);
+        var quote = await sut.QuoteAsync(items, null, null);
 
         Assert.Equal(2000m, quote.Subtotal);
         Assert.Equal(0m, quote.Discount);
         Assert.Equal(99m, quote.Shipping); // below 5000 => shipping applied
         Assert.Equal(2099m, quote.Total);
+        Assert.NotNull(quote.Cashback);
+        Assert.Equal(0m, quote.Cashback.BalanceAmount);
     }
 
     [Fact]
@@ -51,7 +55,8 @@ public class OrdersServiceTests
         using var db = CreateDb();
         var inventory = new InventoryService(db);
         var shipping = new Roue.Infrastructure.Services.DefaultShippingCalculator(new ConfigurationBuilder().Build());
-        var sut = new OrdersService(db, inventory, shipping);
+        var cashback = new CashbackService(db, NullLogger<CashbackService>.Instance);
+        var sut = new OrdersService(db, inventory, shipping, cashback);
 
         // Seed product and address
         var brand = new Roue.Domain.Products.Brand("Brand");
@@ -73,5 +78,6 @@ public class OrdersServiceTests
         var order = await db.Orders.Include(o => o.Items).FirstAsync(o => o.Id == res.OrderId);
         Assert.Single(order.Items);
         Assert.Equal(4500m + 99m, order.Total); // shipping applies under 5000
+        Assert.Equal(0m, res.Cashback.BalanceAmount);
     }
 }

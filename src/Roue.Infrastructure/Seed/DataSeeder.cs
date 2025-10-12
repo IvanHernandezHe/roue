@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Roue.Domain.Accounts;
+using Roue.Domain.Rewards;
 
 namespace Roue.Infrastructure.Seed;
 
@@ -21,8 +22,8 @@ public static class DataSeeder
 
         var brandSeeds = new (Guid Id, string Name, string? LogoUrl, bool Active)[]
         {
-            (Guid.Parse("97A097A2-C054-4C68-AF38-8960FB3739AC"), "Roue", "/assets/brand/roue-mark2.svg", true),
-            (Guid.Parse("0BA11187-712D-40FE-AFBB-2B70F49939A0"), "Enkei", null, true),
+            (Guid.Parse("97A097A2-C054-4C68-AF38-8960FB3739AC"), "ROUE", "/assets/brand/roue-mark2.svg", true),
+            (Guid.Parse("0BA11187-712D-40FE-AFBB-2B70F49939A0"), "ENKEI", "/assets/brand/enkei.png", true),
             (Guid.Parse("9D8C7B6A-4F1E-42C9-A1D2-3B4E5F6C7D8E"), "CONTINENTAL", "/assets/brand/continental.png", true),
             (Guid.Parse("F2A4D9B1-5E8C-4A31-B96D-7F8E1C0D3A5B"), "COOPER", "/assets/brand/cooper.png", true),
             (Guid.Parse("2A1B3C4D-5E6F-4071-8A9B-C1D2E3F4A5B6"), "DELMAX", "/assets/brand/delmax.png", true),
@@ -39,21 +40,21 @@ public static class DataSeeder
             (Guid.Parse("4C3B2A1D-5E6F-4071-8A9B-A0B1C2D3E4F5"), "TOWNHALL", "/assets/brand/townhall.png", true),
         };
 
-        foreach (var seed in brandSeeds)
+        foreach (var (Id, Name, LogoUrl, Active) in brandSeeds)
         {
-            var brand = await db.Brands.FirstOrDefaultAsync(b => b.Id == seed.Id)
-                        ?? await db.Brands.FirstOrDefaultAsync(b => b.Name == seed.Name);
+            var brand = await db.Brands.FirstOrDefaultAsync(b => b.Id == Id)
+                        ?? await db.Brands.FirstOrDefaultAsync(b => b.Name == Name);
             if (brand is null)
             {
-                brand = new Brand(seed.Name, seed.LogoUrl);
-                typeof(Brand).GetProperty(nameof(Brand.Id))?.SetValue(brand, seed.Id);
+                brand = new Brand(Name, LogoUrl);
+                typeof(Brand).GetProperty(nameof(Brand.Id))?.SetValue(brand, Id);
                 db.Brands.Add(brand);
             }
-            typeof(Brand).GetProperty(nameof(Brand.Name))?.SetValue(brand, seed.Name);
-            typeof(Brand).GetProperty(nameof(Brand.LogoUrl))?.SetValue(brand, seed.LogoUrl);
-            typeof(Brand).GetProperty(nameof(Brand.Active))?.SetValue(brand, seed.Active);
-            typeof(Brand).GetProperty(nameof(Brand.Id))?.SetValue(brand, seed.Id);
-            brandCache[seed.Name] = brand;
+            typeof(Brand).GetProperty(nameof(Brand.Name))?.SetValue(brand, Name);
+            typeof(Brand).GetProperty(nameof(Brand.LogoUrl))?.SetValue(brand, LogoUrl);
+            typeof(Brand).GetProperty(nameof(Brand.Active))?.SetValue(brand, Active);
+            typeof(Brand).GetProperty(nameof(Brand.Id))?.SetValue(brand, Id);
+            brandCache[Name] = brand;
         }
         await db.SaveChangesAsync();
 
@@ -251,6 +252,17 @@ public static class DataSeeder
             t.GetProperty(nameof(DiscountCode.Active))!.SetValue(dc, true);
             t.GetProperty(nameof(DiscountCode.ExpiresAtUtc))!.SetValue(dc, DateTime.UtcNow.AddMonths(6));
             db.DiscountCodes.Add(dc);
+        }
+
+        if (!await db.CashbackRules.AsNoTracking().AnyAsync())
+        {
+            var rule = new CashbackRule("Cashback Llantas 5%", 5m);
+            typeof(CashbackRule).GetProperty(nameof(CashbackRule.CategoryId))?.SetValue(rule, tires.Id);
+            typeof(CashbackRule).GetProperty(nameof(CashbackRule.StartsAtUtc))?.SetValue(rule, DateTime.UtcNow.Date.AddDays(-7));
+            typeof(CashbackRule).GetProperty(nameof(CashbackRule.EndsAtUtc))?.SetValue(rule, DateTime.UtcNow.Date.AddMonths(3));
+            typeof(CashbackRule).GetProperty(nameof(CashbackRule.Description))?.SetValue(rule, "Acumula 5% de cashback en compras de llantas durante la temporada.");
+            db.CashbackRules.Add(rule);
+            await db.SaveChangesAsync();
         }
         await db.SaveChangesAsync();
     }

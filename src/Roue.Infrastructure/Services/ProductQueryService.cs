@@ -71,6 +71,12 @@ public sealed class ProductQueryService : IProductQueryService
             try { images = System.Text.Json.JsonSerializer.Deserialize<string[]>(row.Product.ImagesJson!) ?? Array.Empty<string>(); }
             catch { images = Array.Empty<string>(); }
         }
+        // Normalize any stored file-system-like paths to web URLs (e.g., ensure '/assets/..')
+        images = images
+            .Where(s => !string.IsNullOrWhiteSpace(s))
+            .Select(NormalizeImageUrl)
+            .Where(s => !string.IsNullOrWhiteSpace(s))
+            .ToArray();
         var tireSpecs = await _db.TireSpecs.AsNoTracking().FirstOrDefaultAsync(ts => ts.ProductId == id, ct);
         var rimSpecs = await _db.RimSpecs.AsNoTracking().FirstOrDefaultAsync(rs => rs.ProductId == id, ct);
 
@@ -79,5 +85,28 @@ public sealed class ProductQueryService : IProductQueryService
 
         return new ProductDetailDto(row.Product.Id, row.Product.Sku, row.Brand.Name, row.Product.ModelName, row.Product.Size, row.Product.Price, row.Product.Active, stock,
             row.Brand.LogoUrl, images, tire, rim, row.Category?.Name);
+    }
+
+    private static string NormalizeImageUrl(string raw)
+    {
+        if (string.IsNullOrWhiteSpace(raw)) return string.Empty;
+        var s = raw.Trim();
+        // Allow absolute URLs as-is
+        if (s.StartsWith("http://", StringComparison.OrdinalIgnoreCase) || s.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+            return s;
+        // If it already looks like a web path under /assets, collapse anything before 'assets/' and ensure leading '/'
+        var idx = s.IndexOf("assets/", StringComparison.OrdinalIgnoreCase);
+        if (idx >= 0)
+        {
+            var slice = s.Substring(idx).Replace("\\", "/");
+            if (!slice.StartsWith("/")) slice = "/" + slice;
+            return slice;
+        }
+        // Strip common local prefixes like 'public/' or '/public/'
+        if (s.StartsWith("public/", StringComparison.OrdinalIgnoreCase)) s = s.Substring("public/".Length);
+        if (s.StartsWith("/public/", StringComparison.OrdinalIgnoreCase)) s = s.Substring("/public/".Length);
+        s = s.Replace("\\", "/");
+        if (!s.StartsWith("/")) s = "/" + s;
+        return s;
     }
 }

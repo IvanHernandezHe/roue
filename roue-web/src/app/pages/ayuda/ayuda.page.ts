@@ -7,30 +7,83 @@ import { LucideAngularModule } from 'lucide-angular';
   standalone: true,
   imports: [RouterLink, LucideAngularModule],
   styles: [`
-    .card { border-radius: .75rem; border: 1px solid rgba(0,0,0,.08); background: #fff; }
-    .help-grid { display: grid; grid-template-columns: repeat(1, minmax(0,1fr)); gap: 1rem; }
+    :host { display: block; }
+    .help-grid {
+      display: grid;
+      grid-template-columns: repeat(1, minmax(0,1fr));
+      gap: 1rem;
+    }
     @media (min-width: 768px) { .help-grid { grid-template-columns: repeat(3, minmax(0,1fr)); } }
-    .help-tile { padding: 1rem; display: flex; gap: .8rem; align-items: center; }
-    .help-tile lucide-icon { color: var(--jdm-red); }
-    .help-icon { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; flex: 0 0 22px; color: var(--jdm-red); }
-    .help-icon svg { width: 100%; height: 100%; }
-    .contact { display: grid; gap: .5rem; }
-    .contact a { text-decoration: none; }
-    .contact-item { display: flex; align-items: center; gap: .6rem; }
-    .contact-icon { display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; color: var(--jdm-red); }
-    .contact-icon svg { width: 100%; height: 100%; }
-    .tips-list { list-style: none; margin: 0; padding: 0; display: grid; gap: .75rem; }
-    .tip-item { display: flex; align-items: flex-start; gap: .65rem; padding: .65rem .85rem; border-radius: .65rem; background: rgba(225,75,75,.08); border: 1px solid rgba(225,75,75,.18); }
-    .tip-icon { display: inline-flex; width: 22px; height: 22px; color: var(--jdm-red); flex: 0 0 22px; align-items: center; justify-content: center; }
-    .tip-icon lucide-icon { width: 100%; height: 100%; }
-    :host-context([data-bs-theme='dark']) .tip-item { background: rgba(225,75,75,.14); border-color: rgba(225,75,75,.28); }
-    /* Dark theme */
-    :host-context([data-bs-theme="dark"]) .card { background: #0f0f0f; border-color: #2a2a2a; }
+
+    .help-tile {
+      padding: 1rem;
+      display: flex;
+      gap: .85rem;
+      align-items: center;
+      border-radius: var(--brand-radius-md);
+      border: 1.5px solid var(--brand-border);
+      background: rgba(255,255,255,.92);
+      box-shadow: var(--shadow-soft);
+      transition: transform .18s ease, box-shadow .18s ease;
+    }
+    .help-tile:hover { transform: translateY(-4px); box-shadow: var(--shadow-hover); }
+    .help-tile lucide-icon { color: var(--brand-primary); }
+    .help-icon,
+    .contact-icon,
+    .tip-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 12px;
+      background: color-mix(in srgb, var(--brand-primary) 12%, #ffffff);
+      color: var(--brand-primary);
+      box-shadow: 0 8px 18px rgba(15, 82, 186, .18);
+      flex: 0 0 28px;
+    }
+    .help-icon svg,
+    .contact-icon svg { width: 60%; height: 60%; }
+
+    .card {
+      border-radius: var(--brand-radius-lg);
+      border: 1.5px solid var(--brand-border);
+      background: rgba(255,255,255,.94);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .contact { display: grid; gap: .65rem; }
+    .contact a { text-decoration: none; font-weight: 600; color: var(--brand-primary); }
+    .contact-item { display: flex; align-items: center; gap: .8rem; padding: .4rem 0; }
+
+    .tips-list { list-style: none; margin: 0; padding: 0; display: grid; gap: .8rem; }
+    .tip-item {
+      display: flex;
+      align-items: flex-start;
+      gap: .75rem;
+      padding: .85rem 1rem;
+      border-radius: var(--brand-radius-sm);
+      background: linear-gradient(135deg, rgba(15,82,186,.12), rgba(15,82,186,.04));
+      border: 1.5px dashed color-mix(in srgb, var(--brand-primary) 45%, #ffffff);
+    }
+    .tip-icon { width: 28px; height: 28px; }
+
+    :host-context([data-bs-theme='dark']) .help-tile,
+    :host-context([data-bs-theme='dark']) .card {
+      background: rgba(12,18,36,.92);
+      border-color: rgba(92,108,148,.4);
+      box-shadow: 0 28px 70px rgba(4,10,24,.8);
+    }
+    :host-context([data-bs-theme='dark']) .tip-item {
+      background: linear-gradient(135deg, rgba(15,82,186,.28), rgba(9,18,42,.6));
+      border-color: color-mix(in srgb, var(--brand-primary) 55%, rgba(92,108,148,.5));
+    }
   `],
   template: `
   <section class="container my-4">
     <nav class="small mb-2"><a routerLink="/">Inicio</a> › Ayuda</nav>
-    <h1 class="h4 mb-3">Ayuda y Emergencias</h1>
+    <span class="section-eyebrow mb-2 d-inline-flex">Soporte Roue</span>
+    <h1 class="display-6 mb-3">Ayuda y Emergencias</h1>
 
     <div class="card p-3 mb-3">
       <div class="help-grid">
@@ -76,7 +129,8 @@ import { LucideAngularModule } from 'lucide-angular';
     <div class="row g-3 align-items-stretch">
       <div class="col-12 col-md-6">
         <div class="card p-3 h-100">
-          <h2 class="h6">Contactos</h2>
+          <span class="section-eyebrow mb-2 d-inline-flex">Contáctanos</span>
+          <h2 class="h5 mb-3">Estamos disponibles</h2>
           <div class="contact">
             <div class="contact-item">
               <span class="contact-icon" aria-hidden="true">
@@ -101,7 +155,8 @@ import { LucideAngularModule } from 'lucide-angular';
       </div>
       <div class="col-12 col-md-6">
         <div class="card p-3 h-100">
-          <h2 class="h6">Consejos rápidos</h2>
+          <span class="section-eyebrow mb-2 d-inline-flex">Tips express</span>
+          <h2 class="h5 mb-3">Qué hacer antes de llamar</h2>
           <ul class="tips-list">
             <li class="tip-item">
               <span class="tip-icon"><lucide-icon name="alert-triangle" size="18" [strokeWidth]="2.4"></lucide-icon></span>

@@ -13,38 +13,118 @@ import { LucideAngularModule } from 'lucide-angular';
   selector: 'app-product-card',
   imports: [CurrencyPipe, RouterLink, NgIf, NgClass, LucideAngularModule],
   styles: [`
-    .media { position: relative; overflow: hidden; background: #fff; }
-    /* uniform square ratio for all cards */
-    .media::before { content: ''; display: block; aspect-ratio: 1 / 1; }
-    .media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; padding: 1rem; transition: opacity .25s ease; }
-    .media img.loading { opacity: 0; }
-    .media .img-loader { position: absolute; inset: 0; margin: .75rem; border-radius: 1rem; background: linear-gradient(115deg, rgba(226,232,240,.6) 0%, rgba(226,232,240,.2) 40%, rgba(15,23,42,.08) 70%); background-repeat: no-repeat; animation: shimmer 1.2s ease-in-out infinite; }
-    .brand-model { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 2.6em; }
-    .price { font-size: 1.1rem; }
-    .category-badge { position: absolute; top: .5rem; left: .5rem; }
-    :host-context([data-bs-theme='dark']) .media { background: #0f0f0f; }
-    /* Responsive actions: buttons fill and wrap nicely on small screens */
-    .actions { display: flex; gap: .5rem; }
-    .actions .btn { flex: 1 1 0; justify-content: center; text-align: center; }
-    @media (min-width: 576px) {
-      .actions { flex-wrap: nowrap; }
+    .card {
+      border-radius: var(--brand-radius-lg, 26px);
+      border: 1.5px solid var(--brand-border, #d9dde7);
+      background: var(--brand-cloud, #fff);
+      padding: .6rem;
+      display: flex;
+      flex-direction: column;
+      gap: .75rem;
     }
-    /* Minimalist hover/focus effects (no 3D lift) */
-    .card { transition: border-color .15s ease, box-shadow .15s ease; }
-    .card:hover { box-shadow: none; border-color: color-mix(in srgb, var(--jdm-red) 25%, #dcdcdc); }
-    .actions .btn { transition: background-color .12s ease, border-color .12s ease, color .12s ease; }
-    .actions .btn:focus-visible { outline: none; box-shadow: 0 0 0 .2rem color-mix(in srgb, var(--jdm-red) 25%, transparent); }
-    /* Favorite button: subtle tinted hover */
-    .btn-fav { background: #fff; color: #555; border-color: rgba(0,0,0,.15); }
-    .btn-fav:hover, .btn-fav:focus { color: var(--jdm-red); border-color: var(--jdm-red); background: color-mix(in srgb, var(--jdm-red) 8%, #fff); }
-    .btn-fav:active { background: color-mix(in srgb, var(--jdm-red) 14%, #fff); }
+    .card:hover {
+      transform: translateY(-6px);
+      border-color: var(--brand-primary, #0f52ba);
+      box-shadow: 0 26px 52px rgba(15, 82, 186, .18);
+    }
+    .media {
+      position: relative;
+      overflow: hidden;
+      border-radius: calc(var(--brand-radius-lg, 26px) - 8px);
+      background: linear-gradient(165deg, color-mix(in srgb, var(--brand-primary, #0f52ba) 6%, #ffffff) 0%, #f9fbff 100%);
+    }
+    .media::before {
+      content: '';
+      display: block;
+      aspect-ratio: 1 / 1;
+    }
+    .media img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      padding: 1.1rem;
+      transition: transform .35s ease, opacity .25s ease;
+      transform: scale(.96);
+    }
+    .card:hover .media img { transform: scale(1); }
+    .media img.loading { opacity: 0; }
+    .media .img-loader {
+      position: absolute;
+      inset: 0;
+      margin: .9rem;
+      border-radius: 1.3rem;
+      background: linear-gradient(120deg, rgba(215,219,232,.6) 0%, rgba(229,233,247,.25) 45%, rgba(255,255,255,.4) 70%);
+      background-size: 200% 100%;
+      animation: shimmer 1.2s ease-in-out infinite;
+    }
+    .brand-model {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      min-height: 2.6em;
+      font-weight: 600;
+      letter-spacing: .01em;
+    }
+    .price {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--brand-primary, #0f52ba);
+    }
+    .category-badge {
+      position: absolute;
+      top: .75rem;
+      left: .75rem;
+      background: rgba(255,255,255,.82);
+      border: 1px solid color-mix(in srgb, var(--brand-primary, #0f52ba) 25%, #ffffff);
+      backdrop-filter: blur(6px);
+    }
+    :host-context([data-bs-theme='dark']) .media {
+      background: linear-gradient(165deg, rgba(15,82,186,.18) 0%, rgba(7,16,36,.85) 100%);
+    }
+    .actions {
+      display: flex;
+      gap: .65rem;
+      flex-wrap: wrap;
+    }
+    .actions .btn {
+      flex: 1 1 0;
+      justify-content: center;
+      text-align: center;
+      display: inline-flex;
+      align-items: center;
+      gap: .45rem;
+    }
+    .btn-fav {
+      border: 1.5px solid var(--brand-border, #d9dde7);
+      background: var(--brand-cloud, #fff);
+      color: var(--brand-ink-soft, #2f3344);
+    }
+    .btn-fav:hover,
+    .btn-fav:focus {
+      border-color: var(--brand-primary, #0f52ba);
+      color: var(--brand-primary, #0f52ba);
+      background: color-mix(in srgb, var(--brand-primary, #0f52ba) 12%, #ffffff);
+      box-shadow: 0 16px 28px rgba(15, 82, 186, .16);
+    }
+    .stock-badge { align-self: flex-start; letter-spacing: .05em; border: 1.5px solid transparent; }
+    .stock-low { background: rgba(255, 99, 99, .15); color: #c22222; border-color: rgba(255, 99, 99, .4); }
+    .stock-mid { background: rgba(255, 184, 77, .18); color: #c2640e; border-color: rgba(255, 184, 77, .42); }
+    .stock-high { background: rgba(38, 170, 120, .18); color: #0f8b55; border-color: rgba(38, 170, 120, .38); }
     @keyframes shimmer { 0% { background-position: -180% 0; } 100% { background-position: 180% 0; } }
     .media .img-loader { background-size: 200% 100%; }
-    :host-context([data-bs-theme='dark']) .media .img-loader { background: linear-gradient(115deg, rgba(30,41,59,.7) 0%, rgba(30,41,59,.45) 40%, rgba(100,116,139,.25) 70%); background-size: 200% 100%; }
+    :host-context([data-bs-theme='dark']) .media .img-loader {
+      background: linear-gradient(120deg, rgba(30,41,59,.7) 0%, rgba(30,41,59,.45) 40%, rgba(100,116,139,.25) 70%);
+    }
+    @media (max-width: 575.98px) {
+      .actions { flex-direction: column; }
+    }
   `],
   template: `
   <div class="card h-100 position-relative">
-    <span *ngIf="product?.category" class="badge rounded-pill text-bg-light position-absolute category-badge border">{{ product!.category }}</span>
+    <span *ngIf="product?.category" class="badge rounded-pill text-bg-light position-absolute category-badge">{{ product!.category }}</span>
     <a [routerLink]="['/product', product!.id]" class="media d-block" (mouseenter)="startHover()" (mouseleave)="stopHover()" (focus)="startHover()" (blur)="stopHover()">
       <img [src]="currentImage" [class.loading]="imageLoading" (load)="onImageLoad()" [attr.decoding]="'async'" loading="lazy" alt="{{product!.brand}} {{product!.modelName}}" />
       <div class="img-loader" *ngIf="imageLoading"></div>
@@ -56,17 +136,17 @@ import { LucideAngularModule } from 'lucide-angular';
         </a>
       </h5>
       <div class="text-muted small">{{product!.size}} · SKU {{product!.sku}}</div>
-      <span *ngIf="product?.stock !== undefined" class="badge mt-1 align-self-start" [ngClass]="stockClass(product!.stock || 0)">{{ stockLabel(product!.stock || 0) }}</span>
+      <span *ngIf="product?.stock !== undefined" class="badge stock-badge mt-2" [ngClass]="stockClass(product!.stock || 0)">{{ stockLabel(product!.stock || 0) }}</span>
       <div class="mt-auto pt-2">
         <div class="d-flex justify-content-between align-items-center mb-2">
           <strong class="price">{{ product!.price | currency:'MXN' }}</strong>
         </div>
         <div class="actions">
-          <button class="btn btn-outline-secondary btn-sm d-inline-flex align-items-center gap-2 btn-fav" type="button" (click)="saveForLater()" [title]="auth.isAuthenticated() ? 'Agregar a favoritos' : 'Inicia sesión para guardar'" aria-label="Agregar a favoritos">
+          <button class="btn btn-outline-secondary btn-sm btn-fav" type="button" (click)="saveForLater()" [title]="auth.isAuthenticated() ? 'Agregar a favoritos' : 'Inicia sesión para guardar'" aria-label="Agregar a favoritos">
             <lucide-icon name="heart" size="16" [strokeWidth]="2.5" aria-hidden="true"></lucide-icon>
             <span class="d-none d-sm-inline">Guardar</span>
           </button>
-          <button class="btn btn-warning btn-sm fw-semibold d-inline-flex align-items-center gap-2" type="button" (click)="addToCart()">
+          <button class="btn btn-primary btn-sm fw-semibold" type="button" (click)="addToCart()">
             <lucide-icon name="shopping-cart" size="16" [strokeWidth]="2.5" aria-hidden="true"></lucide-icon>
             <span>Agregar</span>
           </button>
@@ -163,9 +243,9 @@ export class ProductCardComponent implements OnChanges, OnDestroy {
   }
 
   stockClass(stock: number) {
-    if (stock <= 5) return 'bg-danger';
-    if (stock <= 20) return 'bg-warning text-dark';
-    return 'bg-success';
+    if (stock <= 5) return 'stock-low';
+    if (stock <= 20) return 'stock-mid';
+    return 'stock-high';
   }
   stockLabel(stock: number) {
     if (stock <= 5) return `Quedan ${stock}`;

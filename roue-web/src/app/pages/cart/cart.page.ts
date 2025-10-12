@@ -8,7 +8,8 @@ import { CartStore } from '../../state/cart.store';
 import { RouterLink } from '@angular/router';
 import { CartService } from '../../core/cart.service';
 import { ApiService } from '../../core/api.service';
-import { forkJoin } from 'rxjs';
+import { ProductAssetsService } from '../../core/product-assets.service';
+import { forkJoin, switchMap } from 'rxjs';
 
 @Component({
   standalone: true,
@@ -116,6 +117,7 @@ export class CartPage implements OnInit {
   #toast = inject(ToastService);
   #cartApi = inject(CartService);
   #productsApi = inject(ApiService);
+  #assets = inject(ProductAssetsService);
   #imgLookupPending = new Set<string>();
   coupon = '';
   saved: WishItem[] = [];
@@ -154,14 +156,16 @@ export class CartPage implements OnInit {
     for (const w of this.saved) {
       if ((w as any).imageUrl || this.#imgLookupPending.has(w.productId)) continue;
       this.#imgLookupPending.add(w.productId);
-      this.#productsApi.getProduct(w.productId).subscribe({
-        next: (p) => {
-          const img = p.images && p.images.length ? p.images[0] : null;
-          this.saved = this.saved.map(x => x.productId === w.productId ? { ...x, imageUrl: img, stock: (p as any).stock ?? (x as any).stock ?? null } : x);
-          this.#imgLookupPending.delete(w.productId);
-        },
-        error: () => { this.#imgLookupPending.delete(w.productId); }
-      });
+      this.#productsApi.getProduct(w.productId)
+        .pipe(switchMap(p => this.#assets.enrichProduct(p)))
+        .subscribe({
+          next: (p) => {
+            const img = p.images && p.images.length ? p.images[0] : null;
+            this.saved = this.saved.map(x => x.productId === w.productId ? { ...x, imageUrl: img, stock: (p as any).stock ?? (x as any).stock ?? null } : x);
+            this.#imgLookupPending.delete(w.productId);
+          },
+          error: () => { this.#imgLookupPending.delete(w.productId); }
+        });
     }
   }
   moveSavedToCart(w: WishItem) { this.#wishlist.moveToCart(w.productId, 1).subscribe({ next: () => { this.loadSaved(); this.cart.increment(w.productId, 1); }, error: () => {} }); }

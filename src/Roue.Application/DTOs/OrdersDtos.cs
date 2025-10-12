@@ -42,7 +42,8 @@ public sealed record QuoteResponseDto(
     decimal Shipping,
     decimal Total,
     string Currency,
-    IReadOnlyList<OrderItemLineDto> Items
+    IReadOnlyList<OrderItemLineDto> Items,
+    CashbackPreviewDto Cashback
 );
 
 public sealed record CheckoutResponseDto(
@@ -51,7 +52,8 @@ public sealed record CheckoutResponseDto(
     decimal Discount,
     decimal Shipping,
     decimal Total,
-    string Currency
+    string Currency,
+    CashbackPreviewDto Cashback
 );
 
 public sealed record ReserveResponseDto(string Token, DateTime ExpiresAtUtc);

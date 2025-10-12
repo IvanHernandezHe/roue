@@ -42,6 +42,8 @@ public sealed class AppDbContext : IdentityDbContext<IdentityUser<Guid>, Identit
     public DbSet<DiscountCode> DiscountCodes => Set<DiscountCode>();
     public DbSet<RewardAccount> RewardAccounts => Set<RewardAccount>();
     public DbSet<RewardTransaction> RewardTransactions => Set<RewardTransaction>();
+    public DbSet<CashbackRule> CashbackRules => Set<CashbackRule>();
+    public DbSet<PersonalizedDiscountReward> PersonalizedDiscountRewards => Set<PersonalizedDiscountReward>();
     public DbSet<Cart> Carts => Set<Cart>();
     public DbSet<CartItem> CartItems => Set<CartItem>();
     public DbSet<Address> Addresses => Set<Address>();
@@ -116,6 +118,32 @@ public sealed class AppDbContext : IdentityDbContext<IdentityUser<Guid>, Identit
         b.Entity<DiscountCode>(e =>
         {
             e.HasIndex(x => x.Code).IsUnique();
+        });
+        b.Entity<RewardAccount>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.HasIndex(x => x.UserId).IsUnique();
+        });
+        b.Entity<RewardTransaction>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.HasIndex(x => new { x.UserId, x.CreatedAtUtc });
+            e.Property(x => x.Reference).HasMaxLength(128);
+        });
+        b.Entity<CashbackRule>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.Property(x => x.Name).HasMaxLength(160);
+            e.Property(x => x.Description).HasMaxLength(512);
+            e.HasIndex(x => x.Active);
+            e.HasIndex(x => x.StartsAtUtc);
+            e.HasIndex(x => x.EndsAtUtc);
+        });
+        b.Entity<PersonalizedDiscountReward>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.Property(x => x.RuleName).HasMaxLength(160);
+            e.HasIndex(x => new { x.UserId, x.Redeemed });
         });
         b.Entity<Address>(e =>
         {

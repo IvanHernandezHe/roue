@@ -1,53 +1,54 @@
 import { Component } from '@angular/core';
+import { NgClass, NgFor } from '@angular/common';
 
 @Component({
   standalone: true,
+  imports: [NgFor, NgClass],
   template: `
-    <article class="servicios-page">
-      <section class="service-hero text-white position-relative overflow-hidden">
-        <div class="hero-media">
-          <img
-            src="https://images.unsplash.com/photo-1549923746-c502d488b3ea?auto=format&fit=crop&w=1600&q=80"
-            alt="Técnico montando llanta en un taller especializado"
-            loading="lazy"
-          />
-          <div class="hero-overlay"></div>
-        </div>
-        <div class="container py-5 position-relative">
-          <div class="row align-items-end gy-4">
-            <div class="col-lg-7">
-              <span class="sticker sticker-red mb-3">Servicios Roue</span>
-              <h1 class="display-4 text-uppercase drift-in">Performance confiable para cualquier terreno</h1>
-              <p class="lead text-white-50 mb-4">
-                Desde el montaje premium hasta programas de mantenimiento predictivo, diseñamos soluciones integrales
-                para autos deportivos, SUVs, camiones ligeros y flotas comerciales.
+    <article class="services-page">
+      <section class="services-hero text-white">
+        <img
+          class="hero-image"
+          src="https://images.unsplash.com/photo-1549923746-c502d488b3ea?auto=format&fit=crop&w=2000&q=80"
+          alt="Técnico ajustando una llanta en taller premium"
+          loading="lazy"
+        />
+        <div class="hero-overlay"></div>
+        <div class="container position-relative py-5">
+          <div class="row gy-5 align-items-end">
+            <div class="col-lg-7 hero-copy">
+              <span class="section-eyebrow text-white-50">Servicios Roue</span>
+              <h1 class="display-5 fw-bold mb-3">Performance confiable para cada kilómetro</h1>
+              <p class="hero-lead">
+                Del montaje milimétrico a los programas de mantenimiento predictivo. Configuramos soluciones para autos deportivos, SUV, flotillas y pilotos de track-day.
               </p>
-              <div class="d-flex flex-wrap gap-3">
-                <div class="hero-pill">
-                  <span class="pill-value">24/7</span>
-                  <span class="pill-label">Soporte móvil</span>
+              <div class="hero-metrics">
+                <div class="metric">
+                  <span class="metric-value">24/7</span>
+                  <span class="metric-label">Soporte móvil</span>
                 </div>
-                <div class="hero-pill">
-                  <span class="pill-value">+140</span>
-                  <span class="pill-label">Marcas certificadas</span>
+                <div class="metric">
+                  <span class="metric-value">+140</span>
+                  <span class="metric-label">Marcas certificadas</span>
                 </div>
-                <div class="hero-pill">
-                  <span class="pill-value">99.4%</span>
-                  <span class="pill-label">Diagnósticos acertados</span>
+                <div class="metric">
+                  <span class="metric-value">99.4%</span>
+                  <span class="metric-label">Diagnósticos acertados</span>
                 </div>
               </div>
             </div>
             <div class="col-lg-5">
-              <div class="hero-card shadow-lg">
-                <h2 class="h4 mb-3">Solicita una sesión diagnóstica</h2>
-                <p class="text-white-50 mb-4">
-                  Verificamos desgaste, presión, alineación y condiciones del camino para recomendarte la llanta exacta.
+              <aside class="hero-card">
+                <span class="hero-label">Diagnóstico inicial</span>
+                <h2 class="h4 mb-3">Agenda una revisión integral</h2>
+                <p class="text-white-75 mb-4">
+                  Evaluamos desgaste, presión, alineación y telemetría para recomendarte la llanta exacta y el plan ideal.
                 </p>
                 <div class="d-flex flex-column flex-md-row gap-3">
-                  <button type="button" class="btn btn-jdm">Agendar ahora</button>
-                  <button type="button" class="btn btn-outline-light">Ver planes empresariales</button>
+                  <button type="button" class="btn btn-light btn-lg text-dark fw-semibold">Agendar ahora</button>
+                  <button type="button" class="btn btn-outline-light btn-lg">Ver planes empresariales</button>
                 </div>
-              </div>
+              </aside>
             </div>
           </div>
         </div>
@@ -56,102 +57,24 @@ import { Component } from '@angular/core';
       <section class="py-5 bg-body service-grid">
         <div class="container">
           <div class="text-center mb-5">
-            <span class="sticker mb-2">Experiencia integral</span>
-            <h2 class="section-title display-6">Domina cada kilómetro con nuestros servicios insignia</h2>
+            <span class="section-eyebrow d-inline-flex justify-content-center">Experiencia integral</span>
+            <h2 class="display-6 section-title">Servicios insignia para dominar cada terreno</h2>
             <p class="text-muted col-lg-8 mx-auto">
-              Cada solución combina ingeniería de precisión, herramientas calibradas y especialistas certificados para
-              entregarte resultados impecables desde el primer montaje.
+              Ingeniería de precisión, herramientas calibradas y especialistas certificados para entregar resultados impecables desde el primer montaje.
             </p>
           </div>
-          <div class="row g-4">
-            <div class="col-md-6 col-xl-3">
+      <div class="row g-4">
+            <div class="col-md-6 col-xl-3" *ngFor="let service of services">
               <article class="service-card h-100">
                 <figure class="service-media ratio ratio-4x3">
-                  <img
-                    src="https://images.unsplash.com/photo-1619546813926-a78fa6372cd2?auto=format&fit=crop&w=900&q=80"
-                    alt="Especialista instalando llanta de alto desempeño"
-                    loading="lazy"
-                  />
+                  <img [src]="service.image" [alt]="service.alt" loading="lazy" />
                 </figure>
                 <div class="service-body">
-                  <span class="service-badge">01</span>
-                  <h3 class="h4">Montaje y balanceo de precisión</h3>
-                  <p class="text-muted">
-                    Maquinaria Hunter® Road Force y torque controlado para proteger tu suspensión y brindar suavidad al volante.
-                  </p>
+                  <span class="service-badge">{{ service.badge }}</span>
+                  <h3 class="h4">{{ service.title }}</h3>
+                  <p class="text-muted">{{ service.description }}</p>
                   <ul class="text-muted small">
-                    <li>Diagnóstico digital del aro en segundos</li>
-                    <li>Balanceo dinámico con microajustes</li>
-                    <li>Revisión de sensores TPMS y calibración</li>
-                  </ul>
-                </div>
-              </article>
-            </div>
-            <div class="col-md-6 col-xl-3">
-              <article class="service-card h-100">
-                <figure class="service-media ratio ratio-4x3">
-                  <img
-                    src="https://images.unsplash.com/photo-1605296862957-0e957c31c27d?auto=format&fit=crop&w=900&q=80"
-                    alt="Vehículo sobre rampa durante servicio de alineación"
-                    loading="lazy"
-                  />
-                </figure>
-                <div class="service-body">
-                  <span class="service-badge">02</span>
-                  <h3 class="h4">Alineación inteligente en 3D</h3>
-                  <p class="text-muted">
-                    Ajustes en tiempo real con visión computarizada, asegurando desgaste uniforme y respuesta precisa en curvas.
-                  </p>
-                  <ul class="text-muted small">
-                    <li>Lectura milimétrica de caída y convergencia</li>
-                    <li>Reportes visuales para tu historial</li>
-                    <li>Configuración sport, touring o carga pesada</li>
-                  </ul>
-                </div>
-              </article>
-            </div>
-            <div class="col-md-6 col-xl-3">
-              <article class="service-card h-100">
-                <figure class="service-media ratio ratio-4x3">
-                  <img
-                    src="https://images.unsplash.com/photo-1542367592-8849eb950fd8?auto=format&fit=crop&w=900&q=80"
-                    alt="Camión de asistencia móvil para cambio de llantas"
-                    loading="lazy"
-                  />
-                </figure>
-                <div class="service-body">
-                  <span class="service-badge">03</span>
-                  <h3 class="h4">Pit-stop móvil 24/7</h3>
-                  <p class="text-muted">
-                    Unidades completamente equipadas llegan a tu domicilio, flotilla o pista para resolver emergencias sin detenerte.
-                  </p>
-                  <ul class="text-muted small">
-                    <li>GPS en ruta y ETA en tiempo real</li>
-                    <li>Montaje, vulcanizado y programación TPMS</li>
-                    <li>Disponibilidad para autopistas y perímetro urbano</li>
-                  </ul>
-                </div>
-              </article>
-            </div>
-            <div class="col-md-6 col-xl-3">
-              <article class="service-card h-100">
-                <figure class="service-media ratio ratio-4x3">
-                  <img
-                    src="https://images.unsplash.com/photo-1513028325910-4c5090065ff0?auto=format&fit=crop&w=900&q=80"
-                    alt="Consultor mostrando opciones de llantas premium a cliente"
-                    loading="lazy"
-                  />
-                </figure>
-                <div class="service-body">
-                  <span class="service-badge">04</span>
-                  <h3 class="h4">Consultoría de performance</h3>
-                  <p class="text-muted">
-                    Análisis de hábitos de manejo, telemetría y objetivos para recomendar combinaciones óptimas de llantas y rines.
-                  </p>
-                  <ul class="text-muted small">
-                    <li>Sesiones one-to-one con especialista</li>
-                    <li>Plan de rotación y mantenimiento anual</li>
-                    <li>Acceso a beneficios y garantías extendidas</li>
+                    <li *ngFor="let item of service.points">{{ item }}</li>
                   </ul>
                 </div>
               </article>
@@ -160,58 +83,37 @@ import { Component } from '@angular/core';
         </div>
       </section>
 
-      <section class="py-5 premium-plans">
+      <section class="py-5 plans">
         <div class="container">
-          <div class="row align-items-center gy-5">
+          <div class="row gy-5 align-items-center">
             <div class="col-lg-5">
-              <span class="sticker sticker-red mb-3">Planes a medida</span>
-              <h2 class="section-title display-6">Selecciona el paquete que potencia tu conducción</h2>
+              <span class="section-eyebrow d-inline-flex">Planes a medida</span>
+              <h2 class="display-6 section-title">El paquete que potencia tu conducción</h2>
               <p class="text-muted mb-4">
-                Personalizamos coberturas para conductores urbanos, entusiastas de track-days y flotillas que buscan minimizar paros
-                operativos. Configura la combinación perfecta de inspecciones, reemplazos y asistencia.
+                Configura la combinación perfecta de inspecciones, reemplazos y asistencia para conductores urbanos, entusiastas de pista y flotillas comerciales.
               </p>
-              <div class="d-flex flex-wrap gap-3">
-                <div class="plan-chip">Cobertura nacional</div>
-                <div class="plan-chip">Garantía antirrotura</div>
-                <div class="plan-chip">Reportes digitales</div>
+              <div class="plan-chips">
+                <span>Cobertura nacional</span>
+                <span>Garantía antirrotura</span>
+                <span>Reportes digitales</span>
               </div>
             </div>
             <div class="col-lg-7">
               <div class="row g-4">
-                <div class="col-md-6">
-                  <article class="plan-card h-100">
+                <div class="col-md-6" *ngFor="let plan of plans">
+                  <article class="plan-card" [class.plan-card-highlight]="plan.highlight">
                     <div class="plan-header">
-                      <h3 class="h4 mb-1">Track+ Sport</h3>
-                      <p class="text-muted mb-0">Para autos performance y SUV premium</p>
+                      <h3 class="h4 mb-1">{{ plan.name }}</h3>
+                      <p class="text-muted mb-0">{{ plan.subtitle }}</p>
                     </div>
                     <ul class="plan-list">
-                      <li>Rotación y balanceo cada 5,000 km</li>
-                      <li>Setup de alineación custom (street / track)</li>
-                      <li>Soporte express en eventos y track-days</li>
-                      <li>Acceso prioritario a llantas semi-slick</li>
+                      <li *ngFor="let item of plan.items">{{ item }}</li>
                     </ul>
                     <div class="plan-footer">
-                      <span class="plan-price">$2,890<span class="plan-price-period">/trimestre</span></span>
-                      <button type="button" class="btn btn-outline-dark">Solicitar demo</button>
-                    </div>
-                  </article>
-                </div>
-                <div class="col-md-6">
-                  <article class="plan-card plan-card-highlight h-100">
-                    <div class="plan-header">
-                      <span class="badge text-bg-danger">El favorito</span>
-                      <h3 class="h4 mb-1">Fleet Guard Pro</h3>
-                      <p class="text-muted mb-0">Ideal para flotillas comerciales y reparto</p>
-                    </div>
-                    <ul class="plan-list">
-                      <li>Inspecciones predictivas con IoT</li>
-                      <li>Reemplazo en sitio y préstamo de llantas</li>
-                      <li>Alertas automáticas por desgaste/temperatura</li>
-                      <li>Reportes KPI para operaciones y finanzas</li>
-                    </ul>
-                    <div class="plan-footer">
-                      <span class="plan-price">$4,490<span class="plan-price-period">/trimestre</span></span>
-                      <button type="button" class="btn btn-jdm">Hablar con un asesor</button>
+                      <span class="plan-price">{{ plan.price }}<span class="plan-price-period">/{{ plan.period }}</span></span>
+                      <button type="button" class="btn" [ngClass]="plan.highlight ? 'btn-light text-dark fw-semibold' : 'btn-outline-secondary'">
+                        {{ plan.cta }}
+                      </button>
                     </div>
                   </article>
                 </div>
@@ -221,140 +123,137 @@ import { Component } from '@angular/core';
         </div>
       </section>
 
-      <section class="py-5 bg-body process-strip">
+      <section class="py-5 bg-body">
         <div class="container">
           <div class="row gy-4 align-items-center">
-            <div class="col-lg-5">
-              <span class="sticker mb-3">Proceso</span>
-              <h2 class="section-title display-6">Así cuidamos tus llantas en tres pasos</h2>
+            <div class="col-lg-6">
+              <span class="section-eyebrow d-inline-flex">Cashback inteligente</span>
+              <h2 class="display-6 section-title">Acumula saldo en cada servicio</h2>
               <p class="text-muted mb-4">
-                Nuestro flujo combina datos, experiencia humana y seguimiento continuo para que cada instalación sea impecable
-                y mantenga tu desempeño por más kilómetros.
+                Cada intervención suma cashback personalizado según tipo de vehículo, categoría y frecuencia. Visualiza tu balance desde el perfil y redímelo en tu siguiente visita.
               </p>
-              <button type="button" class="btn btn-outline-dark">Descargar ficha técnica</button>
-            </div>
-            <div class="col-lg-7">
-              <div class="process-timeline">
-                <div class="process-item">
-                  <div class="process-index">1</div>
+              <div class="cashback-list">
+                <div class="cashback-item">
+                  <span class="item-icon">01</span>
                   <div>
-                    <h3 class="h5 mb-1">Evaluación &amp; escaneo digital</h3>
-                    <p class="text-muted mb-0">Levantamiento de datos con scanners 3D, lectura de presión y consulta de telemetría conectada.</p>
+                    <strong>Registro sin costo</strong>
+                    <p class="text-muted mb-0 small">Crea tu cuenta y obtén 5% en tu primera instalación.</p>
                   </div>
                 </div>
-                <div class="process-item">
-                  <div class="process-index">2</div>
+                <div class="cashback-item">
+                  <span class="item-icon">02</span>
                   <div>
-                    <h3 class="h5 mb-1">Intervención personalizada</h3>
-                    <p class="text-muted mb-0">Selección de la llanta ideal, montaje, balanceo milimétrico y calibración TPMS/documentación.</p>
+                    <strong>Cashback por categoría</strong>
+                    <p class="text-muted mb-0 small">Mayor porcentaje en servicios de mantenimiento predictivo.</p>
                   </div>
                 </div>
-                <div class="process-item">
-                  <div class="process-index">3</div>
+                <div class="cashback-item">
+                  <span class="item-icon">03</span>
                   <div>
-                    <h3 class="h5 mb-1">Seguimiento &amp; optimización</h3>
-                    <p class="text-muted mb-0">Alertas proactivas, rotación programada y análisis para extender la vida útil del set completo.</p>
+                    <strong>Bonos por recurrencia</strong>
+                    <p class="text-muted mb-0 small">Desbloquea beneficios adicionales al completar tus rotaciones.</p>
                   </div>
                 </div>
               </div>
+              <button type="button" class="btn btn-primary btn-lg mt-3">Ver estados de recompensa</button>
             </div>
-          </div>
-        </div>
-      </section>
-
-      <section class="py-5">
-        <div class="container">
-          <div class="cta-banner rounded-4 p-4 p-lg-5 text-white overflow-hidden position-relative">
-            <div class="row align-items-center g-4">
-              <div class="col-lg-8">
-                <h2 class="display-6 mb-3">¿Listo para agendar tu próximo servicio?</h2>
-                <p class="text-white-50 mb-0">
-                  Conéctate con nuestro equipo técnico, recibe una cotización instantánea y programa la visita en el horario que
-                  mejor se adapte a tu operación.
-                </p>
-              </div>
-              <div class="col-lg-4 text-lg-end">
-                <button type="button" class="btn btn-jdm mb-3 mb-lg-0">Agendar servicio</button>
-                <a href="tel:+529990001234" class="cta-phone d-inline-flex align-items-center gap-2">
-                  <span class="cta-phone-icon">📞</span>
-                  <span class="fw-semibold">+52 999 000 1234</span>
-                </a>
+            <div class="col-lg-6">
+              <div class="testimonials">
+                <article class="testimonial">
+                  <p class="mb-3">“Reducimos 22% el gasto en llantas de nuestra flotilla urbana gracias al plan Predict+ y al cashback de servicios.”</p>
+                  <div class="small text-muted">Julio Herrera · Operaciones FleetGo</div>
+                </article>
+                <article class="testimonial">
+                  <p class="mb-3">“El soporte móvil llegó en menos de 40 minutos al autódromo. Ajustaron presiones y alineación antes de la siguiente manga.”</p>
+                  <div class="small text-muted">Valeria Núñez · Piloto amateur</div>
+                </article>
               </div>
             </div>
-            <div class="cta-overlay"></div>
           </div>
         </div>
       </section>
     </article>
   `,
-  styles: [
-    `
+  styles: [`
     :host { display: block; }
 
-    .service-hero {
-      min-height: clamp(520px, 60vh, 680px);
-      display: flex;
-      align-items: flex-end;
+    .services-hero {
+      position: relative;
+      overflow: hidden;
+      border-radius: clamp(26px, 6vw, 44px);
+      min-height: clamp(520px, 70vh, 760px);
     }
-    .hero-media {
+    .hero-image {
       position: absolute;
       inset: 0;
-      overflow: hidden;
-    }
-    .hero-media img {
       width: 100%;
       height: 100%;
       object-fit: cover;
+      filter: brightness(.65) saturate(110%);
       transform: scale(1.08);
-      filter: brightness(0.55);
     }
     .hero-overlay {
       position: absolute;
       inset: 0;
-      background: radial-gradient(90% 80% at 20% 20%, rgba(217, 66, 66, 0.55), transparent 70%),
-                  linear-gradient(120deg, rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.55));
-      mix-blend-mode: lighten;
+      background: linear-gradient(135deg, rgba(15,18,40,.92), rgba(15,82,186,.72));
     }
-    .hero-card {
-      background: rgba(12, 12, 12, 0.8);
-      border-radius: 1.5rem;
-      padding: 2rem;
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      backdrop-filter: blur(16px);
-    }
-    .hero-pill {
-      min-width: 142px;
-      padding: 0.75rem 1rem;
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.16);
-      text-transform: uppercase;
-      font-size: 0.7rem;
-      letter-spacing: 0.08em;
+    .hero-copy { position: relative; z-index: 2; max-width: 640px; }
+    .hero-lead { color: rgba(255,255,255,.74); font-size: 1.1rem; }
+    .hero-metrics {
       display: flex;
-      justify-content: space-between;
-      align-items: center;
+      flex-wrap: wrap;
       gap: 1rem;
+      margin-top: 2rem;
     }
-    .pill-value {
-      font-family: var(--font-display);
-      font-size: 1.4rem;
+    .metric {
+      min-width: 120px;
+      padding: .85rem 1.1rem;
+      border-radius: var(--brand-radius-md);
+      background: rgba(255,255,255,.14);
+      border: 1px solid rgba(255,255,255,.28);
+      text-align: center;
+      box-shadow: 0 18px 40px rgba(4,12,32,.45);
     }
-    .pill-label {
-      color: rgba(255, 255, 255, 0.7);
+    .metric-value { display: block; font-family: var(--font-display); font-size: 1.5rem; letter-spacing: .08em; }
+    .metric-label { display: block; font-size: .72rem; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,.7); }
+
+    .hero-card {
+      position: relative;
+      border-radius: clamp(22px, 4vw, 30px);
+      padding: clamp(1.8rem, 4vw, 2.4rem);
+      background: rgba(8,12,24,.78);
+      border: 1px solid rgba(255,255,255,.18);
+      backdrop-filter: blur(18px);
+      display: flex;
+      flex-direction: column;
+      gap: 1.1rem;
+      box-shadow: 0 34px 64px rgba(4,12,32,.6);
+    }
+    .hero-label {
+      display: inline-flex;
+      align-items: center;
+      padding: .35rem 1rem;
+      border-radius: 999px;
+      background: rgba(255,255,255,.16);
+      letter-spacing: .14em;
+      font-size: .64rem;
+      text-transform: uppercase;
     }
 
-    .service-grid .service-card {
-      background: #ffffff;
-      border-radius: 1.5rem;
+    .service-card {
+      border-radius: var(--brand-radius-lg);
+      border: 1.5px solid var(--brand-border);
+      background: var(--brand-cloud);
+      box-shadow: var(--shadow-soft);
+      display: flex;
+      flex-direction: column;
       overflow: hidden;
-      border: 1px solid rgba(0, 0, 0, 0.05);
-      box-shadow: 0 18px 38px rgba(0, 0, 0, 0.08);
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
     }
-    .service-grid .service-card:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 24px 44px rgba(0, 0, 0, 0.12);
+    .service-card:hover {
+      transform: translateY(-6px);
+      border-color: var(--brand-primary);
+      box-shadow: var(--shadow-hover);
     }
     .service-media img {
       width: 100%;
@@ -362,67 +261,74 @@ import { Component } from '@angular/core';
       object-fit: cover;
     }
     .service-body {
-      padding: 1.8rem;
+      padding: clamp(1.4rem, 3vw, 1.9rem);
+      display: grid;
+      gap: .75rem;
     }
     .service-badge {
       display: inline-flex;
       align-items: center;
-      justify-content: center;
-      width: 48px;
-      height: 48px;
-      border-radius: 15px;
-      background: rgba(217, 66, 66, 0.12);
-      color: var(--jdm-red);
+      padding: .4rem .85rem;
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--brand-primary) 18%, #ffffff);
+      color: var(--brand-primary-dark);
+      letter-spacing: .12em;
+      font-size: .68rem;
       font-weight: 700;
-      margin-bottom: 1.25rem;
-      letter-spacing: 0.08em;
-    }
-    .service-body ul {
-      padding-left: 1.1rem;
-      margin-bottom: 0;
-    }
-    .service-body ul li {
-      margin-bottom: 0.35rem;
     }
 
-    .premium-plans {
-      background: radial-gradient(1200px 680px at 15% 30%, rgba(217, 66, 66, 0.12), transparent 60%);
+    .plans {
+      background: linear-gradient(180deg, rgba(15,82,186,.05), rgba(244,246,252,.94));
     }
-    .plan-chip {
-      padding: 0.6rem 1rem;
+    .plan-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .6rem;
+    }
+    .plan-chips span {
+      padding: .45rem 1.1rem;
       border-radius: 999px;
-      background: rgba(217, 66, 66, 0.12);
-      color: var(--jdm-red);
-      font-size: 0.8rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
+      border: 1.5px solid var(--brand-border);
+      background: rgba(255,255,255,.9);
+      font-weight: 600;
+      letter-spacing: .02em;
     }
     .plan-card {
-      border-radius: 1.5rem;
-      background: #ffffff;
-      border: 1px solid rgba(0, 0, 0, 0.06);
-      padding: 2.2rem 2rem;
-      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.08);
+      border-radius: var(--brand-radius-lg);
+      border: 1.5px solid var(--brand-border);
+      background: var(--brand-cloud);
+      padding: clamp(1.6rem, 3vw, 2rem);
       display: flex;
       flex-direction: column;
-      gap: 1.4rem;
+      gap: 1.2rem;
+      box-shadow: var(--shadow-soft);
+      transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+    }
+    .plan-card:hover {
+      transform: translateY(-6px);
+      border-color: var(--brand-primary);
+      box-shadow: var(--shadow-hover);
     }
     .plan-card-highlight {
-      background: linear-gradient(160deg, rgba(217, 66, 66, 0.92), rgba(11, 11, 11, 0.95));
-      color: #ffffff;
-      border: none;
-      box-shadow: 0 30px 60px rgba(217, 66, 66, 0.25);
+      background: linear-gradient(145deg, rgba(15,82,186,.12), rgba(255,255,255,.92));
+      border-color: color-mix(in srgb, var(--brand-primary) 35%, #ffffff);
     }
-    .plan-card-highlight .text-muted { color: rgba(255, 255, 255, 0.72) !important; }
+    .plan-header p { font-size: .9rem; }
     .plan-list {
       list-style: none;
       padding: 0;
       margin: 0;
       display: grid;
-      gap: 0.55rem;
-      color: rgba(0, 0, 0, 0.7);
+      gap: .6rem;
+      color: var(--brand-muted);
+      font-size: .92rem;
     }
-    .plan-card-highlight .plan-list { color: rgba(255, 255, 255, 0.8); }
+    .plan-list li::before {
+      content: '•';
+      color: var(--brand-primary);
+      margin-right: .5rem;
+      font-weight: 700;
+    }
     .plan-footer {
       display: flex;
       align-items: center;
@@ -431,160 +337,165 @@ import { Component } from '@angular/core';
     }
     .plan-price {
       font-family: var(--font-display);
-      font-size: 2rem;
-      letter-spacing: 0.04em;
-      display: flex;
-      align-items: baseline;
-      gap: 0.35rem;
+      font-size: 1.6rem;
+      color: var(--brand-primary);
     }
     .plan-price-period {
-      font-size: 0.8rem;
-      text-transform: uppercase;
-      color: rgba(0, 0, 0, 0.55);
+      font-size: .85rem;
+      font-family: var(--font-sans);
+      color: var(--brand-muted);
+      margin-left: .4rem;
     }
-    .plan-card-highlight .plan-price-period { color: rgba(255, 255, 255, 0.7); }
 
-    .process-strip {
-      position: relative;
-      overflow: hidden;
-    }
-    .process-strip::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(120deg, rgba(217, 66, 66, 0.08), transparent 55%);
-      pointer-events: none;
-    }
-    .process-timeline {
+    .cashback-list {
       display: grid;
-      gap: 1.75rem;
-      position: relative;
-      padding-left: 3rem;
+      gap: 1rem;
     }
-    .process-timeline::before {
-      content: '';
-      position: absolute;
-      left: 1.1rem;
-      top: 0.5rem;
-      bottom: 0.5rem;
-      width: 3px;
-      background: linear-gradient(180deg, rgba(217, 66, 66, 0.85), transparent);
-    }
-    .process-item {
+    .cashback-item {
       display: flex;
-      gap: 1.2rem;
-      position: relative;
+      gap: 1rem;
+      padding: .9rem 1.1rem;
+      border-radius: var(--brand-radius-sm);
+      border: 1.5px solid var(--brand-border);
+      background: var(--brand-cloud);
+      box-shadow: var(--shadow-soft);
     }
-    .process-index {
-      width: 52px;
-      height: 52px;
-      border-radius: 16px;
-      background: var(--jdm-red);
-      color: #ffffff;
-      font-family: var(--font-display);
-      font-size: 1.5rem;
-      display: flex;
+    .item-icon {
+      display: inline-flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 12px 24px rgba(217, 66, 66, 0.35);
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      background: color-mix(in srgb, var(--brand-primary) 16%, #ffffff);
+      color: var(--brand-primary-dark);
+      font-family: var(--font-display);
+      font-size: 1rem;
+      letter-spacing: .08em;
     }
 
-    .cta-banner {
-      background: linear-gradient(130deg, rgba(11, 11, 11, 0.95), rgba(217, 66, 66, 0.85));
-      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+    .testimonials {
+      display: grid;
+      gap: 1.2rem;
     }
-    .cta-overlay {
-      position: absolute;
-      inset: -20%;
-      background: radial-gradient(45% 45% at 85% 20%, rgba(61, 255, 181, 0.35), transparent 60%);
-      opacity: 0.45;
-      pointer-events: none;
-    }
-    .cta-phone {
-      color: #ffffff;
-      text-decoration: none;
-      letter-spacing: 0.04em;
-    }
-    .cta-phone-icon {
-      display: inline-flex;
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.18);
-      align-items: center;
-      justify-content: center;
-      font-size: 1.1rem;
+    .testimonial {
+      padding: 1.4rem 1.6rem;
+      border-radius: var(--brand-radius-md);
+      border: 1.5px solid var(--brand-border);
+      background: rgba(255,255,255,.94);
+      box-shadow: var(--shadow-soft);
     }
 
     @media (max-width: 991.98px) {
+      .services-hero { border-radius: 18px; }
       .hero-card { margin-top: 2rem; }
-      .plan-footer { flex-direction: column; align-items: flex-start; }
-      .plan-price { font-size: 1.8rem; }
-      .service-grid .service-card:hover { transform: none; }
     }
-
     @media (max-width: 767.98px) {
-      .service-body { padding: 1.5rem; }
-      .process-timeline { padding-left: 0; }
-      .process-timeline::before { left: 0.75rem; }
+      .plan-footer { flex-direction: column; align-items: flex-start; }
+      .hero-metrics { gap: .8rem; }
+      .metric { flex: 1 1 45%; }
     }
 
-    @media (prefers-reduced-motion: reduce) {
-      .service-grid .service-card:hover { transform: none; }
-      .drift-in { animation: none !important; }
+    :host-context([data-bs-theme='dark']) .service-card,
+    :host-context([data-bs-theme='dark']) .plan-card,
+    :host-context([data-bs-theme='dark']) .cashback-item,
+    :host-context([data-bs-theme='dark']) .testimonial,
+    :host-context([data-bs-theme='dark']) .plans,
+    :host-context([data-bs-theme='dark']) .service-grid {
+      background: rgba(10,16,32,.94);
+      border-color: rgba(92,108,148,.4);
+      box-shadow: 0 30px 70px rgba(4,10,24,.75);
+      color: #e7e9f2;
     }
-
-    :host-context([data-bs-theme="dark"]) .service-grid .service-card,
-    :host-context([data-bs-theme="dark"]) .plan-card {
-      background: rgba(10, 10, 10, 0.92);
-      border-color: rgba(255, 255, 255, 0.08);
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45);
+    :host-context([data-bs-theme='dark']) .plan-card-highlight {
+      background: linear-gradient(145deg, rgba(15,82,186,.26), rgba(10,16,32,.92));
     }
-    :host-context([data-bs-theme="dark"]) .service-body,
-    :host-context([data-bs-theme="dark"]) .plan-card {
-      color: #f0f0f0;
+    :host-context([data-bs-theme='dark']) .plan-list { color: rgba(231,233,242,.78); }
+    :host-context([data-bs-theme='dark']) .testimonial {
+      background: rgba(12,18,36,.92);
     }
-    :host-context([data-bs-theme="dark"]) .service-body .text-muted,
-    :host-context([data-bs-theme="dark"]) .plan-card .text-muted,
-    :host-context([data-bs-theme="dark"]) .process-strip .text-muted {
-      color: rgba(232, 232, 232, 0.75) !important;
-    }
-    :host-context([data-bs-theme="dark"]) .plan-price-period {
-      color: rgba(232, 232, 232, 0.65);
-    }
-    :host-context([data-bs-theme="dark"]) .plan-card-highlight {
-      background: linear-gradient(160deg, rgba(217, 66, 66, 0.88), rgba(0, 0, 0, 0.95));
-      box-shadow: 0 30px 60px rgba(217, 66, 66, 0.4);
-    }
-    :host-context([data-bs-theme="dark"]) .process-timeline::before {
-      background: linear-gradient(180deg, rgba(217, 66, 66, 0.6), transparent);
-    }
-    :host-context([data-bs-theme="dark"]) .process-index {
-      box-shadow: 0 18px 32px rgba(217, 66, 66, 0.35);
-    }
-    :host-context([data-bs-theme="dark"]) .plan-list { color: rgba(232, 232, 232, 0.78); }
-    :host-context([data-bs-theme="dark"]) .plan-card-highlight .plan-list { color: rgba(255, 255, 255, 0.85); }
-    :host-context([data-bs-theme="dark"]) .plan-chip {
-      background: rgba(217, 66, 66, 0.28);
-      color: #ffffff;
-    }
-    :host-context([data-bs-theme="dark"]) .plan-card .btn-outline-dark {
-      color: #ffffff;
-      border-color: rgba(255, 255, 255, 0.55);
-    }
-    :host-context([data-bs-theme="dark"]) .plan-card .btn-outline-dark:hover,
-    :host-context([data-bs-theme="dark"]) .plan-card .btn-outline-dark:focus {
-      background: var(--jdm-red);
-      border-color: var(--jdm-red);
-      color: #ffffff;
-    }
-    :host-context([data-bs-theme="dark"]) .cta-banner {
-      background: linear-gradient(130deg, rgba(0, 0, 0, 0.95), rgba(217, 66, 66, 0.88));
-    }
-    :host-context([data-bs-theme="dark"]) .cta-phone-icon {
-      background: rgba(255, 255, 255, 0.22);
-    }
-    `
-  ]
+  `]
 })
-export class ServiciosPage {}
+export class ServiciosPage {
+  readonly services = [
+    {
+      badge: '01',
+      title: 'Montaje y balanceo de precisión',
+      description: 'Maquinaria Hunter® Road Force y torque controlado para proteger tu suspensión y brindar suavidad al volante.',
+      points: [
+        'Diagnóstico digital del aro en segundos',
+        'Balanceo dinámico con microajustes',
+        'Revisión y calibración de sensores TPMS'
+      ],
+      image: 'https://images.unsplash.com/photo-1619546813926-a78fa6372cd2?auto=format&fit=crop&w=1200&q=80',
+      alt: 'Especialista instalando llanta de alto desempeño'
+    },
+    {
+      badge: '02',
+      title: 'Alineación inteligente en 3D',
+      description: 'Visión computarizada para asegurar desgaste uniforme y respuesta precisa en curvas.',
+      points: [
+        'Lectura milimétrica de caída y convergencia',
+        'Reportes visuales para tu historial',
+        'Configuraciones street, touring o carga pesada'
+      ],
+      image: 'https://images.unsplash.com/photo-1605296862957-0e957c31c27d?auto=format&fit=crop&w=1200&q=80',
+      alt: 'Vehículo sobre rampa durante servicio de alineación'
+    },
+    {
+      badge: '03',
+      title: 'Pit-stop móvil 24/7',
+      description: 'Unidades equipadas llegan a tu domicilio, flotilla o pista para resolver emergencias sin detenerte.',
+      points: [
+        'GPS en ruta y ETA en tiempo real',
+        'Montaje, vulcanizado y programación TPMS',
+        'Cobertura autopistas y perímetros urbanos'
+      ],
+      image: 'https://images.unsplash.com/photo-1542367592-8849eb950fd8?auto=format&fit=crop&w=1200&q=80',
+      alt: 'Camión de asistencia móvil para cambio de llantas'
+    },
+    {
+      badge: '04',
+      title: 'Consultoría de performance',
+      description: 'Analizamos hábitos de manejo, telemetría y objetivos para recomendar combinaciones óptimas de llantas y rines.',
+      points: [
+        'Sesiones uno a uno con especialista',
+        'Plan anual de rotación y mantenimiento',
+        'Acceso a garantías extendidas y beneficios'
+      ],
+      image: 'https://images.unsplash.com/photo-1513028325910-4c5090065ff0?auto=format&fit=crop&w=1200&q=80',
+      alt: 'Consultor mostrando opciones de llantas premium a cliente'
+    }
+  ];
+
+  readonly plans = [
+    {
+      name: 'Track+ Sport',
+      subtitle: 'Para autos performance y SUV premium',
+      items: [
+        'Rotación y balanceo cada 5,000 km',
+        'Setup de alineación custom (street / track)',
+        'Soporte express en eventos y track-days',
+        'Acceso prioritario a llantas semi-slick'
+      ],
+      price: '$2,890',
+      period: 'trimestre',
+      cta: 'Solicitar demo',
+      highlight: false
+    },
+    {
+      name: 'Predict+ Flotas',
+      subtitle: 'Control total para flotillas urbanas y de última milla',
+      items: [
+        'Monitoreo de desgaste y alerta temprana',
+        'Inventario de llantas y rotación automatizada',
+        'Cashback preferencial por volumen',
+        'Reportes digitales y API para tu ERP'
+      ],
+      price: '$8,500',
+      period: 'mes',
+      cta: 'Hablar con un asesor',
+      highlight: true
+    }
+  ];
+}

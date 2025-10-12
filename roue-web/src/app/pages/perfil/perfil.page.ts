@@ -13,35 +13,183 @@ import { ApiService } from '../../core/api.service';
   standalone: true,
   imports: [NgIf, NgFor, FormsModule, CurrencyPipe, DatePipe, RouterLink],
   styles: [`
-    .card { border-radius: .75rem; border: 1px solid rgba(0,0,0,.08); }
-    .tabs { border-bottom: 1px solid rgba(0,0,0,.08); }
-    .tab-btn { border: none; background: transparent; padding: .75rem 1rem; font-weight: 600; }
-    .tab-btn.active { color: var(--jdm-red); border-bottom: 2px solid var(--jdm-red); }
-    .pref-group { border: 1px solid rgba(0,0,0,.08); border-radius: .75rem; padding: 1rem; }
-    .pref-title { font-weight: 700; margin-bottom: .25rem; }
+    :host { display: block; }
+    .profile-container { display: grid; gap: 1.8rem; }
+    .profile-shell {
+      border-radius: var(--brand-radius-lg);
+      border: 1.5px solid var(--brand-border);
+      background: rgba(255,255,255,.94);
+      box-shadow: var(--shadow-soft);
+      overflow: hidden;
+    }
+    .profile-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      padding: 1.6rem 1.8rem;
+      background: linear-gradient(120deg, color-mix(in srgb, var(--brand-primary) 8%, #ffffff), rgba(255,255,255,.96));
+      border-bottom: 1.5px solid var(--brand-border);
+    }
+    .profile-meta small { color: var(--brand-muted); }
+    .profile-tabs {
+      display: flex;
+      gap: .4rem;
+      padding: .6rem 1.6rem 0;
+      border-bottom: 1.5px solid var(--brand-border);
+      flex-wrap: wrap;
+    }
+    .tab-btn {
+      border: none;
+      background: transparent;
+      padding: .85rem 1.2rem;
+      font-weight: 600;
+      color: var(--brand-muted);
+      border-bottom: 3px solid transparent;
+      border-radius: .4rem .4rem 0 0;
+      transition: color .18s ease, border-color .18s ease, background .18s ease;
+    }
+    .tab-btn:hover { color: var(--brand-primary); }
+    .tab-btn.active {
+      color: var(--brand-primary);
+      border-color: var(--brand-primary);
+      background: rgba(15,82,186,.08);
+    }
+    .profile-body {
+      padding: 1.8rem;
+      display: grid;
+      gap: 1.6rem;
+    }
+    .section-card {
+      border-radius: var(--brand-radius-md);
+      border: 1.5px solid var(--brand-border);
+      background: var(--brand-cloud);
+      padding: 1.4rem 1.6rem;
+      box-shadow: 0 12px 32px rgba(15,26,67,.08);
+    }
+    .pref-group {
+      border-radius: var(--brand-radius-md);
+      border: 1.5px solid var(--brand-border);
+      padding: 1.1rem;
+      background: rgba(255,255,255,.98);
+      box-shadow: 0 10px 24px rgba(15,26,67,.08);
+    }
+    .pref-title { font-weight: 700; letter-spacing: .02em; margin-bottom: .4rem; }
+    .address-card {
+      border: 1.5px solid var(--brand-border);
+      border-radius: var(--brand-radius-md);
+      padding: 1.1rem;
+      background: rgba(255,255,255,.96);
+      box-shadow: 0 12px 28px rgba(15,26,67,.06);
+    }
+    .address-card.is-default {
+      border-color: var(--brand-primary);
+      box-shadow: 0 16px 36px rgba(15,82,186,.18);
+    }
+    .orders-table table {
+      background: rgba(255,255,255,.96);
+      border-radius: var(--brand-radius-md);
+      overflow: hidden;
+    }
+    .orders-table thead { background: color-mix(in srgb, var(--brand-primary) 6%, #ffffff); }
+    .orders-table th { font-weight: 600; color: var(--brand-muted); }
+    .summary-banner {
+      display: grid;
+      gap: .6rem;
+    }
+    .summary-banner strong { font-size: 1.1rem; }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: .35rem;
+      padding: .35rem .8rem;
+      border-radius: 999px;
+      border: 1.5px solid var(--brand-border);
+      background: rgba(255,255,255,.92);
+      font-weight: 600;
+      letter-spacing: .04em;
+      color: var(--brand-primary-dark);
+    }
+    .form-label { font-weight: 600; }
+    .form-control, .form-select {
+      border-radius: var(--brand-radius-sm);
+      border: 1.5px solid var(--brand-border);
+    }
+    .form-control:focus, .form-select:focus {
+      border-color: var(--brand-primary);
+      box-shadow: 0 0 0 .2rem color-mix(in srgb, var(--brand-primary) 18%, transparent);
+      background: #fff;
+    }
+    .btn-outline-danger {
+      border-radius: var(--brand-radius-sm);
+    }
+
+    @media (max-width: 767.98px) {
+      .profile-header { flex-direction: column; align-items: flex-start; }
+      .profile-tabs { padding-inline: 1.2rem; }
+      .profile-body { padding: 1.4rem; }
+    }
+
+    :host-context([data-bs-theme='dark']) .profile-shell,
+    :host-context([data-bs-theme='dark']) .section-card,
+    :host-context([data-bs-theme='dark']) .pref-group,
+    :host-context([data-bs-theme='dark']) .address-card,
+    :host-context([data-bs-theme='dark']) .orders-table table {
+      background: rgba(10,16,32,.94);
+      border-color: rgba(92,108,148,.4);
+      color: #e7e9f2;
+      box-shadow: 0 28px 70px rgba(4,10,24,.75);
+    }
+    :host-context([data-bs-theme='dark']) .profile-header {
+      background: linear-gradient(120deg, rgba(15,82,186,.28), rgba(10,16,32,.92));
+      border-bottom-color: rgba(92,108,148,.4);
+    }
+    :host-context([data-bs-theme='dark']) .tab-btn { color: rgba(231,233,242,.7); }
+    :host-context([data-bs-theme='dark']) .tab-btn.active {
+      color: #fff;
+      background: color-mix(in srgb, var(--brand-primary) 25%, rgba(12,18,36,.92));
+      border-color: rgba(255,255,255,.45);
+    }
+    :host-context([data-bs-theme='dark']) .chip {
+      background: rgba(12,18,36,.9);
+      border-color: rgba(92,108,148,.4);
+      color: #fff;
+    }
+    :host-context([data-bs-theme='dark']) .form-control,
+    :host-context([data-bs-theme='dark']) .form-select {
+      background: rgba(12,18,36,.92);
+      border-color: rgba(92,108,148,.4);
+      color: #e7e9f2;
+    }
   `],
   template: `
-  <section class="container my-4">
-    <h2 class="mb-3">Tu cuenta</h2>
-    <div class="card p-0 overflow-hidden" *ngIf="me; else loading">
-      <div class="p-3 border-bottom bg-body-tertiary">
-        <div class="d-flex justify-content-between align-items-center">
-          <div>
-            <div class="fw-semibold">{{ me.displayName || 'Usuario' }}</div>
-            <small class="text-muted">{{ me.email }}</small>
-          </div>
+  <section class="container my-4 profile-container">
+    <div>
+      <span class="section-eyebrow">Tu cuenta</span>
+      <h1 class="display-6 mb-1">Panel personal</h1>
+      <p class="text-muted mb-0">Gestiona tus datos, tus direcciones y preferencias de comunicación.</p>
+    </div>
+    <div class="profile-shell" *ngIf="me; else loading">
+      <div class="profile-header">
+        <div class="profile-meta">
+          <div class="fw-semibold">{{ me.displayName || 'Usuario' }}</div>
+          <small>{{ me.email }}</small>
+        </div>
+        <div class="summary-banner text-end">
+          <span class="chip" *ngIf="orders.length">Pedidos: {{ orders.length }}</span>
           <button class="btn btn-outline-danger btn-sm" (click)="logout()">Cerrar sesión</button>
         </div>
       </div>
-      <div class="tabs px-3 d-flex gap-2">
+      <div class="profile-tabs">
         <button class="tab-btn" [class.active]="tab==='perfil'" (click)="tab='perfil'">Perfil</button>
         <button class="tab-btn" [class.active]="tab==='seguridad'" (click)="tab='seguridad'">Seguridad</button>
         <button class="tab-btn" [class.active]="tab==='direcciones'" (click)="tab='direcciones'">Direcciones</button>
         <button class="tab-btn" [class.active]="tab==='pedidos'" (click)="tab='pedidos'">Pedidos</button>
         <button class="tab-btn" [class.active]="tab==='preferencias'" (click)="tab='preferencias'">Preferencias</button>
       </div>
+      <div class="profile-body">
 
-      <div class="p-3" *ngIf="tab==='perfil'">
+      <div class="section-card" *ngIf="tab==='perfil'">
         <form class="row g-3" (submit)="saveProfile($event)">
           <div class="col-12 col-md-6">
             <label class="form-label">Nombre</label>
@@ -52,14 +200,14 @@ import { ApiService } from '../../core/api.service';
             <input class="form-control" [(ngModel)]="profile.phoneNumber" name="phoneNumber" placeholder="10 dígitos"/>
           </div>
           <div class="col-12">
-            <button class="btn btn-dark" type="submit" [disabled]="saving">Guardar cambios</button>
+            <button class="btn btn-primary" type="submit" [disabled]="saving">Guardar cambios</button>
             <span class="text-success ms-2" *ngIf="saved">Guardado</span>
             <span class="text-danger ms-2" *ngIf="error">{{error}}</span>
           </div>
         </form>
       </div>
 
-      <div class="p-3" *ngIf="tab==='seguridad'">
+      <div class="section-card" *ngIf="tab==='seguridad'">
         <form class="row g-3" (submit)="changePassword($event)">
           <div class="col-12 col-md-4">
             <label class="form-label">Actual</label>
@@ -74,14 +222,14 @@ import { ApiService } from '../../core/api.service';
             <input class="form-control" type="password" [(ngModel)]="security.confirm" name="confirm" required minlength="6"/>
           </div>
           <div class="col-12">
-            <button class="btn btn-dark" type="submit" [disabled]="changing">Actualizar contraseña</button>
+            <button class="btn btn-primary" type="submit" [disabled]="changing">Actualizar contraseña</button>
             <span class="text-success ms-2" *ngIf="changed">Actualizada</span>
             <span class="text-danger ms-2" *ngIf="error">{{error}}</span>
           </div>
         </form>
       </div>
 
-      <div class="p-3" *ngIf="tab==='direcciones'">
+      <div class="section-card" *ngIf="tab==='direcciones'">
         <div class="row g-3">
           <div class="col-12 col-lg-7">
             <div *ngIf="addressesLoading" class="text-muted">Cargando direcciones…</div>
@@ -147,7 +295,7 @@ import { ApiService } from '../../core/api.service';
                   </label>
                 </div>
                 <div class="col-12 d-flex gap-2">
-                  <button class="btn btn-dark" type="submit" [disabled]="addressSaving">{{ editingAddressId ? 'Actualizar' : 'Guardar' }}</button>
+                  <button class="btn btn-primary" type="submit" [disabled]="addressSaving">{{ editingAddressId ? 'Actualizar' : 'Guardar' }}</button>
                   <button class="btn btn-outline-secondary" type="button" *ngIf="editingAddressId" (click)="resetAddressForm()" [disabled]="addressSaving">Cancelar</button>
                 </div>
               </form>
@@ -157,7 +305,7 @@ import { ApiService } from '../../core/api.service';
         </div>
       </div>
 
-      <div class="p-3" *ngIf="tab==='pedidos'">
+      <div class="section-card" *ngIf="tab==='pedidos'">
         <div *ngIf="orders.length; else noOrders">
           <div class="table-responsive">
             <table class="table align-middle">
@@ -185,7 +333,7 @@ import { ApiService } from '../../core/api.service';
         </ng-template>
       </div>
 
-      <div class="p-3" *ngIf="tab==='preferencias'">
+      <div class="section-card" *ngIf="tab==='preferencias'">
         <form class="row g-3" (submit)="savePrefs($event)">
           <div class="col-12 col-lg-6">
             <div class="pref-group">
@@ -286,7 +434,7 @@ import { ApiService } from '../../core/api.service';
           </div>
 
           <div class="col-12 d-flex gap-2">
-            <button class="btn btn-dark" type="submit">Guardar preferencias</button>
+            <button class="btn btn-primary" type="submit">Guardar preferencias</button>
             <button class="btn btn-outline-secondary" type="button" (click)="resetPrefs()">Restablecer</button>
             <span class="text-success ms-2" *ngIf="prefsSaved">Guardadas</span>
           </div>
@@ -314,12 +462,13 @@ import { ApiService } from '../../core/api.service';
           </div>
           <div class="col-12 col-lg-6 align-self-end">
             <div class="d-flex flex-column flex-md-row gap-2">
-              <button class="btn btn-dark" type="submit" [disabled]="marketingSaving">Guardar comunicaciones</button>
+              <button class="btn btn-primary" type="submit" [disabled]="marketingSaving">Guardar comunicaciones</button>
               <span class="text-success" *ngIf="marketingSaved">Preferencias guardadas</span>
               <span class="text-danger" *ngIf="marketingError">{{ marketingError }}</span>
             </div>
           </div>
         </form>
+      </div>
       </div>
     </div>
     <ng-template #loading>

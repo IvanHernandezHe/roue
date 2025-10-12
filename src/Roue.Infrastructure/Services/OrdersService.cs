@@ -12,8 +12,14 @@ public sealed class OrdersService : IOrdersService
     private readonly AppDbContext _db;
     private readonly IInventoryService _inventory;
     private readonly IShippingCalculator _shipping;
-    public OrdersService(AppDbContext db, IInventoryService inventory, IShippingCalculator shipping)
-    { _db = db; _inventory = inventory; _shipping = shipping; }
+    private readonly ICashbackService _cashback;
+    public OrdersService(AppDbContext db, IInventoryService inventory, IShippingCalculator shipping, ICashbackService cashback)
+    {
+        _db = db;
+        _inventory = inventory;
+        _shipping = shipping;
+        _cashback = cashback;
+    }
 
     public async Task<IReadOnlyList<OrderSummaryDto>> GetMineAsync(Guid userId, int take = 20, CancellationToken ct = default)
     {
@@ -61,7 +67,7 @@ public sealed class OrdersService : IOrdersService
         return new OrderDetailDto(order.Id, order.Total, order.Subtotal, order.DiscountAmount, order.ShippingCost, order.Currency, order.Status.ToString(), order.PaymentStatus.ToString(), order.PaymentProvider.ToString(), order.PaymentReference, order.CreatedAtUtc, items, shipping);
     }
 
-    public async Task<QuoteResponseDto> QuoteAsync(IReadOnlyList<CheckoutLineDto> items, string? discountCode, CancellationToken ct = default)
+    public async Task<QuoteResponseDto> QuoteAsync(IReadOnlyList<CheckoutLineDto> items, string? discountCode, Guid? userId, CancellationToken ct = default)
     {
         if (items is null || items.Count == 0) throw new ArgumentException("No items");
         var normalized = items.GroupBy(i => i.ProductId).Select(g => new { ProductId = g.Key, Quantity = Math.Max(1, g.Sum(x => x.Quantity)) }).ToList();
@@ -91,12 +97,14 @@ public sealed class OrdersService : IOrdersService
         }
         decimal shipping = await _shipping.CalculateAsync(subtotal, ct);
         var total = Math.Max(0m, subtotal - discount + shipping);
-        return new QuoteResponseDto(subtotal, discount, shipping, total, "MXN", lines);
+        var cashback = await _cashback.PreviewAsync(userId, lines, DateTime.UtcNow, ct)
+                       ?? new CashbackPreviewDto(0m, Array.Empty<CashbackLineDto>(), Array.Empty<CashbackDiscountDto>());
+        return new QuoteResponseDto(subtotal, discount, shipping, total, "MXN", lines, cashback);
     }
 
     public async Task<CheckoutResponseDto> CheckoutAsync(Guid userId, IReadOnlyList<CheckoutLineDto> items, string? discountCode, Guid? addressId, string? reservationToken, CancellationToken ct = default)
     {
-        var quote = await QuoteAsync(items, discountCode, ct);
+        var quote = await QuoteAsync(items, discountCode, userId, ct);
         var order = new Order();
         order.GetType().GetProperty(nameof(Order.UserId))!.SetValue(order, userId);
         order.GetType().GetProperty(nameof(Order.Subtotal))!.SetValue(order, quote.Subtotal);
@@ -140,9 +148,16 @@ public sealed class OrdersService : IOrdersService
             oi.GetType().GetProperty(nameof(Roue.Domain.Orders.OrderItem.Quantity))!.SetValue(oi, it.Quantity);
             _db.OrderItems.Add(oi);
         }
+        var cashback = quote.Cashback ?? new CashbackPreviewDto(0m, Array.Empty<CashbackLineDto>(), Array.Empty<CashbackDiscountDto>());
+        if (cashback is not null)
+        {
+            var expectedPoints = (int)Math.Round(cashback.BalanceAmount * 100m, MidpointRounding.AwayFromZero);
+            order.GetType().GetProperty(nameof(Order.PointsEarned))!.SetValue(order, expectedPoints);
+        }
+
         if (!string.IsNullOrWhiteSpace(reservationToken)) order.GetType().GetProperty(nameof(Order.PaymentReference))!.SetValue(order, $"resv:{reservationToken}");
         await _db.SaveChangesAsync(ct);
-        return new CheckoutResponseDto(order.Id, quote.Subtotal, quote.Discount, quote.Shipping, quote.Total, quote.Currency);
+        return new CheckoutResponseDto(order.Id, quote.Subtotal, quote.Discount, quote.Shipping, quote.Total, quote.Currency, cashback!);
     }
 
     public async Task<ReserveResponseDto> ReserveAsync(IReadOnlyList<CheckoutLineDto> items, int ttlSeconds, CancellationToken ct = default)
@@ -164,7 +179,7 @@ public sealed class OrdersService : IOrdersService
 
     private async Task<bool> MarkPaidSandboxInternalAsync(Guid userId, Guid orderId, CancellationToken ct)
     {
-        var order = await _db.Orders.FirstOrDefaultAsync(o => o.Id == orderId, ct);
+        var order = await _db.Orders.AsTracking().FirstOrDefaultAsync(o => o.Id == orderId, ct);
         if (order is null) throw new KeyNotFoundException();
         if (order.UserId != userId) throw new UnauthorizedAccessException();
 
@@ -179,6 +194,13 @@ public sealed class OrdersService : IOrdersService
         if (!committed) return false; // not enough inventory
 
         order.MarkPaid();
+        var cashbackResult = await _cashback.ApplyAsync(order, ct);
+        if (cashbackResult.PointsCredited > 0)
+        {
+            var currentPoints = order.PointsEarned;
+            var totalPoints = Math.Max(currentPoints, cashbackResult.PointsCredited);
+            order.GetType().GetProperty(nameof(Order.PointsEarned))!.SetValue(order, totalPoints);
+        }
         // Increment discount redemptions if applicable
         if (!string.IsNullOrWhiteSpace(order.DiscountCode))
         {

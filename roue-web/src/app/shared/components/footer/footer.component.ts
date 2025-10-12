@@ -8,11 +8,15 @@ import { ThemeService } from '../../../core/theme.service';
   imports: [RouterLink],
   styles: [`
     footer { width: 100%; }
-    .footer a { color: rgba(255,255,255,.85); text-decoration: none; }
-    .footer a:hover { color: var(--jdm-red); text-decoration: underline; }
-    .footer h6 { letter-spacing: .02em; }
+    .footer a { color: rgba(255,255,255,.88); text-decoration: none; transition: color .18s ease, opacity .18s ease; }
+    .footer a:hover,
+    .footer a:focus { color: #fff; opacity: 1; text-decoration: underline; }
+    .footer h6 { letter-spacing: .08em; text-transform: uppercase; font-weight: 700; font-size: .8rem; margin-bottom: 1rem; }
     .muted { color: rgba(255,255,255,.65); }
     .theme-toggle { align-items: center; display: flex; gap: .5rem; }
+    .btn-outline-light { border-radius: 999px; border: 1.5px solid rgba(255,255,255,.35); }
+    .btn-outline-light:hover,
+    .btn-outline-light:focus { background: rgba(255,255,255,.12); color: #fff; border-color: rgba(255,255,255,.65); }
   `],
   template: `
   <footer class="footer bg-dark text-light mt-5">
