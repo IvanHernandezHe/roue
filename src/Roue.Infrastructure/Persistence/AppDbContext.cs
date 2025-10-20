@@ -73,6 +73,8 @@ public sealed class AppDbContext : IdentityDbContext<IdentityUser<Guid>, Identit
             e.Property(p => p.ImagesJson).HasColumnType("jsonb");
             e.HasIndex(p => p.Sku).IsUnique();
             e.Property(p => p.BrandId).IsRequired();
+            e.Property(p => p.PromoLabel).HasMaxLength(160);
+            e.Property(p => p.IsFeatured).HasDefaultValue(false);
             e.HasOne(p => p.Brand)
                 .WithMany()
                 .HasForeignKey(p => p.BrandId)

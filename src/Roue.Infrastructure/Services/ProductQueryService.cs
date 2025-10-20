@@ -21,7 +21,9 @@ public sealed class ProductQueryService : IProductQueryService
             from c in cjoin.DefaultIfEmpty()
             join inv in _db.Inventory.AsNoTracking() on p.Id equals inv.ProductId into invJoin
             from inv in invJoin.DefaultIfEmpty()
-            select new { Product = p, Brand = br, Category = c, Inventory = inv };
+            join tireSpecs in _db.TireSpecs.AsNoTracking() on p.Id equals tireSpecs.ProductId into tireJoin
+            from tire in tireJoin.DefaultIfEmpty()
+            select new { Product = p, Brand = br, Category = c, Inventory = inv, Tire = tire };
 
         if (!string.IsNullOrWhiteSpace(q))
         {
@@ -40,8 +42,22 @@ public sealed class ProductQueryService : IProductQueryService
                 .Sum(r => (int?)r.Quantity)) ?? 0
             let onHand = row.Inventory == null ? 0 : row.Inventory.OnHand
             let stock = (onHand - reserved) < 0 ? 0 : (onHand - reserved)
+            let tireDto = row.Tire == null ? null : new TireSpecsDto(row.Tire.Type, row.Tire.LoadIndex, row.Tire.SpeedRating)
             orderby row.Brand.Name
-            select new ProductListItemDto(row.Product.Id, row.Product.Sku, row.Brand.Name, row.Product.ModelName, row.Product.Size, row.Product.Price, row.Product.Active, stock, row.Category != null ? row.Category.Name : null)
+            select new ProductListItemDto(
+                row.Product.Id,
+                row.Product.Sku,
+                row.Brand.Name,
+                row.Product.ModelName,
+                row.Product.Size,
+                row.Product.Price,
+                row.Product.Active,
+                stock,
+                row.Category != null ? row.Category.Name : null,
+                row.Brand.LogoUrl,
+                tireDto,
+                row.Product.PromoLabel,
+                row.Product.IsFeatured)
         ).Take(take).ToListAsync(ct);
         return list;
     }
@@ -83,8 +99,22 @@ public sealed class ProductQueryService : IProductQueryService
         TireSpecsDto? tire = tireSpecs is null ? null : new TireSpecsDto(tireSpecs.Type, tireSpecs.LoadIndex, tireSpecs.SpeedRating);
         RimSpecsDto? rim = rimSpecs is null ? null : new RimSpecsDto(rimSpecs.DiameterIn, rimSpecs.WidthIn, rimSpecs.BoltPattern, rimSpecs.OffsetMm, rimSpecs.CenterBoreMm, rimSpecs.Material, rimSpecs.Finish);
 
-        return new ProductDetailDto(row.Product.Id, row.Product.Sku, row.Brand.Name, row.Product.ModelName, row.Product.Size, row.Product.Price, row.Product.Active, stock,
-            row.Brand.LogoUrl, images, tire, rim, row.Category?.Name);
+        return new ProductDetailDto(
+            row.Product.Id,
+            row.Product.Sku,
+            row.Brand.Name,
+            row.Product.ModelName,
+            row.Product.Size,
+            row.Product.Price,
+            row.Product.Active,
+            stock,
+            row.Brand.LogoUrl,
+            images,
+            tire,
+            rim,
+            row.Category?.Name,
+            row.Product.PromoLabel,
+            row.Product.IsFeatured);
     }
 
     private static string NormalizeImageUrl(string raw)

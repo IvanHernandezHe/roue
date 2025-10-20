@@ -99,6 +99,14 @@ public static class DataSeeder
             if (existingSkus.Contains(s.sku)) continue;
             var brand = await EnsureBrandAsync(s.brand);
             var product = new Product(s.sku, brand.Id, s.model, s.size, s.price, tires.Id);
+            var marketing = s.sku switch
+            {
+                "REG-2055516-1" => ("Envío gratis", true),
+                "REG-2156516-1" => ("15% de descuento", false),
+                "REG-2355018-1" => ("Hasta 6 MSI", true),
+                _ => ((string?)null, false)
+            };
+            product.UpdateMarketing(marketing.Item1, marketing.Item2);
             var imgs = System.Text.Json.JsonSerializer.Serialize(new[] {
                 "/assets/product/fallback/default-tire.jpg",
                 "/assets/product/fallback/default-tire.jpg",
@@ -126,6 +134,7 @@ public static class DataSeeder
             if (existingSkus.Contains(r.sku)) continue;
             var brand = await EnsureBrandAsync(r.brand);
             var product = new Product(r.sku, brand.Id, r.model, r.size, r.price, rims.Id);
+            product.UpdateMarketing("Incluye centradores", r.sku == "RIM-REG-17X7.5-5X112-35");
             typeof(Product).GetProperty(nameof(Product.ImagesJson))?.SetValue(product, System.Text.Json.JsonSerializer.Serialize(new[] { "/assets/product/fallback/default-tire.jpg" }));
             db.Products.Add(product);
             db.RimSpecs.Add(new RimSpecs(product.Id, r.dia, r.width, r.pattern, r.offset, r.cbore, r.material, r.finish));

@@ -16,9 +16,17 @@ public sealed class Product
     public string? ImagesJson { get; private set; }
     public TireSpecs? Tire { get; private set; }
     public RimSpecs? Rim { get; private set; }
+    public string? PromoLabel { get; private set; }
+    public bool IsFeatured { get; private set; }
 
     public Product(string sku, Guid brandId, string model, string size, decimal price, Guid? categoryId = null)
     { Sku = sku; BrandId = brandId; ModelName = model; Size = size; Price = price; CategoryId = categoryId; }
+
+    public void UpdateMarketing(string? promoLabel, bool isFeatured)
+    {
+        PromoLabel = string.IsNullOrWhiteSpace(promoLabel) ? null : promoLabel.Trim();
+        IsFeatured = isFeatured;
+    }
 
     private Product() { }
 }

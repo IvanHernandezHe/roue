@@ -88,18 +88,128 @@ import { LucideAngularModule } from 'lucide-angular';
       font-weight: 700;
       color: var(--brand-primary);
     }
-    .category-badge {
-      position: absolute;
-      top: .9rem;
-      left: .9rem;
-      background: rgba(255,255,255,0.92);
-      border: 1px solid color-mix(in srgb, var(--brand-border) 65%, transparent);
-      border-radius: var(--brand-radius-sm);
-      box-shadow: 0 4px 12px -8px rgba(16, 22, 34, 0.4);
-      padding: .35rem .7rem;
-      font-weight: 600;
-      letter-spacing: .05em;
+    .card-meta {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: .45rem;
+      margin-bottom: .75rem;
     }
+    .badge-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: .25rem;
+      padding: .3rem .65rem;
+      border-radius: var(--brand-radius-sm);
+      font-size: .7rem;
+      text-transform: uppercase;
+      font-weight: 600;
+      letter-spacing: .06em;
+      border: 1px solid color-mix(in srgb, var(--brand-border) 70%, transparent);
+      background: rgba(255,255,255,0.9);
+      color: var(--brand-muted);
+    }
+    .category-chip {
+      color: var(--brand-primary);
+      border-color: color-mix(in srgb, var(--brand-primary) 35%, var(--brand-border));
+      background: rgba(236, 244, 255, .8);
+    }
+    .featured-chip {
+      background: rgba(255, 215, 0, .18);
+      color: #b8860b;
+      border-color: rgba(255, 215, 0, .32);
+    }
+    .promo-chip {
+      background: rgba(29, 111, 200, .12);
+      color: var(--brand-primary);
+      border-color: rgba(29, 111, 200, .28);
+    }
+    .low-stock-chip {
+      background: rgba(255, 99, 99, .12);
+      color: #b61a1a;
+      border-color: rgba(255, 99, 99, .3);
+    }
+    .brand-row {
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+    }
+    .brand-logo {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--brand-radius-sm);
+      border: 1px solid color-mix(in srgb, var(--brand-border) 60%, transparent);
+      background: #ffffff;
+      padding: .25rem;
+      object-fit: contain;
+      box-shadow: inset 0 1px 2px rgba(16, 22, 34, 0.05);
+    }
+    .brand-name {
+      font-weight: 600;
+      letter-spacing: .02em;
+    }
+    .size-usage {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .4rem;
+    }
+    .size-chip,
+    .usage-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: .25rem;
+      padding: .35rem .6rem;
+      border-radius: var(--brand-radius-sm);
+      font-size: .78rem;
+      font-weight: 600;
+      letter-spacing: .02em;
+      border: 1px solid color-mix(in srgb, var(--brand-border) 70%, transparent);
+      background: color-mix(in srgb, var(--brand-cloud) 85%, #ffffff);
+    }
+    .usage-chip {
+      background: rgba(29, 111, 200, .1);
+      color: var(--brand-primary);
+      border-color: rgba(29, 111, 200, .24);
+    }
+    .spec-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .6rem;
+      margin-top: .6rem;
+      font-size: .78rem;
+      color: var(--brand-muted);
+    }
+    .spec-row strong {
+      color: var(--brand-primary);
+      font-weight: 700;
+      margin-left: .25rem;
+    }
+    .price-band {
+      display: flex;
+      flex-direction: column;
+      gap: .35rem;
+    }
+    .availability {
+      font-size: .85rem;
+      color: var(--brand-muted);
+    }
+    .availability.low { color: #a3540a; }
+    .availability.out { color: #b61a1a; }
+    .primary-action {
+      display: inline-flex;
+      align-items: center;
+      gap: .45rem;
+      justify-content: center;
+      transition: background var(--transition-base), color var(--transition-base), border-color var(--transition-base);
+    }
+    .primary-action.disabled-state {
+      background: rgba(104, 112, 125, .18);
+      border-color: rgba(104, 112, 125, .25);
+      color: #5c6472;
+      cursor: not-allowed;
+    }
+    .primary-action.disabled-state lucide-icon { opacity: .7; }
+    .card-out .media { filter: grayscale(.18); }
     :host-context([data-bs-theme='dark']) .card {
       background: linear-gradient(180deg, rgba(20, 29, 46, 0.92) 0%, rgba(18, 25, 40, 0.88) 100%);
       border-color: color-mix(in srgb, var(--brand-border) 60%, transparent);
@@ -120,10 +230,27 @@ import { LucideAngularModule } from 'lucide-angular';
     :host-context([data-bs-theme='dark']) .media .img-loader {
       background: linear-gradient(120deg, rgba(46,58,82,.6) 0%, rgba(46,58,82,.35) 50%, rgba(100,116,139,.25) 100%);
     }
-    :host-context([data-bs-theme='dark']) .category-badge {
-      background: rgba(18, 26, 44, 0.95);
+    :host-context([data-bs-theme='dark']) .badge-chip {
+      background: rgba(18, 26, 44, 0.92);
+      color: var(--brand-ink);
+      border-color: color-mix(in srgb, var(--brand-border) 60%, transparent);
+    }
+    :host-context([data-bs-theme='dark']) .brand-logo {
+      background: rgba(26, 34, 52, 0.85);
+      border-color: color-mix(in srgb, var(--brand-border) 55%, transparent);
+    }
+    :host-context([data-bs-theme='dark']) .size-chip {
+      background: rgba(26, 34, 52, 0.8);
       border-color: color-mix(in srgb, var(--brand-border) 60%, transparent);
       color: var(--brand-ink);
+    }
+    :host-context([data-bs-theme='dark']) .usage-chip {
+      background: rgba(29, 111, 200, .2);
+      border-color: rgba(29, 111, 200, .3);
+      color: var(--brand-primary);
+    }
+    :host-context([data-bs-theme='dark']) .availability {
+      color: color-mix(in srgb, var(--brand-ink) 70%, rgba(148,163,184,.85));
     }
     .actions {
       display: flex;
@@ -151,10 +278,6 @@ import { LucideAngularModule } from 'lucide-angular';
       background: rgba(236, 244, 255, 0.5);
       box-shadow: 0 12px 28px -20px rgba(13, 28, 54, 0.42);
     }
-    .stock-badge { align-self: flex-start; letter-spacing: .05em; border: 1px solid transparent; }
-    .stock-low { background: rgba(255, 99, 99, .12); color: #b61a1a; border-color: rgba(255, 99, 99, .3); }
-    .stock-mid { background: rgba(255, 184, 77, .16); color: #a3540a; border-color: rgba(255, 184, 77, .35); }
-    .stock-high { background: rgba(38, 170, 120, .16); color: #0c7847; border-color: rgba(38, 170, 120, .32); }
     @keyframes shimmer { 0% { background-position: -180% 0; } 100% { background-position: 180% 0; } }
     .media .img-loader { background-size: 200% 100%; }
     :host-context([data-bs-theme='dark']) .media .img-loader {
@@ -165,34 +288,53 @@ import { LucideAngularModule } from 'lucide-angular';
     }
   `],
   template: `
-  <div class="card h-100 position-relative">
-    <span *ngIf="(product?.category || '').trim().length" class="badge rounded-pill text-bg-light position-absolute category-badge">{{ product!.category }}</span>
+  <div class="card h-100 position-relative" [class.card-out]="isOutOfStock">
+    <div class="card-meta">
+      <span *ngIf="(product?.category || '').trim().length" class="badge-chip category-chip">{{ product!.category }}</span>
+      <span *ngIf="product?.isFeatured" class="badge-chip featured-chip">⭐ Más vendido</span>
+      <span *ngIf="promoLabel" class="badge-chip promo-chip">{{ promoLabel }}</span>
+      <span *ngIf="lowStockBadge" class="badge-chip low-stock-chip">{{ lowStockBadge }}</span>
+    </div>
     <a [routerLink]="['/product', product!.id]" class="media d-block" (mouseenter)="startHover()" (mouseleave)="stopHover()" (focus)="startHover()" (blur)="stopHover()" (pointerdown)="onPointerDown($event)" (touchstart)="onTouchStart()">
       <img [src]="currentImage" [class.loading]="imageLoading" (load)="onImageLoad()" [attr.decoding]="'async'" loading="lazy" alt="{{product!.brand}} {{product!.modelName}}" />
       <div class="img-loader" *ngIf="imageLoading"></div>
     </a>
-    <div class="card-body d-flex flex-column gap-1">
-      <h5 class="card-title brand-model mb-0">
+    <div class="card-body d-flex flex-column">
+      <div class="brand-row">
+        <img *ngIf="brandLogo" [src]="brandLogo!" [alt]="product!.brand" class="brand-logo" loading="lazy"/>
+        <span class="brand-name">{{ product!.brand }}</span>
+      </div>
+      <h5 class="card-title brand-model mb-1">
         <a class="text-decoration-none" [routerLink]="['/product', product!.id]">
-          {{product!.brand}} {{product!.modelName}}
+          {{ product!.modelName }}
         </a>
       </h5>
-      <div class="text-muted small">{{product!.size}} · SKU {{product!.sku}}</div>
-      <span *ngIf="product?.stock !== undefined" class="badge stock-badge mt-2" [ngClass]="stockClass(product!.stock || 0)">{{ stockLabel(product!.stock || 0) }}</span>
-      <div class="mt-auto pt-2">
-        <div class="d-flex justify-content-between align-items-center mb-2">
-          <strong class="price">{{ product!.price | currency:'MXN' }}</strong>
-        </div>
-        <div class="actions">
-          <button class="btn btn-outline-secondary btn-sm btn-fav" type="button" (click)="saveForLater()" [title]="auth.isAuthenticated() ? 'Agregar a favoritos' : 'Inicia sesión para guardar'" aria-label="Agregar a favoritos">
-            <lucide-icon name="heart" size="16" [strokeWidth]="2.5" aria-hidden="true"></lucide-icon>
-            <span class="d-none d-sm-inline">Guardar</span>
-          </button>
-          <button class="btn btn-primary btn-sm fw-semibold" type="button" (click)="addToCart()">
-            <lucide-icon name="shopping-cart" size="16" [strokeWidth]="2.5" aria-hidden="true"></lucide-icon>
-            <span>Agregar</span>
-          </button>
-        </div>
+      <div class="sku text-muted small">SKU {{ product!.sku }}</div>
+      <div class="size-usage mt-2">
+        <span class="size-chip">{{ product!.size }}</span>
+        <span class="usage-chip" *ngIf="usageLabel">{{ usageLabel }}</span>
+      </div>
+      <div class="spec-row" *ngIf="loadIndex || speedRating">
+        <span *ngIf="loadIndex">Índice carga <strong>{{ loadIndex }}</strong></span>
+        <span *ngIf="speedRating">Velocidad <strong>{{ speedRating }}</strong></span>
+      </div>
+      <div class="price-band mt-3">
+        <strong class="price">{{ product!.price | currency:'MXN' }}</strong>
+        <div class="availability" [ngClass]="{ 'low': isLowStock, 'out': isOutOfStock }">{{ availabilityLabel }}</div>
+      </div>
+      <div class="actions pt-3">
+        <button class="btn btn-outline-secondary btn-sm btn-fav" type="button" (click)="saveForLater()" [title]="auth.isAuthenticated() ? 'Agregar a favoritos' : 'Inicia sesión para guardar'" aria-label="Agregar a favoritos">
+          <lucide-icon name="heart" size="16" [strokeWidth]="2.5" aria-hidden="true"></lucide-icon>
+          <span class="d-none d-sm-inline">Guardar</span>
+        </button>
+        <button class="btn btn-sm fw-semibold primary-action"
+          type="button"
+          (click)="addToCart()"
+          [disabled]="isOutOfStock"
+          [ngClass]="isOutOfStock ? 'btn-secondary disabled-state' : 'btn-primary'">
+          <lucide-icon name="shopping-cart" size="16" [strokeWidth]="2.5" aria-hidden="true"></lucide-icon>
+          <span>{{ isOutOfStock ? 'Agotado' : 'Agregar' }}</span>
+        </button>
       </div>
     </div>
   </div>
@@ -212,8 +354,59 @@ export class ProductCardComponent implements OnChanges, OnDestroy {
   imageIndex = 0;
   currentImage = this.fallbackImage;
   imageLoading = true;
+  get stockCount(): number { return this.product?.stock ?? 0; }
+  get isOutOfStock(): boolean { return this.stockCount <= 0; }
+  get isLowStock(): boolean { const qty = this.stockCount; return qty > 0 && qty <= 3; }
+  get lowStockBadge(): string | null { return this.isLowStock ? `🔥 Solo ${this.stockCount} disponibles` : null; }
+  get availabilityLabel(): string {
+    if (this.isOutOfStock) return 'Agotado';
+    if (this.isLowStock) return `Solo ${this.stockCount} disponibles`;
+    if (this.stockCount <= 6) return `Stock limitado (${this.stockCount})`;
+    return 'Disponible';
+  }
+  get promoLabel(): string | null {
+    const value = this.product?.promoLabel?.trim();
+    return value && value.length ? value : null;
+  }
+  get brandLogo(): string | null {
+    const value = this.product?.brandLogoUrl?.trim();
+    return value && value.length ? value : null;
+  }
+  get usageLabel(): string | null {
+    const raw = this.product?.tire?.type ?? '';
+    const trimmed = raw.trim();
+    if (!trimmed.length) {
+      const fallback = this.product?.category?.trim();
+      return fallback && fallback.length ? this.toTitleCase(fallback) : null;
+    }
+    switch (trimmed.toUpperCase()) {
+      case 'AUTO':
+        return 'Auto';
+      case 'AUTO DEPORTIVO':
+        return 'Auto deportivo';
+      case 'SUV':
+        return 'SUV';
+      case 'CAMIONETA':
+      case 'CAMIONETA LIGERA':
+        return 'Camioneta ligera';
+      case 'OFFROAD':
+      case 'OFF-ROAD':
+        return 'Off-road';
+      default:
+        return this.toTitleCase(trimmed);
+    }
+  }
+  get loadIndex(): string | null {
+    return this.extractCode(this.product?.tire?.loadIndex);
+  }
+  get speedRating(): string | null {
+    return this.extractCode(this.product?.tire?.speedRating);
+  }
 
   addToCart() {
+    if (this.isOutOfStock) {
+      return;
+    }
     this.#cart.add(this.product);
   }
   saveForLater() {
@@ -303,6 +496,19 @@ export class ProductCardComponent implements OnChanges, OnDestroy {
     return arr.length ? arr : [this.fallbackImage];
   }
 
+  private extractCode(value?: string | null): string | null {
+    if (!value) return null;
+    const trimmed = value.trim();
+    if (!trimmed.length) return null;
+    const idx = trimmed.indexOf('(');
+    const code = idx > 0 ? trimmed.substring(0, idx).trim() : trimmed;
+    return code.length ? code : null;
+  }
+
+  private toTitleCase(value: string): string {
+    return value.toLowerCase().replace(/\b\w/g, ch => ch.toUpperCase());
+  }
+
   private clearHoverTimer() {
     if (this.hoverTimer) {
       clearInterval(this.hoverTimer);
@@ -327,16 +533,5 @@ export class ProductCardComponent implements OnChanges, OnDestroy {
     if (ProductCardComponent.activeTouchCard === this) {
       ProductCardComponent.activeTouchCard = null;
     }
-  }
-
-  stockClass(stock: number) {
-    if (stock <= 5) return 'stock-low';
-    if (stock <= 20) return 'stock-mid';
-    return 'stock-high';
-  }
-  stockLabel(stock: number) {
-    if (stock <= 5) return `Quedan ${stock}`;
-    if (stock <= 20) return `Stock bajo: ${stock}`;
-    return `Stock: ${stock}`;
   }
 }

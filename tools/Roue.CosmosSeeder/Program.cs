@@ -110,6 +110,17 @@ internal static class SeedData
                     }
                 },
                 inventory = new InventoryDocument { quantity = tire.Stock },
+                promoLabel = tire.Sku switch
+                {
+                    "REG-2055516-1" => "Envío gratis",
+                    "REG-2156516-1" => "15% de descuento",
+                    "REG-2355018-1" => "Hasta 6 MSI",
+                    _ => null
+                },
+                isFeatured = tire.Sku is "REG-2055516-1" or "REG-2355018-1",
+                usage = tire.Size.Contains("70") ? "Camioneta ligera" : "Auto / Touring",
+                loadIndex = "107",
+                speedRating = "H",
                 createdAtUtc = timestamp,
                 updatedAtUtc = timestamp
             };
@@ -149,6 +160,11 @@ internal static class SeedData
                     }
                 },
                 inventory = new InventoryDocument { quantity = rim.Stock },
+                promoLabel = rim.Sku == "RIM-REG-17X7.5-5X112-35" ? "Compatible con VW/Audi" : null,
+                isFeatured = rim.Sku == "RIM-REG-17X7.5-5X112-35",
+                usage = "Auto deportivo",
+                loadIndex = null,
+                speedRating = null,
                 createdAtUtc = timestamp,
                 updatedAtUtc = timestamp
             };
@@ -268,6 +284,11 @@ internal sealed record ProductDocument
     public required string[] images { get; init; }
     public required ProductSpecs specs { get; init; }
     public required InventoryDocument inventory { get; init; }
+    public string? promoLabel { get; init; }
+    public bool isFeatured { get; init; }
+    public string? usage { get; init; }
+    public string? loadIndex { get; init; }
+    public string? speedRating { get; init; }
     public required DateTime createdAtUtc { get; init; }
     public required DateTime updatedAtUtc { get; init; }
 }

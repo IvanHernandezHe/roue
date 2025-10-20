@@ -1,6 +1,6 @@
 import { Component, inject, OnInit, OnDestroy, signal, computed, ElementRef, ViewChild, HostListener, AfterViewInit } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { NgIf, CurrencyPipe, NgFor } from '@angular/common';
+import { NgIf, CurrencyPipe, NgFor, NgClass } from '@angular/common';
 import { LucideAngularModule } from 'lucide-angular';
 import { Product } from '../../core/models/product.model';
 import { ApiService } from '../../core/api.service';
@@ -12,9 +12,9 @@ import { switchMap } from 'rxjs';
 
 @Component({
   standalone: true,
-  imports: [NgIf, NgFor, CurrencyPipe, RouterLink, LucideAngularModule],
+  imports: [NgIf, NgFor, NgClass, CurrencyPipe, RouterLink, LucideAngularModule],
   styles: [`
-    :host { display: block; --viewer-h: clamp(260px, 46vh, 460px); }
+    :host { display: block; --viewer-h: clamp(280px, 42vh, 480px); }
 
     .crumb {
       font-size: .88rem;
@@ -34,7 +34,7 @@ import { switchMap } from 'rxjs';
 
     .detail-layout {
       display: grid;
-      gap: 2rem;
+      gap: clamp(1.5rem, 3vw, 2rem);
       align-items: start;
     }
     @media (min-width: 992px) {
@@ -57,7 +57,7 @@ import { switchMap } from 'rxjs';
     .rail {
       display: none;
       flex-direction: column;
-      gap: .35rem;
+      gap: .4rem;
       width: 82px;
     }
     @media (min-width: 768px) { .rail { display: flex; flex-shrink: 0; } }
@@ -65,7 +65,7 @@ import { switchMap } from 'rxjs';
     .viewer-stage {
       display: flex;
       flex-direction: column;
-      gap: .75rem;
+      gap: .9rem;
       min-width: 0;
       align-items: center;
     }
@@ -77,8 +77,8 @@ import { switchMap } from 'rxjs';
       padding-bottom: .25rem;
     }
     .thumb {
-      width: 74px;
-      height: 74px;
+      width: 72px;
+      height: 72px;
       border-radius: var(--brand-radius-sm);
       border: 1px solid var(--brand-border);
       background: #ffffff;
@@ -97,7 +97,7 @@ import { switchMap } from 'rxjs';
       object-fit: cover;
     }
     @media (max-width: 767.98px) {
-      .thumb { width: 60px; height: 60px; }
+      .thumb { width: 62px; height: 62px; }
     }
 
     .simple-carousel {
@@ -108,7 +108,7 @@ import { switchMap } from 'rxjs';
       background: linear-gradient(135deg, #ffffff 0%, #f0f3f9 100%);
       height: var(--viewer-h);
       width: 100%;
-      max-width: clamp(240px, 42vw, 460px);
+      max-width: clamp(260px, 40vw, 440px);
       margin: 0 auto;
       box-shadow: var(--shadow-soft);
     }
@@ -124,13 +124,14 @@ import { switchMap } from 'rxjs';
       width: 100%;
       height: 100%;
       object-fit: contain;
-      padding: clamp(0.75rem, 2.4vw, 1.3rem);
+      padding: clamp(0.65rem, 2.4vw, 1.2rem);
+      max-height: calc(var(--viewer-h) - clamp(20px, 3vh, 36px));
     }
     .simple-progress {
       position: absolute;
-      left: clamp(12px, 4vw, 42px);
-      right: clamp(12px, 4vw, 42px);
-      bottom: clamp(12px, 4vw, 32px);
+      left: clamp(12px, 4vw, 32px);
+      right: clamp(12px, 4vw, 32px);
+      bottom: clamp(12px, 4vw, 26px);
       display: flex;
       gap: 6px;
       z-index: 2;
@@ -166,37 +167,119 @@ import { switchMap } from 'rxjs';
       border-radius: var(--brand-radius-lg);
       border: 1px solid var(--brand-border);
       background: linear-gradient(180deg, #ffffff 0%, #f4f6fb 100%);
-      padding: clamp(1.35rem, 2.6vw, 1.85rem);
+      padding: clamp(1.25rem, 2.4vw, 1.75rem);
       display: grid;
-      gap: 1.1rem;
+      gap: 1.05rem;
       box-shadow: var(--shadow-soft);
     }
+    .detail-card > p { margin-bottom: .3rem; }
     .product-title {
       font-family: var(--font-display);
       letter-spacing: .02em;
       font-size: clamp(1.65rem, 3vw, 2.2rem);
     }
+    .meta-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .45rem;
+    }
+    .badge-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: .3rem;
+      padding: .35rem .65rem;
+      border-radius: var(--brand-radius-sm);
+      border: 1px solid color-mix(in srgb, var(--brand-border) 70%, transparent);
+      background: rgba(255,255,255,.92);
+      font-size: .7rem;
+      font-weight: 600;
+      letter-spacing: .055em;
+      text-transform: uppercase;
+      color: var(--brand-muted);
+    }
+    .badge-chip.category { color: var(--brand-primary); border-color: color-mix(in srgb, var(--brand-primary) 35%, var(--brand-border)); background: rgba(236,244,255,.8); }
+    .badge-chip.featured { background: rgba(255,215,0,.18); border-color: rgba(255,215,0,.32); color: #b8860b; }
+    .badge-chip.promo { background: rgba(29,111,200,.12); border-color: rgba(29,111,200,.28); color: var(--brand-primary); }
+    .badge-chip.low { background: rgba(255,99,99,.12); border-color: rgba(255,99,99,.3); color: #b61a1a; }
+    .badge-chip.out { background: rgba(104,112,125,.16); border-color: rgba(104,112,125,.28); color: #5c6472; }
+
+    .brand-row {
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+    }
+    .brand-logo {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--brand-radius-sm);
+      border: 1px solid color-mix(in srgb, var(--brand-border) 65%, transparent);
+      background: #fff;
+      padding: .32rem;
+      object-fit: contain;
+      box-shadow: inset 0 1px 2px rgba(16,22,34,.06);
+    }
+    .brand-name { font-weight: 700; letter-spacing: .02em; text-transform: uppercase; }
+
+    .size-usage {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .5rem;
+    }
+    .size-chip,
+    .usage-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: .3rem;
+      padding: .38rem .7rem;
+      border-radius: var(--brand-radius-sm);
+      border: 1px solid color-mix(in srgb, var(--brand-border) 65%, transparent);
+      background: rgba(236, 242, 255, .6);
+      font-weight: 600;
+      letter-spacing: .03em;
+    }
+    .usage-chip {
+      background: rgba(29,111,200,.12);
+      border-color: rgba(29,111,200,.28);
+      color: var(--brand-primary);
+    }
+
+    .spec-inline {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .6rem;
+      font-size: .82rem;
+      color: var(--brand-muted);
+    }
+    .spec-inline strong {
+      margin-left: .25rem;
+      color: var(--brand-primary);
+      font-weight: 700;
+    }
+
     .price-row {
       display: flex;
-      align-items: baseline;
-      gap: 1rem;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      gap: .85rem 1.2rem;
     }
     .price-amount {
       font-family: var(--font-display);
-      font-size: clamp(1.8rem, 3vw, 2.4rem);
+      font-size: clamp(1.75rem, 3vw, 2.3rem);
       color: var(--brand-primary);
     }
-    .badge-stock {
-      display: inline-flex;
-      align-items: center;
+    .price-meta {
+      display: flex;
+      flex-direction: column;
       gap: .35rem;
-      padding: .35rem .75rem;
-      border-radius: var(--brand-radius-sm);
-      background: rgba(236, 242, 255, 0.7);
-      border: 1px solid var(--brand-border);
-      font-weight: 600;
-      letter-spacing: .04em;
+      min-width: 180px;
     }
+    .availability-note {
+      font-size: .9rem;
+      font-weight: 600;
+      color: var(--brand-muted);
+    }
+    .availability-note.low { color: #a3540a; }
+    .availability-note.out { color: #b61a1a; }
 
     .qty-group {
       display: inline-flex;
@@ -233,12 +316,19 @@ import { switchMap } from 'rxjs';
       align-items: center;
       gap: .55rem;
     }
+    .disabled-state {
+      background: rgba(104,112,125,.2) !important;
+      border-color: rgba(104,112,125,.28) !important;
+      color: rgba(92,100,114,.85) !important;
+      cursor: not-allowed;
+    }
+    .disabled-state lucide-icon { opacity: .7; }
 
     .specs-card {
       border-radius: var(--brand-radius-lg);
       border: 1px solid var(--brand-border);
       background: linear-gradient(180deg, #ffffff 0%, #f4f6fb 100%);
-      padding: clamp(1.35rem, 2.5vw, 1.75rem);
+      padding: clamp(1.1rem, 2.2vw, 1.6rem);
       box-shadow: var(--shadow-soft);
     }
     .specs-table {
@@ -260,6 +350,37 @@ import { switchMap } from 'rxjs';
     }
     .specs-table tr:nth-child(odd) td { background: var(--brand-cream); }
 
+    @media (min-width: 992px) {
+      .specs-table tbody {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: .7rem;
+      }
+      .specs-table tr {
+        display: flex;
+        flex-direction: column;
+        border: 1px solid var(--brand-border);
+        border-radius: var(--brand-radius-sm);
+        background: #fff;
+        padding: .65rem .75rem;
+      }
+      .specs-table th {
+        width: auto;
+        border-bottom: none;
+        background: transparent;
+        padding: 0;
+        font-size: .78rem;
+        color: var(--brand-muted);
+      }
+      .specs-table td {
+        padding: .25rem 0 0;
+        border-bottom: none;
+        background: transparent;
+        font-weight: 600;
+      }
+      .specs-table tr:nth-child(odd) td { background: transparent; }
+    }
+
     @media (prefers-reduced-motion: reduce) {
       .thumb:hover,
       .post-card:hover,
@@ -274,12 +395,44 @@ import { switchMap } from 'rxjs';
       border-color: var(--brand-border);
       color: var(--brand-ink);
     }
-    :host-context([data-bs-theme='dark']) .badge-stock,
     :host-context([data-bs-theme='dark']) .specs-table th,
     :host-context([data-bs-theme='dark']) .specs-table td {
       background: var(--surface-subtle);
       border-color: var(--brand-border);
       color: var(--brand-ink);
+    }
+    @media (min-width: 992px) {
+      :host-context([data-bs-theme='dark']) .specs-table tr {
+        background: rgba(22, 30, 44, .9);
+        border-color: color-mix(in srgb, var(--brand-border) 60%, transparent);
+      }
+    }
+    :host-context([data-bs-theme='dark']) .badge-chip {
+      background: rgba(18,26,44,.92);
+      border-color: color-mix(in srgb, var(--brand-border) 60%, transparent);
+      color: var(--brand-ink);
+    }
+    :host-context([data-bs-theme='dark']) .badge-chip.out {
+      background: rgba(104,112,125,.28);
+      border-color: rgba(104,112,125,.36);
+      color: rgba(214,218,228,.92);
+    }
+    :host-context([data-bs-theme='dark']) .size-chip {
+      background: rgba(26,34,52,.85);
+      border-color: color-mix(in srgb, var(--brand-border) 60%, transparent);
+      color: var(--brand-ink);
+    }
+    :host-context([data-bs-theme='dark']) .usage-chip {
+      background: rgba(29,111,200,.24);
+      border-color: rgba(29,111,200,.32);
+      color: var(--brand-primary);
+    }
+    :host-context([data-bs-theme='dark']) .brand-logo {
+      background: rgba(26,34,52,.85);
+      border-color: color-mix(in srgb, var(--brand-border) 60%, transparent);
+    }
+    :host-context([data-bs-theme='dark']) .availability-note {
+      color: color-mix(in srgb, var(--brand-ink) 75%, rgba(148,163,184,.8));
     }
   `],
   template: `
@@ -347,33 +500,64 @@ import { switchMap } from 'rxjs';
       <div #panelEl class="detail-panel">
         <div class="detail-card">
           <span class="section-eyebrow text-muted">Ficha técnica</span>
-          <h2 class="product-title mb-1">{{ title() }}</h2>
+          <div class="meta-chips" *ngIf="hasMetaChips">
+            <span class="badge-chip category" *ngIf="(product?.category || '').trim().length">{{ product!.category }}</span>
+            <span class="badge-chip featured" *ngIf="product?.isFeatured">⭐ Más vendido</span>
+            <span class="badge-chip promo" *ngIf="promoLabel">{{ promoLabel }}</span>
+            <span class="badge-chip low" *ngIf="lowStockBadge">{{ lowStockBadge }}</span>
+            <span class="badge-chip out" *ngIf="isOutOfStock">Agotado</span>
+          </div>
+          <div class="brand-row mt-2">
+            <img *ngIf="brandLogo" [src]="brandLogo!" [alt]="product!.brand" class="brand-logo" loading="lazy"/>
+            <span class="brand-name">{{ product!.brand }}</span>
+          </div>
+          <h2 class="product-title mb-1">{{ product!.modelName }}</h2>
           <div class="text-muted small">SKU {{ product!.sku }}</div>
-          <div class="price-row">
+          <div class="size-usage mt-2">
+            <span class="size-chip">{{ product!.size }}</span>
+            <span class="usage-chip" *ngIf="usageLabel">{{ usageLabel }}</span>
+          </div>
+          <div class="spec-inline mt-2" *ngIf="loadIndexCode || speedRatingCode">
+            <span *ngIf="loadIndexCode">Índice carga <strong>{{ loadIndexCode }}</strong></span>
+            <span *ngIf="speedRatingCode">Velocidad <strong>{{ speedRatingCode }}</strong></span>
+          </div>
+          <div class="price-row mt-3">
             <div class="price-amount">{{ product!.price | currency:'MXN' }}</div>
-            <span class="badge-stock">{{ product!.stock ? (product!.stock + ' disponibles') : 'Consultar inventario' }}</span>
+            <div class="price-meta">
+              <span class="availability-note" [ngClass]="{ 'low': isLowStock, 'out': isOutOfStock }">{{ availabilityLabel }}</span>
+              <span class="text-muted small" *ngIf="product?.category">Categoría {{ product!.category }}</span>
+            </div>
           </div>
           <p class="text-muted mb-2">Llanta {{ product!.brand }} {{ product!.modelName }} en medida {{ product!.size }} lista para tu vehículo.</p>
-          <div class="small text-muted">Categoría {{ product!.category || 'general' }}</div>
 
           <div class="d-flex align-items-center gap-3 flex-wrap">
             <div class="d-flex align-items-center gap-2">
               <label class="text-muted">Cantidad</label>
               <div class="qty-group">
-                <button class="qty-btn" type="button" (click)="dec()" [disabled]="qty()<=1">−</button>
+                <button class="qty-btn" type="button" (click)="dec()" [disabled]="isOutOfStock || qty()<=1">−</button>
                 <input class="qty-input" type="number" [value]="qty()" readonly aria-live="polite">
-                <button class="qty-btn" type="button" (click)="inc()" [disabled]="product!.stock && qty()>=product!.stock!">+</button>
+                <button class="qty-btn" type="button" (click)="inc()" [disabled]="isOutOfStock || qty()>=maxPurchasable">+</button>
               </div>
             </div>
-            <div class="text-muted" *ngIf="product!.stock!==undefined">En stock: {{ product!.stock }}</div>
+            <div class="text-muted small" *ngIf="hasStockInfo && !isOutOfStock">En stock: {{ displayStock }}</div>
+            <div class="text-muted small" *ngIf="isOutOfStock">Inventario agotado</div>
+            <div class="text-muted small" *ngIf="!hasStockInfo">Consultar inventario</div>
           </div>
 
           <div class="cta-group">
-            <button class="btn btn-primary btn-lg fw-semibold btn-ico" (click)="addToCart()">
+            <button class="btn btn-lg fw-semibold btn-ico"
+              type="button"
+              [ngClass]="isOutOfStock ? 'btn-secondary disabled-state' : 'btn-primary'"
+              (click)="addToCart()"
+              [disabled]="isOutOfStock">
               <lucide-icon name="shopping-cart" size="18" [strokeWidth]="2.5" aria-hidden="true"></lucide-icon>
-              <span>Añadir al carrito</span>
+              <span>{{ isOutOfStock ? 'Agotado' : 'Añadir al carrito' }}</span>
             </button>
-            <button class="btn btn-light btn-lg text-dark fw-semibold btn-ico" (click)="buyNow()">
+            <button class="btn btn-light btn-lg text-dark fw-semibold btn-ico"
+              type="button"
+              (click)="buyNow()"
+              [disabled]="isOutOfStock"
+              [ngClass]="{ 'disabled-state': isOutOfStock }">
               <lucide-icon name="credit-card" size="18" [strokeWidth]="2.5" aria-hidden="true"></lucide-icon>
               <span>Comprar ahora</span>
             </button>
@@ -391,9 +575,10 @@ import { switchMap } from 'rxjs';
               <tr><th>Modelo</th><td>{{ product!.modelName }}</td></tr>
               <tr><th>Tamaño</th><td>{{ product!.size }}</td></tr>
               <tr><th>Categoría</th><td>{{ product!.category || '—' }}</td></tr>
-              <tr *ngIf="product!.tire"><th>Tipo</th><td>{{ product!.tire.type || '—' }}</td></tr>
-              <tr *ngIf="product!.tire"><th>Rango carga</th><td>{{ product!.tire.loadIndex || '—' }}</td></tr>
-              <tr *ngIf="product!.tire"><th>Rango Velocidad</th><td>{{ product!.tire.speedRating || '—' }}</td></tr>
+              <tr *ngIf="usageLabel"><th>Uso recomendado</th><td>{{ usageLabel }}</td></tr>
+              <tr *ngIf="loadIndexCode"><th>Índice de carga</th><td>{{ loadIndexCode }}</td></tr>
+              <tr *ngIf="speedRatingCode"><th>Índice de velocidad</th><td>{{ speedRatingCode }}</td></tr>
+              <tr *ngIf="promoLabel"><th>Promoción</th><td>{{ promoLabel }}</td></tr>
               <ng-container *ngIf="product!.rim">
                 <tr><th>Diámetro</th><td>{{ product!.rim.diameterIn || '—' }} in</td></tr>
                 <tr><th>Ancho</th><td>{{ product!.rim.widthIn || '—' }} in</td></tr>
@@ -422,7 +607,6 @@ export class ProductDetailPage implements OnInit, OnDestroy, AfterViewInit {
   private route = inject(ActivatedRoute);
   private api = inject(ApiService);
   private cart = inject(CartStore);
-  private host = inject(ElementRef<HTMLElement>);
   auth = inject(AuthStore);
   private wishlist = inject(WishlistStore);
   private assets = inject(ProductAssetsService);
@@ -437,7 +621,6 @@ export class ProductDetailPage implements OnInit, OnDestroy, AfterViewInit {
   title = computed(() => this.product ? `${this.product.brand} ${this.product.modelName} ${this.product.size}` : '');
   // autoplay
   readonly autoMs = 5500;
-  private t: any = null;
   private tick: any = null;
   paused = signal(false);
   private autoDisabled = false;
@@ -452,6 +635,76 @@ export class ProductDetailPage implements OnInit, OnDestroy, AfterViewInit {
     return i === this.idx() ? Math.min(100, Math.round(this.elapsed() / this.autoMs * 100)) : 0;
   };
 
+  private get stockValue(): number | null {
+    const raw = this.product?.stock;
+    return typeof raw === 'number' ? raw : null;
+  }
+  get displayStock(): number | null {
+    return this.stockValue;
+  }
+  get isOutOfStock(): boolean {
+    const raw = this.stockValue;
+    return raw !== null && raw <= 0;
+  }
+  get isLowStock(): boolean {
+    const raw = this.stockValue;
+    return raw !== null && raw > 0 && raw <= 3;
+  }
+  get maxPurchasable(): number {
+    const raw = this.stockValue;
+    return raw !== null && raw > 0 ? raw : Number.MAX_SAFE_INTEGER;
+  }
+  get availabilityLabel(): string {
+    const raw = this.stockValue;
+    if (raw === null) return 'Consultar inventario';
+    if (raw <= 0) return 'Agotado';
+    if (raw <= 3) return `¡Quedan ${raw}!`;
+    if (raw <= 6) return `Stock limitado (${raw})`;
+    return 'Disponible para envío inmediato';
+  }
+  get lowStockBadge(): string | null {
+    const raw = this.stockValue;
+    if (raw !== null && raw > 0 && raw <= 3) return `🔥 Solo ${raw} disponibles`;
+    return null;
+  }
+  get promoLabel(): string | null {
+    const text = this.product?.promoLabel?.trim();
+    return text && text.length ? text : null;
+  }
+  get brandLogo(): string | null {
+    const url = this.product?.brandLogoUrl?.trim();
+    return url && url.length ? url : null;
+  }
+  get usageLabel(): string | null {
+    const tireType = this.product?.tire?.type?.trim() ?? '';
+    if (tireType.length) {
+      switch (tireType.toUpperCase()) {
+        case 'AUTO': return 'Auto';
+        case 'AUTO DEPORTIVO': return 'Auto deportivo';
+        case 'SUV': return 'SUV';
+        case 'CAMIONETA':
+        case 'CAMIONETA LIGERA': return 'Camioneta ligera';
+        case 'OFFROAD':
+        case 'OFF-ROAD': return 'Off-road';
+        default: return this.toTitleCase(tireType);
+      }
+    }
+    const category = this.product?.category?.trim();
+    return category && category.length ? this.toTitleCase(category) : null;
+  }
+  get loadIndexCode(): string | null { return this.extractCode(this.product?.tire?.loadIndex); }
+  get speedRatingCode(): string | null { return this.extractCode(this.product?.tire?.speedRating); }
+  get hasMetaChips(): boolean {
+    return !!(
+      (this.product?.category || '').trim().length ||
+      this.product?.isFeatured ||
+      this.promoLabel ||
+      this.lowStockBadge ||
+      this.isOutOfStock
+    );
+  }
+  get hasStockInfo(): boolean { return this.stockValue !== null; }
+
   @ViewChild('viewerEl') viewerRef?: ElementRef<HTMLDivElement>;
   @ViewChild('specsEl') specsRef?: ElementRef<HTMLDivElement>;
   @ViewChild('panelEl') panelRef?: ElementRef<HTMLDivElement>;
@@ -463,6 +716,8 @@ export class ProductDetailPage implements OnInit, OnDestroy, AfterViewInit {
       .subscribe(p => {
         this.product = p;
         if (p.images && p.images.length) this.images.set(p.images);
+        if (this.isOutOfStock) this.qty.set(1);
+        else this.qty.set(Math.min(this.qty(), this.maxPurchasable));
         setTimeout(() => this.equalizeHeights(), 0);
       });
     this.startAutoplay();
@@ -485,10 +740,23 @@ export class ProductDetailPage implements OnInit, OnDestroy, AfterViewInit {
     }
   }
   endPreview() { if (!this.autoDisabled) this.paused.set(false); }
-  inc() { this.qty.set(Math.min((this.product?.stock ?? Number.MAX_SAFE_INTEGER), this.qty()+1)); }
-  dec() { this.qty.set(Math.max(1, this.qty()-1)); }
-  addToCart() { if (this.product) this.cart.add(this.product, this.qty()); }
-  buyNow() { this.addToCart(); window.location.href = '/checkout'; }
+  inc() {
+    if (this.isOutOfStock) return;
+    this.qty.set(Math.min(this.maxPurchasable, this.qty()+1));
+  }
+  dec() {
+    if (this.isOutOfStock) return;
+    this.qty.set(Math.max(1, this.qty()-1));
+  }
+  addToCart() {
+    if (!this.product || this.isOutOfStock) return;
+    this.cart.add(this.product, this.qty());
+  }
+  buyNow() {
+    if (this.isOutOfStock) return;
+    this.addToCart();
+    window.location.href = '/checkout';
+  }
   saveForLater() { if (this.product) this.wishlist.add(this.product.id); }
 
   parsed() {
@@ -497,9 +765,6 @@ export class ProductDetailPage implements OnInit, OnDestroy, AfterViewInit {
     if (!m) return { width: null, aspect: null, rim: null } as any;
     return { width: Number(m[1]), aspect: Number(m[2]), rim: Number(m[3]) } as any;
   }
-  productType(): string | null { return this.product?.tire?.type ?? null; }
-  loadIndex(): string | null { return this.product?.tire?.loadIndex ?? null; }
-  speedRating(): string | null { return this.product?.tire?.speedRating ?? null; }
   savingsPct() { return 0; }
 
   // autoplay helpers
@@ -524,11 +789,26 @@ export class ProductDetailPage implements OnInit, OnDestroy, AfterViewInit {
   @HostListener('window:resize') onResize() { this.equalizeHeights(); }
   imageLoaded() { this.equalizeHeights(); }
   private equalizeHeights() {
-    const viewer = this.viewerRef?.nativeElement; const panel = this.panelRef?.nativeElement;
-    if (!viewer || !panel) return;
-    if (window.innerWidth < 768) { viewer.style.height = 'auto'; return; }
-    const h = panel.offsetHeight || 0;
-    if (h > 0) viewer.style.height = h + 'px';
+    const viewer = this.viewerRef?.nativeElement;
+    if (!viewer) return;
+    if (window.innerWidth < 768) {
+      viewer.style.height = 'auto';
+      return;
+    }
+    viewer.style.removeProperty('height');
+  }
+
+  private extractCode(value?: string | null): string | null {
+    if (!value) return null;
+    const trimmed = value.trim();
+    if (!trimmed.length) return null;
+    const bracket = trimmed.indexOf('(');
+    const core = bracket > 0 ? trimmed.substring(0, bracket).trim() : trimmed;
+    return core.length ? core : null;
+  }
+
+  private toTitleCase(value: string): string {
+    return value.toLowerCase().replace(/\b\w/g, ch => ch.toUpperCase());
   }
 
   // Click en documento para restablecer autoplay si fue deshabilitado manualmente

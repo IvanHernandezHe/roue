@@ -927,10 +927,18 @@ export class ShopPage {
     this.typesSelected = new Set(getCsv('type'));
     this.loadSelected = new Set(getCsv('load'));
     this.speedSelected = new Set(getCsv('speed'));
-    const pmin = Number(qp.get('priceMin'));
-    const pmax = Number(qp.get('priceMax'));
-    this.priceMin = Number.isFinite(pmin) ? pmin : this.priceMin;
-    this.priceMax = Number.isFinite(pmax) ? pmax : this.priceMax;
+    const parseOptionalNumber = (key: string) => {
+      const raw = qp.get(key);
+      if (raw === null) return null;
+      const trimmed = raw.trim();
+      if (!trimmed.length) return null;
+      const parsed = Number(trimmed);
+      return Number.isFinite(parsed) ? parsed : null;
+    };
+    const pmin = parseOptionalNumber('priceMin');
+    const pmax = parseOptionalNumber('priceMax');
+    if (pmin !== null) this.priceMin = pmin;
+    if (pmax !== null) this.priceMax = pmax;
     if (this.priceMin > this.priceMax) { const t = this.priceMin; this.priceMin = this.priceMax; this.priceMax = t; }
 
     return { qChanged: prevQ !== this.currentQuery, catChanged: prevCat !== this.selectedCategory };

@@ -9,7 +9,11 @@ public sealed record ProductListItemDto(
     decimal Price,
     bool Active,
     int Stock,
-    string? Category
+    string? Category,
+    string? BrandLogoUrl,
+    TireSpecsDto? Tire,
+    string? PromoLabel,
+    bool IsFeatured
 );
 
 public sealed record ProductDetailDto(
@@ -25,7 +29,9 @@ public sealed record ProductDetailDto(
     IReadOnlyList<string> Images,
     TireSpecsDto? Tire,
     RimSpecsDto? Rim,
-    string? Category
+    string? Category,
+    string? PromoLabel,
+    bool IsFeatured
 );
 
 public sealed record TireSpecsDto(string? Type, string? LoadIndex, string? SpeedRating);

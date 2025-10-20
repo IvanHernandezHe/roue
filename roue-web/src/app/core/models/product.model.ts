@@ -13,4 +13,6 @@ export interface Product {
   brandLogoUrl?: string | null;
   images?: string[];
   category?: string | null;
+  promoLabel?: string | null;
+  isFeatured?: boolean;
 }

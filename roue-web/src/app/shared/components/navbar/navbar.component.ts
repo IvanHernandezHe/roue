@@ -38,6 +38,23 @@ import { WishlistStore } from '../../../state/wishlist.store';
       background: var(--brand-cloud);
       box-shadow: 0 0 0 4px rgba(29, 111, 200, 0.12);
     }
+    .nav-icon {
+      border: none;
+      background: transparent;
+      padding: 0;
+      color: var(--brand-muted);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: color var(--transition-base), transform var(--transition-base);
+    }
+    .nav-icon:hover,
+    .nav-icon:focus {
+      color: var(--brand-primary);
+      transform: translateY(-1px);
+      outline: none;
+      box-shadow: none;
+    }
     .nav-ico-left,
     .nav-ico-right {
       position: absolute;
