@@ -14,7 +14,7 @@ COPY . .
 
 # Development image used by docker-compose for the frontend
 FROM base AS dev
-CMD ["npm", "run", "start", "--", "--host", "0.0.0.0", "--port", "4200", "--proxy-config", "proxy.docker.conf.json"]
+CMD ["npm", "run", "start", "--", "--host", "0.0.0.0", "--port", "4200", "--proxy-config", "proxy.docker.conf.json", "--allowed-hosts=all"]
 
 # Production build stage to create static assets (optional but handy)
 FROM base AS build

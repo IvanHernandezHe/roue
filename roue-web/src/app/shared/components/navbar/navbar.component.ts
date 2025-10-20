@@ -18,62 +18,74 @@ import { WishlistStore } from '../../../state/wishlist.store';
   imports: [RouterLink, RouterLinkActive, NgIf, NgFor, SlicePipe, FormsModule, LucideAngularModule],
   styles: [`
     :host { display: block; }
-    nav { backdrop-filter: blur(18px); }
+    nav {
+      background: var(--brand-cloud);
+      border-bottom: 1px solid var(--brand-border);
+    }
     .nav-search { max-width: 520px; position: relative; }
     .nav-input {
-      border-radius: 18px;
+      border-radius: var(--brand-radius-sm);
       padding-left: 44px;
       padding-right: 48px;
-      border: 1.5px solid var(--brand-border, #d9dde7);
-      background: var(--brand-cloud, #fff);
-      height: 46px;
+      border: 1px solid var(--brand-border);
+      background: var(--brand-cloud);
+      height: 44px;
+      transition: border-color var(--transition-base), background var(--transition-base), box-shadow var(--transition-base);
+      box-shadow: inset 0 1px 2px rgba(16, 22, 34, 0.05);
     }
     .nav-input:focus {
-      border-color: var(--brand-primary, #0f52ba);
-      box-shadow: 0 0 0 0.2rem color-mix(in srgb, var(--brand-primary, #0f52ba) 18%, transparent);
-      background: #fff;
+      border-color: var(--brand-primary);
+      background: var(--brand-cloud);
+      box-shadow: 0 0 0 4px rgba(29, 111, 200, 0.12);
     }
     .nav-ico-left,
     .nav-ico-right {
       position: absolute;
       top: 50%;
       transform: translateY(-50%);
-      color: var(--brand-muted, #8a8ea3);
+      color: var(--brand-muted);
     }
     .nav-ico-left { left: 12px; }
     .nav-ico-right {
       right: 10px;
       cursor: pointer;
       background: transparent;
-      border: 0;
-      width: 30px;
-      height: 30px;
-      border-radius: 10px;
+      border: 1px solid transparent;
+      width: 28px;
+      height: 28px;
+      border-radius: var(--brand-radius-sm);
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      transition: background 0.18s ease, color 0.18s ease;
+      transition: border-color var(--transition-base), color var(--transition-base), background var(--transition-base);
     }
     .nav-ico-right:hover,
     .nav-ico-right:focus {
-      color: var(--brand-primary, #0f52ba);
-      background: color-mix(in srgb, var(--brand-primary, #0f52ba) 10%, transparent);
+      color: var(--brand-primary);
+      background: var(--surface-subtle);
+      border-color: var(--brand-primary);
     }
-    .dropdown-menu.show { display: block; border-radius: 18px; border: 1px solid var(--brand-border, #d9dde7); box-shadow: 0 18px 40px rgba(15, 26, 67, .12); }
-    .dropdown-item { border-radius: 12px; }
+    .dropdown-menu.show {
+      display: block;
+      border-radius: var(--brand-radius-md);
+      border: 1px solid var(--brand-border);
+      box-shadow: var(--shadow-soft);
+      padding: .5rem;
+    }
+    .dropdown-item { border-radius: var(--brand-radius-sm); transition: background var(--transition-base), color var(--transition-base); }
     .dropdown-item:hover,
-    .dropdown-item:focus { background: color-mix(in srgb, var(--brand-primary, #0f52ba) 10%, #ffffff); color: var(--brand-primary, #0f52ba); }
+    .dropdown-item:focus { background: var(--surface-subtle); color: var(--brand-primary); }
     .badge-counter { position: absolute; top: -4px; right: -4px; transform: none; }
-    .suggest-dropdown { border-radius: 18px; border: 1px solid var(--brand-border, #d9dde7); box-shadow: 0 18px 40px rgba(15,26,67,.12); overflow: hidden; }
-    .suggest-dropdown .dropdown-item { border-radius: 0; padding: .6rem .85rem; }
+    .suggest-dropdown { border-radius: var(--brand-radius-md); border: 1px solid var(--brand-border); box-shadow: var(--shadow-soft); overflow: hidden; }
+    .suggest-dropdown .dropdown-item { border-radius: var(--brand-radius-sm); padding: .55rem .85rem; }
     .suggest-dropdown .dropdown-item.active,
     .suggest-dropdown .dropdown-item:hover,
     .suggest-dropdown .dropdown-item:focus {
-      background: color-mix(in srgb, var(--brand-primary, #0f52ba) 12%, #ffffff);
-      color: var(--brand-primary-dark, #0c3f8f);
+      background: var(--surface-subtle);
+      color: var(--brand-primary);
     }
-    .navbar-toggler { border-radius: 12px; border-color: var(--brand-border, #d9dde7); }
-    .navbar-toggler:focus { box-shadow: 0 0 0 .2rem color-mix(in srgb, var(--brand-primary, #0f52ba) 25%, transparent); }
+    .navbar-toggler { border-radius: var(--brand-radius-sm); border-color: var(--brand-border); padding: .35rem .6rem; }
+    .navbar-toggler:focus { box-shadow: 0 0 0 3px rgba(29, 111, 200, 0.14); border-color: var(--brand-primary); }
     @media (max-width: 991.98px) {
       .nav-search { width: 100%; }
       .navbar-collapse { padding-top: 1rem; }
@@ -182,7 +194,7 @@ import { WishlistStore } from '../../../state/wishlist.store';
               [attr.aria-selected]="i === activeIndex"
               [id]="optionId(i)"
             >
-              <img src="/assets/pzero-1_80.jpg" width="36" height="36" class="rounded bg-body border" alt="">
+              <img src="/assets/product/fallback/default-tire.jpg" width="36" height="36" class="rounded bg-body border" alt="">
               <div class="text-truncate">{{ p.brand }} {{ p.modelName }} — {{ p.size }}</div>
             </button>
             <div class="dropdown-item text-muted" *ngIf="(suggestions.length === 0) && (search.trim().length > 0 && hasSearched)" role="option" aria-disabled="true">

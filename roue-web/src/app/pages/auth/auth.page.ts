@@ -7,11 +7,28 @@ import { AuthWidgetComponent } from '../../shared/components/auth-widget/auth-wi
   imports: [AuthWidgetComponent, RouterLink],
   styles: [`
     :host { display: block; }
-    .auth-hero { background: radial-gradient(circle at top left, rgba(217,66,66,.18), transparent 55%), radial-gradient(circle at bottom right, rgba(15,23,42,.12), transparent 60%), #f8fafc; padding: clamp(3rem, 8vw, 4.5rem) 0; }
-    .hero-card { border-radius: 1.75rem; background: rgba(15,23,42,.82); color: #fff; padding: clamp(2rem, 6vw, 3rem); box-shadow: 0 22px 48px rgba(15,23,42,.28); }
+    .auth-hero { background: var(--brand-cream); padding: clamp(3rem, 8vw, 4.5rem) 0; }
+    .hero-card {
+      border-radius: var(--brand-radius-lg);
+      background: linear-gradient(180deg, #ffffff 0%, #f4f6fb 100%);
+      color: var(--brand-ink);
+      padding: clamp(2rem, 6vw, 3rem);
+      border: 1px solid var(--brand-border);
+      box-shadow: var(--shadow-soft);
+    }
     .hero-card h2 { font-family: var(--font-display); letter-spacing: .02em; }
     .fact { display: flex; align-items: flex-start; gap: .9rem; }
-    .fact-icon { width: 36px; height: 36px; border-radius: 12px; background: rgba(255,255,255,.12); display: inline-flex; align-items: center; justify-content: center; font-weight: 700; }
+    .fact-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--brand-radius-sm);
+      background: rgba(236, 242, 255, 0.7);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: var(--brand-primary);
+    }
     .auth-section { margin-top: clamp(2.5rem, 6vw, 4rem); }
     .highlight { color: var(--jdm-red); font-weight: 700; }
     @media (max-width: 991.98px) {

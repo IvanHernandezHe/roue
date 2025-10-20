@@ -17,22 +17,12 @@ import { switchMap } from 'rxjs';
     .filters-card {
       position: relative;
       border-radius: var(--brand-radius-lg);
-      border: 1.5px solid var(--brand-border);
-      background: rgba(255,255,255,.94);
-      padding: 1.25rem;
+      border: 1px solid var(--brand-border);
+      background: linear-gradient(180deg, #ffffff 0%, #f4f6fb 100%);
+      padding: 1.4rem;
       box-shadow: var(--shadow-soft);
     }
-    .filters-card::before {
-      content: '';
-      position: absolute;
-      left: 1.4rem;
-      right: 1.4rem;
-      top: .9rem;
-      height: 3px;
-      border-radius: 999px;
-      background: linear-gradient(90deg, var(--brand-primary), transparent);
-      opacity: .65;
-    }
+    .filters-card::before { content: none; }
     .filters-sticky { position: sticky; top: 96px; }
     .filter-title { font-family: var(--font-display); letter-spacing: .08em; text-transform: uppercase; font-size: .85rem; }
     .filters-card .form-label { font-weight: 600; color: var(--brand-muted); letter-spacing: .02em; }
@@ -41,29 +31,27 @@ import { switchMap } from 'rxjs';
     .filters-card .form-select,
     .filters-card .form-control { font-size: .9rem; border-radius: var(--brand-radius-sm); }
     .filters-card .form-select:focus,
-    .filters-card .form-control:focus { border-color: var(--brand-primary); box-shadow: 0 0 0 .2rem color-mix(in srgb, var(--brand-primary) 18%, transparent); background: #fff; }
+    .filters-card .form-control:focus { border-color: var(--brand-primary); box-shadow: 0 0 0 4px rgba(29, 111, 200, 0.12); background: var(--brand-cloud); }
 
     .chips { display: flex; flex-wrap: wrap; gap: .45rem .6rem; }
     .chips .form-check {
       margin: 0;
       padding: .25rem .75rem;
-      border-radius: 999px;
-      border: 1.5px solid var(--brand-border);
-      background: var(--brand-cloud);
+      border-radius: var(--brand-radius-sm);
+      border: 1px solid var(--brand-border);
+      background: #ffffff;
       display: inline-flex;
       align-items: center;
       gap: .35rem;
-      box-shadow: 0 12px 24px rgba(15, 26, 67, .1);
-      transition: border-color .18s ease, box-shadow .18s ease, background .18s ease, color .18s ease;
+      transition: border-color .18s ease, background .18s ease, color .18s ease;
     }
     .chips .form-check-input { margin: 0; pointer-events: auto; }
     .chips .form-check-label { font-size: .85rem; font-weight: 600; letter-spacing: .02em; cursor: pointer; }
-    .chips .form-check:hover { border-color: var(--brand-primary); box-shadow: 0 20px 36px rgba(15, 26, 67, .16); }
+    .chips .form-check:hover { border-color: var(--brand-primary); }
     .chips .form-check.is-selected {
-      background: color-mix(in srgb, var(--brand-primary) 16%, #ffffff);
+      background: var(--surface-subtle);
       border-color: var(--brand-primary);
       color: var(--brand-primary-dark);
-      box-shadow: 0 22px 40px rgba(15, 82, 186, .22);
     }
     .chips .form-check.is-selected .form-check-label { color: inherit; }
 
@@ -74,18 +62,18 @@ import { switchMap } from 'rxjs';
       gap: .6rem;
       padding: .55rem .7rem;
       border-radius: var(--brand-radius-sm);
-      border: 1.5px solid var(--brand-border);
-      background: var(--brand-cloud);
+      border: 1px solid var(--brand-border);
+      background: #ffffff;
       margin-bottom: .45rem;
       cursor: pointer;
-      transition: border-color .18s ease, box-shadow .18s ease, background .18s ease;
+      transition: border-color .18s ease, background .18s ease;
     }
-    .list-check .form-check:hover { border-color: var(--brand-primary); box-shadow: 0 18px 30px rgba(15, 26, 67, .14); }
+    .list-check .form-check:hover { border-color: var(--brand-primary); }
     .list-check .form-check-input { margin-top: 0; }
     .list-check .form-check-label { font-size: .92rem; cursor: pointer; flex: 1; }
     .list-check .form-check.is-selected {
       border-color: var(--brand-primary);
-      background: color-mix(in srgb, var(--brand-primary) 12%, #ffffff);
+      background: var(--surface-subtle);
       color: var(--brand-primary-dark);
     }
 
@@ -96,16 +84,15 @@ import { switchMap } from 'rxjs';
       align-items: center;
       gap: .35rem;
       padding: .35rem .75rem;
-      border-radius: 999px;
-      border: 1.5px solid var(--brand-border);
-      background: var(--brand-cloud);
+      border-radius: var(--brand-radius-sm);
+      border: 1px solid var(--brand-border);
+      background: #ffffff;
       font-size: .88rem;
       font-weight: 600;
       letter-spacing: .01em;
-      box-shadow: 0 12px 24px rgba(15, 26, 67, .08);
-      transition: border-color .18s ease, box-shadow .18s ease;
+      transition: border-color .18s ease, background .18s ease;
     }
-    .filter-chip:hover { border-color: var(--brand-primary); box-shadow: 0 20px 40px rgba(15, 26, 67, .18); }
+    .filter-chip:hover { border-color: var(--brand-primary); background: var(--surface-subtle); }
     .filter-chip .btn-clear {
       border: none;
       background: transparent;
@@ -117,7 +104,7 @@ import { switchMap } from 'rxjs';
     }
     .filter-chip--accent {
       border-color: var(--brand-primary);
-      background: color-mix(in srgb, var(--brand-primary) 14%, #ffffff);
+      background: var(--surface-subtle);
       color: var(--brand-primary-dark);
     }
 
@@ -127,8 +114,7 @@ import { switchMap } from 'rxjs';
     .filters-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(7, 12, 24, .45);
-      backdrop-filter: blur(4px);
+      background: rgba(7, 12, 24, .35);
       z-index: 1040;
     }
     .filters-drawer {
@@ -137,23 +123,22 @@ import { switchMap } from 'rxjs';
       top: 0;
       bottom: 0;
       width: min(92vw, 420px);
-      background: rgba(255,255,255,.98);
+      background: linear-gradient(180deg, #ffffff 0%, #f4f6fb 100%);
       z-index: 1041;
-      border-left: 1.5px solid var(--brand-border);
-      box-shadow: -16px 0 42px rgba(15, 26, 67, .25);
+      border-left: 1px solid var(--brand-border);
       animation: drawerIn .24s cubic-bezier(.22,1,.32,1);
       overflow-y: auto;
-      padding: 1rem;
+      padding: 1.25rem;
+      box-shadow: var(--shadow-soft);
     }
     @keyframes drawerIn { from { transform: translateX(24px); opacity: .9; } to { transform: translateX(0); opacity: 1; } }
     .filters-sticky-footer {
       position: sticky;
       bottom: 0;
-      background: rgba(255,255,255,.94);
-      border-top: 1.5px solid var(--brand-border);
+      background: #ffffff;
+      border-top: 1px solid var(--brand-border);
       margin: 1rem -1rem -1rem;
       padding: 1rem;
-      backdrop-filter: blur(8px);
     }
 
     .price-range {
@@ -168,14 +153,14 @@ import { switchMap } from 'rxjs';
       right: 0;
       top: 14px;
       height: 4px;
-      border-radius: 999px;
+      border-radius: var(--brand-radius-sm);
       background: var(--price-track-base);
     }
     .price-range .range-fill {
       position: absolute;
       top: 14px;
       height: 4px;
-      border-radius: 999px;
+      border-radius: var(--brand-radius-sm);
       background: var(--price-track-fill);
       pointer-events: none;
       transition: left .18s ease, width .18s ease;
@@ -198,7 +183,6 @@ import { switchMap } from 'rxjs';
       border-radius: 50%;
       background: var(--brand-primary);
       border: 2px solid #fff;
-      box-shadow: 0 0 0 1px rgba(15, 26, 67, .25);
       pointer-events: auto;
       cursor: pointer;
     }
@@ -216,37 +200,36 @@ import { switchMap } from 'rxjs';
 
     :host-context([data-bs-theme='dark']) .filters-card,
     :host-context([data-bs-theme='dark']) .filters-drawer {
-      background: rgba(10, 16, 32, .94);
-      border-color: rgba(92, 108, 148, .4);
-      box-shadow: 0 32px 72px rgba(4, 10, 24, .8);
+      background: var(--brand-cloud);
+      border-color: var(--brand-border);
     }
-    :host-context([data-bs-theme='dark']) .filters-card::before { background: linear-gradient(90deg, rgba(255,255,255,.45), transparent); opacity: .6; }
-    :host-context([data-bs-theme='dark']) .filters-card .section + .section { border-top-color: rgba(92,108,148,.3); }
+    :host-context([data-bs-theme='dark']) .filters-card::before { content: none; }
+    :host-context([data-bs-theme='dark']) .filters-card .section + .section { border-top-color: var(--brand-border); }
     :host-context([data-bs-theme='dark']) .chips .form-check,
     :host-context([data-bs-theme='dark']) .list-check .form-check {
-      background: rgba(12,18,36,.9);
-      border-color: rgba(92,108,148,.35);
-      color: rgba(231,233,242,.92);
+      background: var(--brand-cloud);
+      border-color: var(--brand-border);
+      color: var(--brand-ink);
     }
     :host-context([data-bs-theme='dark']) .chips .form-check.is-selected,
     :host-context([data-bs-theme='dark']) .list-check .form-check.is-selected {
-      background: color-mix(in srgb, var(--brand-primary) 24%, rgba(12,18,36,.95));
-      border-color: color-mix(in srgb, var(--brand-primary) 65%, rgba(92,108,148,.4));
-      color: #fff;
+      background: var(--surface-subtle);
+      border-color: var(--brand-primary);
+      color: var(--brand-primary);
     }
     :host-context([data-bs-theme='dark']) .filter-chip {
-      background: rgba(12,18,36,.92);
-      border-color: rgba(92,108,148,.4);
-      color: rgba(231,233,242,.9);
+      background: var(--brand-cloud);
+      border-color: var(--brand-border);
+      color: var(--brand-ink);
     }
     :host-context([data-bs-theme='dark']) .filter-chip--accent {
-      border-color: rgba(255,255,255,.45);
-      background: color-mix(in srgb, var(--brand-primary) 35%, rgba(12,18,36,.92));
-      color: #fff;
+      border-color: var(--brand-primary);
+      background: var(--surface-subtle);
+      color: var(--brand-primary);
     }
     :host-context([data-bs-theme='dark']) .filters-sticky-footer {
-      background: rgba(10,16,32,.94);
-      border-top-color: rgba(92,108,148,.4);
+      background: var(--brand-cloud);
+      border-top-color: var(--brand-border);
     }
     :host-context([data-bs-theme='dark']) .price-range {
       --price-track-base: rgba(92,108,148,.35);

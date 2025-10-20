@@ -12,50 +12,36 @@ import { ProductCardComponent } from '../../shared/components/product-card/produ
   standalone: true,
   imports: [RouterLink, NgFor, NgIf, AsyncPipe, SlicePipe, ProductCardComponent, FormsModule, LucideAngularModule],
   styles: [`
-    :host { display: block; }
+    :host { display: block; overflow-x: hidden; }
 
     .hero {
       position: relative;
-      overflow: hidden;
-      border-radius: clamp(24px, 5vw, 40px);
-      background:
-        radial-gradient(540px 420px at 90% -15%, color-mix(in srgb, var(--brand-primary) 24%, #ffffff) 0%, transparent 72%),
-        radial-gradient(420px 320px at -10% 10%, rgba(255, 132, 95, .12), transparent 65%),
-        linear-gradient(160deg, var(--brand-cream) 0%, #ffffff 55%, color-mix(in srgb, var(--brand-primary) 12%, #ffffff) 100%);
-    }
-    .hero::after {
-      content: "";
-      position: absolute;
-      width: clamp(160px, 26vw, 320px);
-      height: clamp(160px, 26vw, 320px);
-      border-radius: 40px;
-      right: clamp(-60px, -6vw, -20px);
-      bottom: clamp(-60px, -6vw, -20px);
-      background: color-mix(in srgb, var(--brand-primary) 22%, #ffffff);
-      opacity: .35;
-      transform: rotate(6deg);
+      border-radius: var(--brand-radius-lg);
+      border: 1px solid var(--brand-border);
+      background: linear-gradient(135deg, #ffffff 0%, #f4f6fb 100%);
+      box-shadow: var(--shadow-soft);
     }
     .hero-img {
       width: 100%;
-      max-width: 520px;
-      border-radius: clamp(22px, 4vw, 32px);
-      background: rgba(255,255,255,.86);
-      padding: clamp(1rem, 3vw, 1.6rem);
-      box-shadow: 0 24px 60px rgba(15, 26, 67, .18);
+      max-width: 500px;
+      border-radius: var(--brand-radius-md);
+      border: 1px solid var(--brand-border);
+      background: var(--brand-cloud);
+      padding: clamp(1rem, 3vw, 1.4rem);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.4);
     }
     .hero-copy { position: relative; z-index: 1; }
 
     .search-panel {
-      border-radius: var(--brand-radius-lg);
-      border: 1.5px solid color-mix(in srgb, var(--brand-primary) 10%, var(--brand-border));
-      background: rgba(255,255,255,.9);
-      backdrop-filter: blur(12px);
-      box-shadow: 0 28px 64px rgba(15, 26, 67, .12);
+      border-radius: var(--brand-radius-md);
+      border: 1px solid var(--brand-border);
+      background: #ffffff;
+      box-shadow: var(--shadow-soft);
+      padding: clamp(1rem, 2.5vw, 1.6rem);
     }
     :host-context([data-bs-theme="dark"]) .search-panel {
-      background: rgba(12, 19, 38, .92);
-      border-color: rgba(92,108,148,.35);
-      box-shadow: 0 32px 80px rgba(4, 10, 24, .7);
+      background: var(--brand-cloud);
+      box-shadow: none;
     }
 
     .simple-carousel {
@@ -63,11 +49,9 @@ import { ProductCardComponent } from '../../shared/components/product-card/produ
       overflow: hidden;
       height: clamp(32vh, 58vh, 72vh);
       max-height: 720px;
-      border-radius: 0;
-      isolation: isolate;
-      contain: layout paint;
-      overflow-x: clip;
-      overflow-clip-margin: content-box;
+      border: 1px solid var(--brand-border);
+      background: linear-gradient(135deg, #ffffff 0%, #eef1f7 100%);
+      box-shadow: var(--shadow-soft);
     }
     .simple-track {
       display: flex;
@@ -82,7 +66,6 @@ import { ProductCardComponent } from '../../shared/components/product-card/produ
       height: 100%;
       object-fit: cover;
       object-position: center;
-      filter: saturate(109%);
     }
     .simple-progress {
       position: absolute;
@@ -96,28 +79,32 @@ import { ProductCardComponent } from '../../shared/components/product-card/produ
     .simple-progress .bar {
       flex: 1;
       height: 4px;
-      border-radius: 999px;
-      background: rgba(255,255,255,.45);
+      border-radius: var(--brand-radius-sm);
+      background: rgba(15, 18, 30, .12);
       overflow: hidden;
     }
     .simple-progress .fill {
       display: block;
       height: 100%;
       width: 0%;
-      background: rgba(255,255,255,.92);
+      background: var(--brand-primary);
       transition: width 150ms linear;
     }
-    .simple-carousel[data-paused="true"] .fill { background: rgba(255,255,255,.7); }
+    .simple-carousel[data-paused="true"] .fill { background: color-mix(in srgb, var(--brand-primary) 40%, transparent); }
 
     .value-grid .feature {
-      padding: 1.4rem;
+      padding: 1.2rem;
       text-align: left;
+      background: linear-gradient(180deg, #ffffff 0%, #f5f6fb 100%);
+      border: 1px solid var(--brand-border);
+      border-radius: var(--brand-radius-md);
+      box-shadow: var(--shadow-soft);
     }
     .value-grid .feature small { color: var(--brand-muted); }
 
     .category-tile {
       min-height: 180px;
-      background: linear-gradient(150deg, rgba(255,255,255,.9), rgba(246,248,255,.95));
+      background: linear-gradient(160deg, #ffffff 0%, #f3f5fb 100%);
     }
     .category-tile h5 {
       position: absolute;
@@ -131,7 +118,7 @@ import { ProductCardComponent } from '../../shared/components/product-card/produ
       position: absolute;
       top: clamp(1.2rem, 3vw, 1.6rem);
       left: clamp(1.2rem, 3vw, 1.6rem);
-      font-size: .85rem;
+      font-size: .8rem;
       font-weight: 600;
       color: var(--brand-muted);
       letter-spacing: .12em;
@@ -144,18 +131,18 @@ import { ProductCardComponent } from '../../shared/components/product-card/produ
       justify-content: center;
       width: clamp(120px, 16vw, 150px);
       height: clamp(38px, 5vw, 48px);
-      border-radius: calc(var(--brand-radius-sm) + 6px);
-      border: 1.5px solid var(--brand-border);
-      background: rgba(255,255,255,.92);
-      box-shadow: 0 16px 32px rgba(15, 26, 67, .08);
-      transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease;
+      border-radius: var(--brand-radius-sm);
+      border: 1px solid var(--brand-border);
+      background: #ffffff;
+      box-shadow: var(--shadow-soft);
+      transition: border-color var(--transition-base), color var(--transition-base), box-shadow var(--transition-base);
     }
     .brand-logos a:hover,
     .brand-logos a:focus-visible {
-      transform: translateY(-3px);
-      box-shadow: 0 24px 40px rgba(15, 26, 67, .18);
       border-color: var(--brand-primary);
       outline: none;
+      color: var(--brand-primary);
+      box-shadow: var(--shadow-hover);
     }
     .brand-logos img {
       width: 100%;
@@ -165,66 +152,65 @@ import { ProductCardComponent } from '../../shared/components/product-card/produ
 
     .cashback {
       border-radius: var(--brand-radius-lg);
-      background: linear-gradient(125deg, var(--brand-primary-dark), var(--brand-primary));
-      color: #fff;
-      box-shadow: 0 32px 62px rgba(15, 82, 186, .32);
+      background: linear-gradient(180deg, #ffffff 0%, #f4f6fb 100%);
+      color: var(--brand-ink);
+      border: 1px solid var(--brand-border);
+      padding: 2rem;
+      box-shadow: var(--shadow-soft);
     }
     .cashback .btn-light {
-      background: rgba(255,255,255,.92);
-      border: none;
-      color: var(--brand-primary);
+      background: var(--brand-cloud);
+      border: 1px solid var(--brand-border);
+      color: var(--brand-ink);
     }
     .cashback .btn-light:hover,
     .cashback .btn-light:focus {
-      background: #fff;
-      color: var(--brand-primary-dark);
-      box-shadow: 0 10px 24px rgba(15, 82, 186, .28);
+      border-color: var(--brand-primary);
+      color: var(--brand-primary);
+      background: var(--surface-subtle);
     }
 
-    .floating-fabs { right: 24px; bottom: 24px; }
+    .floating-fabs { right: 20px; bottom: 20px; }
     .fab {
       width: clamp(48px, 9vw, 58px);
       height: clamp(48px, 9vw, 58px);
-      border-radius: 20px;
+      border-radius: var(--brand-radius-sm);
       background: var(--brand-primary);
       color: #fff;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 22px 42px rgba(15, 82, 186, .25);
       border: none;
-      transition: transform .18s ease, box-shadow .18s ease;
+      transition: background var(--transition-base);
       position: relative;
     }
     .fab svg { width: 60%; height: 60%; }
     .fab:hover,
     .fab:focus-visible {
-      transform: translateY(-2px);
-      box-shadow: 0 28px 54px rgba(15, 82, 186, .38);
+      background: var(--brand-primary-dark);
     }
     .fab::after {
       content: attr(data-label);
       position: absolute;
       right: calc(100% + 8px);
       top: 50%;
-      transform: translateY(4px);
+      transform: translateY(-50%);
       opacity: 0;
-      background: rgba(17, 18, 23, .85);
+      background: var(--surface-contrast);
       color: #fff;
       font-size: .72rem;
-      padding: .3rem .55rem;
-      border-radius: .65rem;
+      padding: .35rem .55rem;
+      border-radius: var(--brand-radius-sm);
       white-space: nowrap;
       pointer-events: none;
-      transition: opacity .18s ease, transform .18s ease;
+      transition: opacity var(--transition-base);
     }
     .fab:hover::after,
     .fab:focus-visible::after {
       opacity: 1;
-      transform: translateY(-50%);
     }
-    .fab-call { background: color-mix(in srgb, var(--brand-primary) 65%, #1cc7ff); }
-    .fab-wa { background: #24c568; }
+    .fab-call { background: var(--brand-primary); }
+    .fab-wa { background: #1f8f57; }
 
     .pill {
       min-height: 88px;
@@ -233,37 +219,60 @@ import { ProductCardComponent } from '../../shared/components/product-card/produ
     }
     .pill small { color: var(--brand-muted); }
 
+    @media (max-width: 767.98px) {
+      .simple-carousel {
+        height: min(58vh, 420px);
+      }
+      .cashback {
+        padding: 1.5rem;
+      }
+    }
+
+    @media (max-width: 575.98px) {
+      .hero-img {
+        max-width: 360px;
+        margin-inline: auto;
+      }
+      .simple-progress {
+        left: 16px;
+        right: 16px;
+      }
+      .brand-logos a {
+        width: 100%;
+        max-width: 220px;
+      }
+      .floating-fabs {
+        right: 12px;
+        bottom: 12px;
+      }
+      .floating-fabs .fab::after {
+        display: none;
+      }
+    }
+
     @media (max-width: 991.98px) {
-      .hero { border-radius: 0; }
-      .hero::after { display: none; }
+      .hero { border-radius: var(--brand-radius-md); }
     }
 
     :host-context([data-bs-theme="dark"]) .hero {
-      background:
-        radial-gradient(520px 420px at 90% -15%, rgba(15, 82, 186, .3), transparent 70%),
-        radial-gradient(420px 320px at -10% 10%, rgba(255, 119, 82, .22), transparent 65%),
-        linear-gradient(160deg, rgba(8,12,23,.95) 0%, rgba(10,15,30,.92) 60%, rgba(9,18,42,.88) 100%);
+      background: var(--brand-cloud);
     }
     :host-context([data-bs-theme="dark"]) .hero-img {
-      background: rgba(12,18,34,.92);
-      box-shadow: 0 28px 70px rgba(4, 10, 24, .75);
+      background: var(--brand-cloud);
+      border-color: var(--brand-border);
     }
     :host-context([data-bs-theme="dark"]) .category-tile {
-      background: linear-gradient(150deg, rgba(13,18,38,.94), rgba(9,14,30,.9));
+      background: var(--brand-cloud);
     }
     :host-context([data-bs-theme="dark"]) .brand-logos a {
-      background: rgba(11,16,30,.92);
-      border-color: rgba(92,108,148,.35);
-    }
-    :host-context([data-bs-theme="dark"]) .brand-logos a:hover,
-    :host-context([data-bs-theme="dark"]) .brand-logos a:focus-visible {
-      border-color: rgba(255,255,255,.45);
+      background: var(--brand-cloud);
+      border-color: var(--brand-border);
     }
     :host-context([data-bs-theme="dark"]) .simple-progress .bar {
-      background: rgba(14,17,29,.55);
+      background: rgba(148,163,184,.45);
     }
     :host-context([data-bs-theme="dark"]) .simple-progress .fill {
-      background: rgba(255,255,255,.82);
+      background: var(--brand-primary);
     }
   `],
   template: `
@@ -326,13 +335,13 @@ import { ProductCardComponent } from '../../shared/components/product-card/produ
           </div>
 
           <div class="row g-3 mt-3">
-            <div class="col-4">
+            <div class="col-12 col-sm-4">
               <div class="pill sticker-red">20%<small>OFF</small></div>
             </div>
-            <div class="col-4">
+            <div class="col-12 col-sm-4">
               <div class="pill sticker">Envío<small>Gratis</small></div>
             </div>
-            <div class="col-4">
+            <div class="col-12 col-sm-4">
               <div class="pill sticker">6 MSI<small>Financiamiento</small></div>
             </div>
           </div>
@@ -340,7 +349,7 @@ import { ProductCardComponent } from '../../shared/components/product-card/produ
 
         <!-- Right: hero image -->
         <div class="col-12 col-lg-5 text-center d-flex flex-column gap-3">
-          <img src="/assets/pzero-1_80.jpg" alt="llanta" class="hero-img border rounded-3 bg-body align-self-center"/>
+          <img src="/assets/product/fallback/default-tire.jpg" alt="llanta" class="hero-img border rounded-3 bg-body align-self-center"/>
         </div>
       </div>
     </div>
@@ -382,10 +391,10 @@ import { ProductCardComponent } from '../../shared/components/product-card/produ
         <span class="section-eyebrow">Catálogo destacado</span>
         <h2 class="h4 m-0 section-title">Llantas populares</h2>
       </div>
-      <div class="d-flex align-items-center gap-2 w-100 w-lg-auto">
-        <input #q class="form-control" placeholder="Buscar marca, modelo o SKU" (input)="onSearch(q.value)"/>
-        <button class="btn btn-outline-secondary" (click)="onSearch('')">Limpiar</button>
-        <a class="btn btn-light fw-semibold" routerLink="/shop">Ver todo</a>
+      <div class="d-flex flex-column flex-sm-row align-items-stretch align-items-lg-center gap-2 w-100 w-lg-auto">
+        <input #q class="form-control flex-fill" placeholder="Buscar marca, modelo o SKU" (input)="onSearch(q.value)"/>
+        <button class="btn btn-outline-secondary w-100 w-sm-auto" (click)="onSearch('')">Limpiar</button>
+        <a class="btn btn-light fw-semibold w-100 w-sm-auto text-center" routerLink="/shop">Ver todo</a>
       </div>
     </div>
     <div class="row g-3">
@@ -527,17 +536,17 @@ import { ProductCardComponent } from '../../shared/components/product-card/produ
                 <option *ngFor="let r of rims" [value]="r">{{r}}</option>
               </select>
             </div>
-            <div class="col-12 d-flex gap-2">
-              <button class="btn btn-dark" (click)="onSizeSearch()" [disabled]="!size.width || !size.aspect || !size.rim">Buscar {{size.width}}/{{size.aspect}}R{{size.rim}}</button>
-              <button class="btn btn-outline-secondary" (click)="resetSize()">Limpiar</button>
+            <div class="col-12 d-flex flex-column flex-sm-row gap-2">
+              <button class="btn btn-dark w-100 w-sm-auto" (click)="onSizeSearch()" [disabled]="!size.width || !size.aspect || !size.rim">Buscar {{size.width}}/{{size.aspect}}R{{size.rim}}</button>
+              <button class="btn btn-outline-secondary w-100 w-sm-auto" (click)="resetSize()">Limpiar</button>
             </div>
           </div>
         </div>
         <div class="col-12 col-lg-6">
           <h2 class="h5 mb-3">¿Ya sabes lo que buscas?</h2>
-          <div class="d-flex align-items-center gap-2">
-            <input #search2 class="form-control" placeholder="Modelo, marca o SKU"/>
-            <button class="btn btn-outline-dark" (click)="goToShop(search2.value)">Buscar</button>
+          <div class="d-flex flex-column flex-sm-row align-items-stretch gap-2">
+            <input #search2 class="form-control flex-fill" placeholder="Modelo, marca o SKU"/>
+            <button class="btn btn-outline-dark w-100 w-sm-auto" (click)="goToShop(search2.value)">Buscar</button>
           </div>
           <small class="text-muted">Ejemplo: P-Zero, 205/55R16 o 123456</small>
         </div>
@@ -587,17 +596,17 @@ import { ProductCardComponent } from '../../shared/components/product-card/produ
             <div class="h5 m-0">Cupones promocionales</div>
             <small class="text-muted">Aplica tu cupón al pagar. Ej.: ROUE10</small>
           </div>
-          <div class="d-flex gap-2 w-100 w-lg-auto">
-            <input #coupon class="form-control" placeholder="Código"/>
-            <button class="btn btn-dark" (click)="applyCoupon(coupon.value)">Aplicar</button>
+          <div class="d-flex flex-column flex-sm-row align-items-stretch gap-2 w-100 w-lg-auto">
+            <input #coupon class="form-control flex-fill" placeholder="Código"/>
+            <button class="btn btn-dark w-100 w-sm-auto" (click)="applyCoupon(coupon.value)">Aplicar</button>
           </div>
         </div>
       </div>
       <div class="col-12 col-lg-6">
         <div class="feature p-4 h-100">
-          <div class="d-flex justify-content-between align-items-center mb-2">
+          <div class="d-flex flex-column flex-sm-row justify-content-between align-items-stretch align-items-sm-center gap-2 mb-2">
             <h3 class="h5 m-0">Promociones vigentes</h3>
-            <a class="btn btn-sm btn-outline-dark" routerLink="/shop">Ver más</a>
+            <a class="btn btn-sm btn-outline-dark w-100 w-sm-auto text-center" routerLink="/shop">Ver más</a>
           </div>
           <ul class="m-0 ps-3">
             <li>4x3 en líneas seleccionadas</li>
@@ -622,7 +631,7 @@ import { ProductCardComponent } from '../../shared/components/product-card/produ
   <!-- Contact / social strip -->
   <section class="container mb-5">
     <div class="feature p-3 p-lg-4 d-flex flex-column flex-lg-row align-items-center justify-content-between gap-3">
-      <div class="d-flex align-items-center gap-4">
+      <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center gap-3 gap-md-4 w-100">
         <div>
           <div class="fw-bold">Atención al cliente</div>
           <small class="text-muted">Lun–Sáb 9:00–19:00</small>
@@ -636,10 +645,10 @@ import { ProductCardComponent } from '../../shared/components/product-card/produ
           <a href="mailto:hola@roue.mx" class="text-decoration-none">hola@roue.mx</a>
         </div>
       </div>
-      <div class="d-flex align-items-center gap-3">
-        <a href="https://facebook.com/roue" target="_blank" rel="noopener" class="btn btn-outline-secondary btn-sm">Facebook</a>
-        <a href="https://instagram.com/roue" target="_blank" rel="noopener" class="btn btn-outline-secondary btn-sm">Instagram</a>
-        <a href="https://t.me/roue" target="_blank" rel="noopener" class="btn btn-outline-secondary btn-sm">Telegram</a>
+      <div class="d-flex flex-wrap justify-content-center justify-content-lg-start align-items-center gap-3">
+        <a href="https://facebook.com/roue" target="_blank" rel="noopener" class="btn btn-outline-secondary btn-sm w-100 w-sm-auto">Facebook</a>
+        <a href="https://instagram.com/roue" target="_blank" rel="noopener" class="btn btn-outline-secondary btn-sm w-100 w-sm-auto">Instagram</a>
+        <a href="https://t.me/roue" target="_blank" rel="noopener" class="btn btn-outline-secondary btn-sm w-100 w-sm-auto">Telegram</a>
       </div>
     </div>
   </section>

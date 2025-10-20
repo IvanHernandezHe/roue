@@ -14,7 +14,7 @@ import { switchMap } from 'rxjs';
   standalone: true,
   imports: [NgIf, NgFor, CurrencyPipe, RouterLink, LucideAngularModule],
   styles: [`
-    :host { display: block; --viewer-h: clamp(360px, 52vh, 560px); }
+    :host { display: block; --viewer-h: clamp(260px, 46vh, 460px); }
 
     .crumb {
       font-size: .88rem;
@@ -30,31 +30,46 @@ import { switchMap } from 'rxjs';
       font-weight: 600;
     }
     .crumb a:hover { color: var(--brand-primary); text-decoration: underline; }
-    .crumb .sep { color: color-mix(in srgb, var(--brand-muted) 65%, #ffffff); }
+    .crumb .sep { color: var(--brand-muted); }
 
     .detail-layout {
       display: grid;
-      gap: 2.2rem;
+      gap: 2rem;
+      align-items: start;
     }
     @media (min-width: 992px) {
       .detail-layout {
-        grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr);
-        gap: 3rem;
+        grid-template-columns: minmax(0, 1fr) minmax(320px, 400px);
+        gap: clamp(2rem, 3vw, 2.8rem);
+      }
+    }
+    @media (min-width: 1280px) {
+      .detail-layout {
+        grid-template-columns: minmax(0, 1.08fr) minmax(360px, 440px);
       }
     }
 
     .media-shell {
       display: flex;
       gap: .75rem;
-      align-items: stretch;
+      align-items: flex-start;
     }
     .rail {
       display: none;
       flex-direction: column;
       gap: .35rem;
-      width: 86px;
+      width: 82px;
     }
-    @media (min-width: 768px) { .rail { display: flex; } }
+    @media (min-width: 768px) { .rail { display: flex; flex-shrink: 0; } }
+
+    .viewer-stage {
+      display: flex;
+      flex-direction: column;
+      gap: .75rem;
+      min-width: 0;
+      align-items: center;
+    }
+
     .thumbs {
       display: flex;
       gap: .35rem;
@@ -64,23 +79,22 @@ import { switchMap } from 'rxjs';
     .thumb {
       width: 74px;
       height: 74px;
-      border-radius: 16px;
-      border: 2px solid transparent;
-      background: var(--brand-cloud);
-      box-shadow: var(--shadow-soft);
+      border-radius: var(--brand-radius-sm);
+      border: 1px solid var(--brand-border);
+      background: #ffffff;
       cursor: pointer;
-      transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+      box-shadow: var(--shadow-soft);
+      transition: border-color .18s ease, background .18s ease, box-shadow var(--transition-base), transform var(--transition-base);
     }
-    .thumb:hover { transform: translateY(-2px); box-shadow: var(--shadow-hover); }
+    .thumb:hover { border-color: var(--brand-primary); transform: translateY(-2px); box-shadow: var(--shadow-hover); }
     .thumb.active {
       border-color: var(--brand-primary);
-      box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand-primary) 20%, transparent);
+      background: var(--surface-subtle);
     }
     .thumb img {
       width: 100%;
       height: 100%;
       object-fit: cover;
-      border-radius: inherit;
     }
     @media (max-width: 767.98px) {
       .thumb { width: 60px; height: 60px; }
@@ -89,10 +103,13 @@ import { switchMap } from 'rxjs';
     .simple-carousel {
       position: relative;
       overflow: hidden;
-      border-radius: clamp(18px, 3vw, 26px);
-      border: 1.5px solid var(--brand-border);
-      background: radial-gradient(120% 120% at 50% 0%, rgba(15,82,186,.08), rgba(255,255,255,.95));
+      border-radius: var(--brand-radius-lg);
+      border: 1px solid var(--brand-border);
+      background: linear-gradient(135deg, #ffffff 0%, #f0f3f9 100%);
       height: var(--viewer-h);
+      width: 100%;
+      max-width: clamp(240px, 42vw, 460px);
+      margin: 0 auto;
       box-shadow: var(--shadow-soft);
     }
     .simple-carousel.plain::after { display: none !important; }
@@ -107,13 +124,13 @@ import { switchMap } from 'rxjs';
       width: 100%;
       height: 100%;
       object-fit: contain;
-      padding: clamp(1.6rem, 4vw, 2.2rem);
+      padding: clamp(0.75rem, 2.4vw, 1.3rem);
     }
     .simple-progress {
       position: absolute;
       left: clamp(12px, 4vw, 42px);
       right: clamp(12px, 4vw, 42px);
-      bottom: clamp(12px, 4vw, 36px);
+      bottom: clamp(12px, 4vw, 32px);
       display: flex;
       gap: 6px;
       z-index: 2;
@@ -122,7 +139,7 @@ import { switchMap } from 'rxjs';
       flex: 1;
       height: 3px;
       background: rgba(17,18,23,.18);
-      border-radius: 999px;
+      border-radius: var(--brand-radius-sm);
       overflow: hidden;
     }
     .simple-progress .fill {
@@ -134,18 +151,25 @@ import { switchMap } from 'rxjs';
     }
     @media (max-width: 767.98px) {
       .media-shell { flex-direction: column; }
-      .simple-carousel { height: auto; }
+      .viewer-stage { align-items: stretch; }
+      .simple-carousel { height: auto; max-width: 100%; }
       .simple-item img { height: auto; }
+    }
+
+    .detail-panel {
+      display: flex;
+      flex-direction: column;
+      gap: clamp(1.2rem, 2.4vw, 1.8rem);
     }
 
     .detail-card {
       border-radius: var(--brand-radius-lg);
-      border: 1.5px solid var(--brand-border);
-      background: rgba(255,255,255,.94);
-      box-shadow: var(--shadow-soft);
-      padding: clamp(1.6rem, 3vw, 2rem);
+      border: 1px solid var(--brand-border);
+      background: linear-gradient(180deg, #ffffff 0%, #f4f6fb 100%);
+      padding: clamp(1.35rem, 2.6vw, 1.85rem);
       display: grid;
-      gap: 1.2rem;
+      gap: 1.1rem;
+      box-shadow: var(--shadow-soft);
     }
     .product-title {
       font-family: var(--font-display);
@@ -166,10 +190,10 @@ import { switchMap } from 'rxjs';
       display: inline-flex;
       align-items: center;
       gap: .35rem;
-      padding: .35rem .9rem;
-      border-radius: 999px;
-      background: color-mix(in srgb, var(--brand-primary) 12%, #ffffff);
-      border: 1.5px solid color-mix(in srgb, var(--brand-primary) 35%, #ffffff);
+      padding: .35rem .75rem;
+      border-radius: var(--brand-radius-sm);
+      background: rgba(236, 242, 255, 0.7);
+      border: 1px solid var(--brand-border);
       font-weight: 600;
       letter-spacing: .04em;
     }
@@ -177,9 +201,9 @@ import { switchMap } from 'rxjs';
     .qty-group {
       display: inline-flex;
       border-radius: var(--brand-radius-sm);
-      border: 1.5px solid var(--brand-border);
-      overflow: hidden;
-      background: var(--brand-cloud);
+      border: 1px solid var(--brand-border);
+      background: #ffffff;
+      box-shadow: var(--shadow-soft);
     }
     .qty-btn {
       width: 42px;
@@ -188,8 +212,9 @@ import { switchMap } from 'rxjs';
       background: transparent;
       font-weight: 600;
       color: var(--brand-ink);
+      transition: background .18s ease, color .18s ease;
     }
-    .qty-btn:hover:not(:disabled) { background: color-mix(in srgb, var(--brand-primary) 12%, #ffffff); color: var(--brand-primary); }
+    .qty-btn:hover:not(:disabled) { background: var(--surface-subtle); color: var(--brand-primary); }
     .qty-input {
       width: 58px;
       border: none;
@@ -211,33 +236,29 @@ import { switchMap } from 'rxjs';
 
     .specs-card {
       border-radius: var(--brand-radius-lg);
-      border: 1.5px solid var(--brand-border);
-      background: rgba(255,255,255,.96);
+      border: 1px solid var(--brand-border);
+      background: linear-gradient(180deg, #ffffff 0%, #f4f6fb 100%);
+      padding: clamp(1.35rem, 2.5vw, 1.75rem);
       box-shadow: var(--shadow-soft);
-      padding: clamp(1.5rem, 3vw, 1.9rem);
     }
     .specs-table {
       width: 100%;
-      border-collapse: separate;
-      border-spacing: 0;
+      border-collapse: collapse;
       font-size: .95rem;
     }
     .specs-table th {
       width: 32%;
       color: var(--brand-muted);
       font-weight: 600;
-      padding: .65rem .75rem;
-      background: color-mix(in srgb, var(--brand-primary) 6%, #ffffff);
+      padding: .6rem .7rem;
+      border-bottom: 1px solid var(--brand-border);
+      background: var(--surface-subtle);
     }
     .specs-table td {
-      padding: .65rem .75rem;
-      border-left: 1px solid transparent;
-      border-right: 1px solid transparent;
-      border-bottom: 1px solid color-mix(in srgb, var(--brand-border) 80%, #ffffff);
+      padding: .6rem .7rem;
+      border-bottom: 1px solid var(--brand-border);
     }
-    .specs-table tr:first-child th,
-    .specs-table tr:first-child td { border-top: none; }
-    .specs-table tr:nth-child(odd) td { background: rgba(244,246,252,.7); }
+    .specs-table tr:nth-child(odd) td { background: var(--brand-cream); }
 
     @media (prefers-reduced-motion: reduce) {
       .thumb:hover,
@@ -245,37 +266,20 @@ import { switchMap } from 'rxjs';
       .service-card:hover { transform: none !important; }
     }
 
-    :host-context([data-bs-theme='dark']) .simple-carousel {
-      background: radial-gradient(120% 120% at 50% 0%, rgba(15,82,186,.28), rgba(8,12,24,.92));
-      border-color: rgba(92,108,148,.45);
-      box-shadow: 0 30px 72px rgba(4,10,24,.8);
-    }
-    :host-context([data-bs-theme='dark']) .thumb {
-      background: rgba(10,16,32,.94);
-      border-color: rgba(92,108,148,.35);
-    }
-    :host-context([data-bs-theme='dark']) .thumb.active {
-      border-color: rgba(255,255,255,.48);
-      box-shadow: 0 0 0 3px rgba(255,255,255,.14);
-    }
+    :host-context([data-bs-theme='dark']) .simple-carousel,
+    :host-context([data-bs-theme='dark']) .thumb,
     :host-context([data-bs-theme='dark']) .detail-card,
     :host-context([data-bs-theme='dark']) .specs-card {
-      background: rgba(10,16,32,.94);
-      border-color: rgba(92,108,148,.4);
-      box-shadow: 0 32px 70px rgba(4,10,24,.75);
-      color: #e7e9f2;
+      background: var(--brand-cloud);
+      border-color: var(--brand-border);
+      color: var(--brand-ink);
     }
-    :host-context([data-bs-theme='dark']) .specs-table th {
-      color: rgba(231,233,242,.82);
-      background: rgba(15,82,186,.22);
-    }
+    :host-context([data-bs-theme='dark']) .badge-stock,
+    :host-context([data-bs-theme='dark']) .specs-table th,
     :host-context([data-bs-theme='dark']) .specs-table td {
-      background: rgba(12,18,36,.88);
-      border-bottom-color: rgba(92,108,148,.35);
-    }
-    :host-context([data-bs-theme='dark']) .metric {
-      background: rgba(12,18,36,.9);
-      border-color: rgba(255,255,255,.24);
+      background: var(--surface-subtle);
+      border-color: var(--brand-border);
+      color: var(--brand-ink);
     }
   `],
   template: `
@@ -304,7 +308,7 @@ import { switchMap } from 'rxjs';
               <img [src]="src" alt="Vista {{i+1}} de {{ title() }}"/>
             </div>
           </div>
-          <div class="flex-fill">
+          <div class="viewer-stage flex-fill">
             <div #viewerEl
                  class="simple-carousel plain"
                  [attr.data-paused]="paused() ? 'true' : null"
@@ -340,7 +344,7 @@ import { switchMap } from 'rxjs';
         </div>
       </div>
 
-      <div #panelEl>
+      <div #panelEl class="detail-panel">
         <div class="detail-card">
           <span class="section-eyebrow text-muted">Ficha técnica</span>
           <h2 class="product-title mb-1">{{ title() }}</h2>
@@ -380,7 +384,7 @@ import { switchMap } from 'rxjs';
           </div>
         </div>
 
-        <div #specsEl class="specs-card mt-3">
+        <div #specsEl class="specs-card">
           <table class="specs-table">
             <tbody>
               <tr><th class="w-25">Marca</th><td class="text-uppercase">{{ product!.brand }}</td></tr>
@@ -425,7 +429,11 @@ export class ProductDetailPage implements OnInit, OnDestroy, AfterViewInit {
   product?: Product;
   idx = signal(0);
   qty = signal(1);
-  images = signal<string[]>(['/assets/pzero-1_80.jpg','/assets/pzero-1_80.jpg','/assets/pzero-1_80.jpg']);
+  images = signal<string[]>([
+    '/assets/product/fallback/default-tire.jpg',
+    '/assets/product/fallback/default-tire.jpg',
+    '/assets/product/fallback/default-tire.jpg'
+  ]);
   title = computed(() => this.product ? `${this.product.brand} ${this.product.modelName} ${this.product.size}` : '');
   // autoplay
   readonly autoMs = 5500;

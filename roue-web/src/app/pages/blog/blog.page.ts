@@ -217,8 +217,9 @@ import { NgFor } from '@angular/common';
     .blog-hero {
       position: relative;
       overflow: hidden;
-      border-radius: clamp(26px, 6vw, 44px);
+      border: 1px solid var(--brand-border);
       min-height: clamp(520px, 72vh, 760px);
+      background: var(--brand-cream);
     }
     .hero-image {
       position: absolute;
@@ -226,90 +227,91 @@ import { NgFor } from '@angular/common';
       width: 100%;
       height: 100%;
       object-fit: cover;
-      filter: saturate(115%) brightness(0.7);
-      transform: scale(1.08);
+      filter: brightness(0.75);
     }
     .hero-overlay {
       position: absolute;
       inset: 0;
-      background: linear-gradient(135deg, rgba(15, 18, 44, 0.92), rgba(15, 82, 186, 0.72));
+      background: rgba(11, 15, 32, .6);
     }
-    .hero-copy { position: relative; z-index: 2; max-width: 620px; }
-    .hero-lead { color: rgba(255,255,255,.74); font-size: 1.1rem; }
-    .hero-tags { display: flex; flex-wrap: wrap; gap: .6rem; margin-top: 1.5rem; }
+    .hero-copy { position: relative; z-index: 2; max-width: 620px; color: var(--brand-cloud); }
+    .hero-lead { color: color-mix(in srgb, var(--brand-cloud) 80%, transparent); font-size: 1.05rem; }
+    .hero-tags { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: 1.5rem; }
     .tag-chip {
-      padding: .4rem 1rem;
-      border-radius: 999px;
-      background: rgba(255,255,255,.16);
-      border: 1px solid rgba(255,255,255,.28);
+      padding: .35rem .8rem;
+      border-radius: var(--brand-radius-sm);
+      background: rgba(255,255,255,.15);
+      border: 1px solid rgba(255,255,255,.45);
       text-transform: uppercase;
-      font-size: .7rem;
-      letter-spacing: .14em;
+      font-size: .68rem;
+      letter-spacing: .12em;
       font-weight: 600;
+      color: var(--brand-cloud);
+      backdrop-filter: blur(6px);
     }
 
     .hero-card {
       position: relative;
-      border-radius: clamp(20px, 4vw, 28px);
+      border-radius: var(--brand-radius-lg);
       padding: clamp(1.8rem, 4vw, 2.4rem);
-      background: rgba(8, 12, 24, .78);
-      border: 1px solid rgba(255,255,255,.18);
-      backdrop-filter: blur(18px);
+      background: linear-gradient(180deg, #ffffff 0%, #f4f6fb 100%);
+      border: 1px solid var(--brand-border);
       display: flex;
       flex-direction: column;
       gap: 1rem;
-      box-shadow: 0 32px 60px rgba(4, 12, 32, .6);
+      box-shadow: var(--shadow-soft);
     }
     .hero-label {
       display: inline-flex;
       align-items: center;
       gap: .4rem;
-      padding: .35rem .9rem;
-      border-radius: 999px;
-      background: rgba(255,255,255,.12);
+      padding: .3rem .7rem;
+      border-radius: var(--brand-radius-sm);
+      background: rgba(236, 242, 255, 0.7);
       letter-spacing: .14em;
       font-size: .64rem;
       text-transform: uppercase;
+      color: var(--brand-muted);
     }
     .hero-author .author-avatar {
       width: 52px;
       height: 52px;
       border-radius: 50%;
       object-fit: cover;
-      border: 2px solid rgba(255,255,255,.4);
+      border: 1px solid var(--brand-border);
     }
 
     .featured-article {
-      border-radius: clamp(22px, 5vw, 32px);
+      border-radius: var(--brand-radius-lg);
       overflow: hidden;
-      background: var(--brand-cloud);
-      border: 1.5px solid var(--brand-border);
-      box-shadow: var(--shadow-soft);
+      background: linear-gradient(180deg, #ffffff 0%, #f4f6fb 100%);
+      border: 1px solid var(--brand-border);
       display: flex;
       flex-direction: column;
+      box-shadow: var(--shadow-soft);
     }
     .featured-body {
-      padding: clamp(1.8rem, 4vw, 2.4rem);
+      padding: clamp(1.6rem, 4vw, 2.2rem);
       display: grid;
-      gap: 1rem;
+      gap: .9rem;
     }
     .category-badge {
       display: inline-block;
-      padding: .4rem .95rem;
-      border-radius: 999px;
-      background: color-mix(in srgb, var(--brand-primary) 18%, #ffffff);
-      color: var(--brand-primary-dark);
+      padding: .35rem .8rem;
+      border-radius: var(--brand-radius-sm);
+      background: rgba(236, 242, 255, 0.7);
+      color: var(--brand-ink-soft);
       text-transform: uppercase;
-      font-size: .68rem;
-      letter-spacing: .12em;
-      font-weight: 700;
+      font-size: .66rem;
+      letter-spacing: .1em;
+      font-weight: 600;
     }
-    .featured-meta { display: flex; align-items: center; gap: .6rem; }
+    .featured-meta { display: flex; align-items: center; gap: .6rem; color: var(--brand-muted); }
     .featured-meta .dot { opacity: .45; }
 
     .story-stack {
       display: grid;
-      gap: 1.2rem;
+      gap: 1.1rem;
     }
     .story-card {
       display: grid;
@@ -317,93 +319,105 @@ import { NgFor } from '@angular/common';
       gap: 1rem;
       padding: 1rem;
       border-radius: var(--brand-radius-md);
-      border: 1.5px solid var(--brand-border);
-      background: var(--brand-cloud);
+      border: 1px solid var(--brand-border);
+      background: linear-gradient(180deg, #ffffff 0%, #f4f6fb 100%);
+      transition: border-color var(--transition-base), background var(--transition-base), box-shadow var(--transition-base), transform var(--transition-base);
       box-shadow: var(--shadow-soft);
-      transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
     }
     .story-card:hover {
-      transform: translateY(-4px);
-      border-color: var(--brand-primary);
+      border-color: color-mix(in srgb, var(--brand-primary) 35%, var(--brand-border));
+      background: #ffffff;
       box-shadow: var(--shadow-hover);
+      transform: translateY(-3px);
+    }
+    .story-thumb {
+      overflow: hidden;
+      border: 1px solid var(--brand-border);
+      border-radius: var(--brand-radius-sm);
+      background: var(--brand-cream);
     }
     .story-thumb img {
       width: 100%;
       height: 100%;
       object-fit: cover;
-      border-radius: calc(var(--brand-radius-md) - 6px);
     }
-    .category-chip {
-      font-size: .72rem;
-      text-transform: uppercase;
-      letter-spacing: .12em;
-      color: var(--brand-primary-dark);
-      font-weight: 700;
-    }
+    .story-content { display: grid; gap: .4rem; }
 
-    .latest-posts {
-      background: linear-gradient(180deg, rgba(15,82,186,.04), rgba(244,246,252,.92));
-    }
     .filter-chips {
-      display: flex;
+      display: inline-flex;
+      gap: .5rem;
+      align-items: center;
       flex-wrap: wrap;
-      gap: .6rem;
     }
     .filter-chip {
-      padding: .52rem 1.2rem;
-      border-radius: 999px;
-      border: 1.5px solid var(--brand-border);
-      background: rgba(255,255,255,.9);
-      text-transform: uppercase;
-      font-size: .68rem;
-      letter-spacing: .14em;
+      border: 1px solid var(--brand-border);
+      background: #ffffff;
+      color: var(--brand-ink);
+      padding: .35rem .8rem;
+      border-radius: var(--brand-radius-sm);
       font-weight: 600;
-      color: var(--brand-muted);
-      transition: transform .18s ease, border-color .18s ease, background .18s ease, color .18s ease;
+      letter-spacing: .04em;
+      transition: background var(--transition-base), border-color var(--transition-base), color var(--transition-base), box-shadow var(--transition-base);
+      box-shadow: var(--shadow-soft);
     }
-    .filter-chip:hover,
+    .filter-chip:hover {
+      border-color: color-mix(in srgb, var(--brand-primary) 35%, var(--brand-border));
+      color: var(--brand-primary);
+      box-shadow: var(--shadow-hover);
+    }
     .filter-chip.active {
-      border-color: var(--brand-primary);
-      background: color-mix(in srgb, var(--brand-primary) 18%, #ffffff);
-      color: var(--brand-primary-dark);
-      transform: translateY(-2px);
+      border-color: color-mix(in srgb, var(--brand-primary) 45%, var(--brand-border));
+      background: rgba(236, 242, 255, 0.75);
+      color: var(--brand-primary);
     }
 
     .post-card {
       border-radius: var(--brand-radius-lg);
-      border: 1.5px solid var(--brand-border);
-      background: var(--brand-cloud);
-      box-shadow: var(--shadow-soft);
+      border: 1px solid var(--brand-border);
+      background: linear-gradient(180deg, #ffffff 0%, #f4f6fb 100%);
       display: flex;
       flex-direction: column;
       overflow: hidden;
-      transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+      transition: border-color var(--transition-base), background var(--transition-base), box-shadow var(--transition-base), transform var(--transition-base);
+      box-shadow: var(--shadow-soft);
     }
     .post-card:hover {
-      transform: translateY(-6px);
-      border-color: var(--brand-primary);
+      border-color: color-mix(in srgb, var(--brand-primary) 35%, var(--brand-border));
+      background: #ffffff;
+      transform: translateY(-4px);
       box-shadow: var(--shadow-hover);
     }
-    .post-body {
-      padding: clamp(1.6rem, 3vw, 2rem);
-      display: grid;
-      gap: 1rem;
+    .post-media {
+      overflow: hidden;
+      border-bottom: 1px solid var(--brand-border);
+      border-radius: var(--brand-radius-md) var(--brand-radius-md) 0 0;
     }
-    .post-media img,
-    .featured-media img {
+    .post-media img {
       width: 100%;
       height: 100%;
       object-fit: cover;
+      transition: transform .25s ease;
     }
-    .author-avatar {
+    .post-card:hover .post-media img { transform: scale(1.02); }
+    .post-body {
+      padding: clamp(1.3rem, 3.5vw, 1.8rem);
+      display: grid;
+      gap: .75rem;
+    }
+    .author-row .author-avatar {
       width: 44px;
       height: 44px;
       border-radius: 50%;
       object-fit: cover;
+      border: 1px solid var(--brand-border);
     }
 
     .newsletter {
-      background: var(--brand-cream);
+      background: linear-gradient(180deg, #ffffff 0%, #f0f4fa 100%);
+      border: 1px solid var(--brand-border);
+      border-radius: var(--brand-radius-lg);
+      padding: 2rem;
+      box-shadow: var(--shadow-soft);
     }
     .newsletter-form {
       display: flex;
@@ -418,87 +432,82 @@ import { NgFor } from '@angular/common';
       width: 100%;
       height: 100%;
       object-fit: cover;
-      border-radius: clamp(20px, 4vw, 28px);
-      box-shadow: var(--shadow-hover);
+      border: 1px solid var(--brand-border);
+      border-radius: var(--brand-radius-md);
     }
 
     .knowledge-strip {
-      background: linear-gradient(135deg, var(--brand-primary-dark), var(--brand-primary));
-      border-radius: clamp(24px, 5vw, 36px);
-      padding: clamp(2.4rem, 8vw, 4rem);
-      box-shadow: 0 32px 68px rgba(15, 82, 186, .34);
+      background: linear-gradient(180deg, #ffffff 0%, #f4f6fb 100%);
+      border: 1px solid var(--brand-border);
+      border-radius: var(--brand-radius-lg);
+      padding: clamp(2rem, 7vw, 3.2rem);
+      color: var(--brand-ink);
+      box-shadow: var(--shadow-soft);
     }
     .resource-grid {
       display: grid;
-      gap: 1.4rem;
+      gap: 1.2rem;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     }
     .resource-card {
       display: grid;
       grid-template-columns: auto 1fr;
       gap: 1rem;
-      padding: 1.4rem;
+      padding: 1.2rem;
       border-radius: var(--brand-radius-md);
-      background: rgba(255,255,255,.16);
-      backdrop-filter: blur(8px);
+      border: 1px solid var(--brand-border);
+      background: linear-gradient(180deg, #ffffff 0%, #f4f6fb 100%);
+      box-shadow: var(--shadow-soft);
     }
     .resource-icon {
-      width: 52px;
-      height: 52px;
-      border-radius: 16px;
-      background: rgba(255,255,255,.22);
+      width: 48px;
+      height: 48px;
+      border-radius: var(--brand-radius-sm);
+      background: rgba(236, 242, 255, 0.7);
       display: flex;
       align-items: center;
       justify-content: center;
       font-family: var(--font-display);
-      font-size: 1.05rem;
-      letter-spacing: .12em;
+      font-size: 1rem;
+      letter-spacing: .1em;
+      color: var(--brand-ink);
     }
 
-    @media (max-width: 991.98px) {
-      .blog-hero { border-radius: 18px; }
-      .hero-card { margin-top: 2rem; }
-      .knowledge-strip { border-radius: 18px; padding: 2.4rem; }
-    }
     @media (max-width: 767.98px) {
       .story-card { grid-template-columns: 1fr; }
-      .story-thumb img { border-radius: var(--brand-radius-md); }
-      .post-body { padding: 1.4rem; }
-      .hero-card { padding: 1.6rem; }
+      .post-body { padding: 1.2rem; }
+      .hero-card { margin-top: 2rem; padding: 1.6rem; }
     }
 
+    :host-context([data-bs-theme='dark']) .hero-card,
     :host-context([data-bs-theme='dark']) .featured-article,
     :host-context([data-bs-theme='dark']) .story-card,
     :host-context([data-bs-theme='dark']) .post-card,
-    :host-context([data-bs-theme='dark']) .newsletter {
-      background: rgba(10, 16, 32, .92);
-      border-color: rgba(92,108,148,.4);
-      box-shadow: 0 32px 70px rgba(4, 10, 24, .75);
-      color: #e7e9f2;
-    }
-    :host-context([data-bs-theme='dark']) .story-card:hover,
-    :host-context([data-bs-theme='dark']) .post-card:hover {
-      border-color: rgba(255,255,255,.45);
+    :host-context([data-bs-theme='dark']) .newsletter,
+    :host-context([data-bs-theme='dark']) .knowledge-strip,
+    :host-context([data-bs-theme='dark']) .resource-card {
+      background: var(--brand-cloud);
+      border-color: var(--brand-border);
+      color: var(--brand-ink);
     }
     :host-context([data-bs-theme='dark']) .filter-chip {
-      background: rgba(12,18,36,.92);
-      border-color: rgba(92,108,148,.35);
-      color: rgba(231,233,242,.75);
+      background: var(--brand-cloud);
+      border-color: var(--brand-border);
+      color: var(--brand-ink);
     }
     :host-context([data-bs-theme='dark']) .filter-chip.active,
     :host-context([data-bs-theme='dark']) .filter-chip:hover {
-      background: color-mix(in srgb, var(--brand-primary) 28%, rgba(12,18,36,.92));
-      border-color: rgba(255,255,255,.4);
-      color: #fff;
+      border-color: var(--brand-primary);
+      color: var(--brand-primary);
     }
     :host-context([data-bs-theme='dark']) .newsletter-form .form-control {
-      background: rgba(12,18,36,.92);
-      border-color: rgba(92,108,148,.4);
-      color: #e7e9f2;
+      background: var(--brand-cloud);
+      border-color: var(--brand-border);
+      color: var(--brand-ink);
     }
-    :host-context([data-bs-theme='dark']) .resource-card {
-      background: rgba(255,255,255,.18);
-      color: #fff;
+    :host-context([data-bs-theme='dark']) .blog-hero {
+      border-color: var(--brand-border);
+      background: var(--brand-cream);
     }
   `]
 })

@@ -9,8 +9,16 @@ import { CartStore } from '../../state/cart.store';
   imports: [NgIf, NgFor, CurrencyPipe, DatePipe, RouterLink],
   styles: [`
     :host { display: block; }
-    .hero { position: relative; overflow: hidden; color: #fff; border-radius: clamp(1.5rem, 6vw, 2.5rem); padding: clamp(3rem, 8vw, 4.5rem) 0; background: radial-gradient(140% 140% at 15% 10%, rgba(217, 66, 66, 0.9), rgba(17, 24, 39, 0.95)); box-shadow: 0 28px 48px rgba(15, 23, 42, 0.35); }
-    .hero::after { content: ''; position: absolute; inset: -10%; background: radial-gradient(circle at 20% 20%, rgba(255,255,255,.22), transparent 40%), radial-gradient(circle at 80% 10%, rgba(216, 180, 254, .25), transparent 45%), radial-gradient(circle at 50% 80%, rgba(45, 212, 191, .24), transparent 40%); opacity: .45; }
+    .hero {
+      position: relative;
+      overflow: hidden;
+      color: #fff;
+      border-radius: var(--brand-radius-lg);
+      padding: clamp(3rem, 8vw, 4.5rem) 0;
+      background: linear-gradient(135deg, var(--brand-primary-dark) 0%, #123b68 100%);
+      box-shadow: var(--shadow-soft);
+    }
+    .hero::after { display: none; }
     .confetti { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
     .confetti span { position: absolute; width: 8px; height: 16px; border-radius: 3px; opacity: .8; animation: fall var(--dur) linear infinite; mix-blend-mode: screen; }
     .confetti span:nth-child(odd) { background: rgba(255,255,255,.8); }
@@ -18,17 +26,32 @@ import { CartStore } from '../../state/cart.store';
     .confetti span:nth-child(3n) { background: rgba(59, 130, 246, 0.85); }
     @keyframes fall { 0% { transform: translate3d(var(--x,0), -120%, 0) rotate(0deg); opacity: .85; } 60% { opacity: .9; } 100% { transform: translate3d(calc(var(--x,0) + 15px), 120%, 0) rotate(160deg); opacity: 0; } }
     .hero-content { position: relative; z-index: 1; }
-    .hero .badge { background: rgba(255, 255, 255, 0.18); border: 1px solid rgba(255, 255, 255, 0.35); letter-spacing: .12em; }
+    .hero .badge { background: transparent; border: 1px solid rgba(255, 255, 255, 0.45); letter-spacing: .12em; }
     .cta-group { display: flex; flex-wrap: wrap; gap: .75rem; justify-content: center; }
-    .summary-card { border-radius: 1.5rem; border: 1px solid rgba(15,23,42,.08); box-shadow: 0 18px 42px rgba(15,23,42,.12); }
-    .items-card { border-radius: 1.5rem; border: 1px solid rgba(148,163,184,.18); }
+    .summary-card {
+      border-radius: var(--brand-radius-lg);
+      border: 1px solid var(--brand-border);
+      background: linear-gradient(180deg, #ffffff 0%, #f4f6fb 100%);
+      box-shadow: var(--shadow-soft);
+    }
+    .items-card {
+      border-radius: var(--brand-radius-lg);
+      border: 1px solid var(--brand-border);
+      background: linear-gradient(180deg, #ffffff 0%, #f4f6fb 100%);
+      box-shadow: var(--shadow-soft);
+    }
     .items-card table { margin: 0; }
-    .items-card thead { background: rgba(15, 23, 42, .03); }
-    .next-steps { border-radius: 1.25rem; background: rgba(15,23,42,.04); border: 1px dashed rgba(148,163,184,.45); }
-    :host-context([data-bs-theme='dark']) .summary-card { background: rgba(15,23,42,.65); border-color: rgba(255,255,255,.08); box-shadow: 0 25px 52px rgba(0,0,0,.55); }
-    :host-context([data-bs-theme='dark']) .items-card { background: rgba(15,23,42,.55); border-color: rgba(255,255,255,.08); }
-    :host-context([data-bs-theme='dark']) .items-card thead { background: rgba(255,255,255,.04); }
-    :host-context([data-bs-theme='dark']) .next-steps { background: rgba(15,23,42,.55); border-color: rgba(148,163,184,.35); }
+    .items-card thead { background: var(--surface-subtle); }
+    .next-steps {
+      border-radius: var(--brand-radius-lg);
+      background: linear-gradient(180deg, #ffffff 0%, #eef2fa 100%);
+      border: 1px dashed color-mix(in srgb, var(--brand-primary) 30%, var(--brand-border));
+      box-shadow: var(--shadow-soft);
+    }
+    :host-context([data-bs-theme='dark']) .summary-card,
+    :host-context([data-bs-theme='dark']) .items-card,
+    :host-context([data-bs-theme='dark']) .next-steps { background: var(--brand-cloud); border-color: var(--brand-border); }
+    :host-context([data-bs-theme='dark']) .items-card thead { background: var(--surface-subtle); }
   `],
   template: `
   <section class="container my-4 checkout-success">

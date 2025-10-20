@@ -21,12 +21,17 @@ import { LucideAngularModule } from 'lucide-angular';
       gap: .85rem;
       align-items: center;
       border-radius: var(--brand-radius-md);
-      border: 1.5px solid var(--brand-border);
-      background: rgba(255,255,255,.92);
+      border: 1px solid var(--brand-border);
+      background: linear-gradient(180deg, #ffffff 0%, #f4f6fb 100%);
       box-shadow: var(--shadow-soft);
-      transition: transform .18s ease, box-shadow .18s ease;
+      transition: border-color var(--transition-base), background var(--transition-base), box-shadow var(--transition-base), transform var(--transition-base);
     }
-    .help-tile:hover { transform: translateY(-4px); box-shadow: var(--shadow-hover); }
+    .help-tile:hover {
+      border-color: color-mix(in srgb, var(--brand-primary) 35%, var(--brand-border));
+      background: #ffffff;
+      box-shadow: var(--shadow-hover);
+      transform: translateY(-3px);
+    }
     .help-tile lucide-icon { color: var(--brand-primary); }
     .help-icon,
     .contact-icon,
@@ -36,10 +41,9 @@ import { LucideAngularModule } from 'lucide-angular';
       justify-content: center;
       width: 28px;
       height: 28px;
-      border-radius: 12px;
-      background: color-mix(in srgb, var(--brand-primary) 12%, #ffffff);
+      border-radius: var(--brand-radius-sm);
+      background: rgba(236, 242, 255, 0.6);
       color: var(--brand-primary);
-      box-shadow: 0 8px 18px rgba(15, 82, 186, .18);
       flex: 0 0 28px;
     }
     .help-icon svg,
@@ -47,8 +51,8 @@ import { LucideAngularModule } from 'lucide-angular';
 
     .card {
       border-radius: var(--brand-radius-lg);
-      border: 1.5px solid var(--brand-border);
-      background: rgba(255,255,255,.94);
+      border: 1px solid var(--brand-border);
+      background: linear-gradient(180deg, #ffffff 0%, #f4f6fb 100%);
       box-shadow: var(--shadow-soft);
     }
 
@@ -62,21 +66,20 @@ import { LucideAngularModule } from 'lucide-angular';
       align-items: flex-start;
       gap: .75rem;
       padding: .85rem 1rem;
-      border-radius: var(--brand-radius-sm);
-      background: linear-gradient(135deg, rgba(15,82,186,.12), rgba(15,82,186,.04));
-      border: 1.5px dashed color-mix(in srgb, var(--brand-primary) 45%, #ffffff);
+      border-radius: var(--brand-radius-md);
+      background: linear-gradient(180deg, #ffffff 0%, #f2f5fb 100%);
+      border: 1px dashed color-mix(in srgb, var(--brand-primary) 35%, var(--brand-border));
     }
     .tip-icon { width: 28px; height: 28px; }
 
     :host-context([data-bs-theme='dark']) .help-tile,
     :host-context([data-bs-theme='dark']) .card {
-      background: rgba(12,18,36,.92);
-      border-color: rgba(92,108,148,.4);
-      box-shadow: 0 28px 70px rgba(4,10,24,.8);
+      background: var(--brand-cloud);
+      border-color: var(--brand-border);
     }
     :host-context([data-bs-theme='dark']) .tip-item {
-      background: linear-gradient(135deg, rgba(15,82,186,.28), rgba(9,18,42,.6));
-      border-color: color-mix(in srgb, var(--brand-primary) 55%, rgba(92,108,148,.5));
+      background: var(--surface-subtle);
+      border-color: color-mix(in srgb, var(--brand-primary) 45%, var(--brand-border));
     }
   `],
   template: `

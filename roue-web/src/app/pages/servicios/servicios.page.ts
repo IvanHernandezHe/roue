@@ -179,9 +179,13 @@ import { NgClass, NgFor } from '@angular/common';
 
     .services-hero {
       position: relative;
+      border: 1px solid var(--brand-border);
+      border-radius: var(--brand-radius-lg);
+      min-height: clamp(520px, 70vh, 720px);
+      background: linear-gradient(135deg, var(--brand-primary-dark) 0%, #123b68 100%);
+      color: #fff;
+      box-shadow: var(--shadow-soft);
       overflow: hidden;
-      border-radius: clamp(26px, 6vw, 44px);
-      min-height: clamp(520px, 70vh, 760px);
     }
     .hero-image {
       position: absolute;
@@ -189,16 +193,15 @@ import { NgClass, NgFor } from '@angular/common';
       width: 100%;
       height: 100%;
       object-fit: cover;
-      filter: brightness(.65) saturate(110%);
-      transform: scale(1.08);
+      filter: brightness(.65);
     }
     .hero-overlay {
       position: absolute;
       inset: 0;
-      background: linear-gradient(135deg, rgba(15,18,40,.92), rgba(15,82,186,.72));
+      background: rgba(9, 14, 32, .65);
     }
     .hero-copy { position: relative; z-index: 2; max-width: 640px; }
-    .hero-lead { color: rgba(255,255,255,.74); font-size: 1.1rem; }
+    .hero-lead { color: rgba(255,255,255,.78); font-size: 1.05rem; }
     .hero-metrics {
       display: flex;
       flex-wrap: wrap;
@@ -209,50 +212,52 @@ import { NgClass, NgFor } from '@angular/common';
       min-width: 120px;
       padding: .85rem 1.1rem;
       border-radius: var(--brand-radius-md);
-      background: rgba(255,255,255,.14);
-      border: 1px solid rgba(255,255,255,.28);
+      background: rgba(255,255,255,.18);
+      border: 1px solid rgba(255,255,255,.4);
       text-align: center;
-      box-shadow: 0 18px 40px rgba(4,12,32,.45);
+      backdrop-filter: blur(8px);
     }
     .metric-value { display: block; font-family: var(--font-display); font-size: 1.5rem; letter-spacing: .08em; }
     .metric-label { display: block; font-size: .72rem; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,.7); }
 
     .hero-card {
       position: relative;
-      border-radius: clamp(22px, 4vw, 30px);
+      border-radius: var(--brand-radius-lg);
       padding: clamp(1.8rem, 4vw, 2.4rem);
-      background: rgba(8,12,24,.78);
-      border: 1px solid rgba(255,255,255,.18);
-      backdrop-filter: blur(18px);
+      background: linear-gradient(180deg, #ffffff 0%, #f3f6fb 100%);
+      border: 1px solid var(--brand-border);
       display: flex;
       flex-direction: column;
       gap: 1.1rem;
-      box-shadow: 0 34px 64px rgba(4,12,32,.6);
+      color: var(--brand-ink);
+      box-shadow: var(--shadow-soft);
     }
     .hero-label {
       display: inline-flex;
       align-items: center;
-      padding: .35rem 1rem;
-      border-radius: 999px;
-      background: rgba(255,255,255,.16);
-      letter-spacing: .14em;
+      padding: .35rem .9rem;
+      border-radius: var(--brand-radius-sm);
+      background: rgba(236, 242, 255, 0.7);
+      letter-spacing: .12em;
       font-size: .64rem;
       text-transform: uppercase;
+      color: var(--brand-muted);
     }
 
     .service-card {
       border-radius: var(--brand-radius-lg);
-      border: 1.5px solid var(--brand-border);
-      background: var(--brand-cloud);
-      box-shadow: var(--shadow-soft);
+      border: 1px solid var(--brand-border);
+      background: linear-gradient(180deg, #ffffff 0%, #f4f6fb 100%);
       display: flex;
       flex-direction: column;
       overflow: hidden;
-      transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+      box-shadow: var(--shadow-soft);
+      transition: border-color var(--transition-base), background var(--transition-base), transform var(--transition-base), box-shadow var(--transition-base);
     }
     .service-card:hover {
-      transform: translateY(-6px);
-      border-color: var(--brand-primary);
+      border-color: color-mix(in srgb, var(--brand-primary) 35%, var(--brand-border));
+      background: #ffffff;
+      transform: translateY(-4px);
       box-shadow: var(--shadow-hover);
     }
     .service-media img {
@@ -261,57 +266,61 @@ import { NgClass, NgFor } from '@angular/common';
       object-fit: cover;
     }
     .service-body {
-      padding: clamp(1.4rem, 3vw, 1.9rem);
+      padding: clamp(1.3rem, 3vw, 1.8rem);
       display: grid;
       gap: .75rem;
     }
     .service-badge {
       display: inline-flex;
       align-items: center;
-      padding: .4rem .85rem;
-      border-radius: 999px;
-      background: color-mix(in srgb, var(--brand-primary) 18%, #ffffff);
-      color: var(--brand-primary-dark);
-      letter-spacing: .12em;
-      font-size: .68rem;
-      font-weight: 700;
+      padding: .35rem .75rem;
+      border-radius: var(--brand-radius-sm);
+      background: rgba(236, 242, 255, 0.7);
+      color: var(--brand-primary);
+      letter-spacing: .08em;
+      font-size: .66rem;
+      font-weight: 600;
     }
 
     .plans {
-      background: linear-gradient(180deg, rgba(15,82,186,.05), rgba(244,246,252,.94));
+      background: var(--brand-cream);
+      border: 1px solid var(--brand-border);
+      border-radius: var(--brand-radius-lg);
+      box-shadow: var(--shadow-soft);
     }
     .plan-chips {
       display: flex;
       flex-wrap: wrap;
-      gap: .6rem;
+      gap: .5rem;
     }
     .plan-chips span {
-      padding: .45rem 1.1rem;
-      border-radius: 999px;
-      border: 1.5px solid var(--brand-border);
-      background: rgba(255,255,255,.9);
+      padding: .4rem .95rem;
+      border-radius: var(--brand-radius-sm);
+      border: 1px solid var(--brand-border);
+      background: #ffffff;
       font-weight: 600;
       letter-spacing: .02em;
     }
     .plan-card {
       border-radius: var(--brand-radius-lg);
-      border: 1.5px solid var(--brand-border);
-      background: var(--brand-cloud);
-      padding: clamp(1.6rem, 3vw, 2rem);
+      border: 1px solid var(--brand-border);
+      background: linear-gradient(180deg, #ffffff 0%, #f4f6fb 100%);
+      padding: clamp(1.5rem, 3vw, 1.9rem);
       display: flex;
       flex-direction: column;
-      gap: 1.2rem;
+      gap: 1.1rem;
+      transition: border-color var(--transition-base), background var(--transition-base), transform var(--transition-base), box-shadow var(--transition-base);
       box-shadow: var(--shadow-soft);
-      transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
     }
     .plan-card:hover {
-      transform: translateY(-6px);
-      border-color: var(--brand-primary);
+      border-color: color-mix(in srgb, var(--brand-primary) 35%, var(--brand-border));
+      background: #ffffff;
+      transform: translateY(-4px);
       box-shadow: var(--shadow-hover);
     }
     .plan-card-highlight {
-      background: linear-gradient(145deg, rgba(15,82,186,.12), rgba(255,255,255,.92));
-      border-color: color-mix(in srgb, var(--brand-primary) 35%, #ffffff);
+      background: rgba(236, 242, 255, 0.65);
+      border-color: color-mix(in srgb, var(--brand-primary) 45%, var(--brand-border));
     }
     .plan-header p { font-size: .9rem; }
     .plan-list {
@@ -354,10 +363,10 @@ import { NgClass, NgFor } from '@angular/common';
     .cashback-item {
       display: flex;
       gap: 1rem;
-      padding: .9rem 1.1rem;
-      border-radius: var(--brand-radius-sm);
-      border: 1.5px solid var(--brand-border);
-      background: var(--brand-cloud);
+      padding: .85rem 1rem;
+      border-radius: var(--brand-radius-md);
+      border: 1px solid var(--brand-border);
+      background: linear-gradient(180deg, #ffffff 0%, #f4f6fb 100%);
       box-shadow: var(--shadow-soft);
     }
     .item-icon {
@@ -366,9 +375,9 @@ import { NgClass, NgFor } from '@angular/common';
       justify-content: center;
       width: 42px;
       height: 42px;
-      border-radius: 14px;
-      background: color-mix(in srgb, var(--brand-primary) 16%, #ffffff);
-      color: var(--brand-primary-dark);
+      border-radius: var(--brand-radius-sm);
+      background: rgba(236, 242, 255, 0.7);
+      color: var(--brand-primary);
       font-family: var(--font-display);
       font-size: 1rem;
       letter-spacing: .08em;
@@ -376,43 +385,35 @@ import { NgClass, NgFor } from '@angular/common';
 
     .testimonials {
       display: grid;
-      gap: 1.2rem;
+      gap: 1.1rem;
     }
     .testimonial {
-      padding: 1.4rem 1.6rem;
-      border-radius: var(--brand-radius-md);
-      border: 1.5px solid var(--brand-border);
-      background: rgba(255,255,255,.94);
+      padding: 1.3rem 1.5rem;
+      border-radius: var(--brand-radius-lg);
+      border: 1px solid var(--brand-border);
+      background: linear-gradient(180deg, #ffffff 0%, #f5f6fb 100%);
       box-shadow: var(--shadow-soft);
     }
 
-    @media (max-width: 991.98px) {
-      .services-hero { border-radius: 18px; }
-      .hero-card { margin-top: 2rem; }
-    }
     @media (max-width: 767.98px) {
       .plan-footer { flex-direction: column; align-items: flex-start; }
       .hero-metrics { gap: .8rem; }
       .metric { flex: 1 1 45%; }
     }
 
+    :host-context([data-bs-theme='dark']) .hero-card,
     :host-context([data-bs-theme='dark']) .service-card,
     :host-context([data-bs-theme='dark']) .plan-card,
     :host-context([data-bs-theme='dark']) .cashback-item,
     :host-context([data-bs-theme='dark']) .testimonial,
-    :host-context([data-bs-theme='dark']) .plans,
-    :host-context([data-bs-theme='dark']) .service-grid {
-      background: rgba(10,16,32,.94);
-      border-color: rgba(92,108,148,.4);
-      box-shadow: 0 30px 70px rgba(4,10,24,.75);
-      color: #e7e9f2;
+    :host-context([data-bs-theme='dark']) .plans {
+      background: var(--brand-cloud);
+      border-color: var(--brand-border);
+      color: var(--brand-ink);
     }
     :host-context([data-bs-theme='dark']) .plan-card-highlight {
-      background: linear-gradient(145deg, rgba(15,82,186,.26), rgba(10,16,32,.92));
-    }
-    :host-context([data-bs-theme='dark']) .plan-list { color: rgba(231,233,242,.78); }
-    :host-context([data-bs-theme='dark']) .testimonial {
-      background: rgba(12,18,36,.92);
+      background: var(--surface-subtle);
+      border-color: var(--brand-primary);
     }
   `]
 })

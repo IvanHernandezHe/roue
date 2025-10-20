@@ -99,7 +99,11 @@ public static class DataSeeder
             if (existingSkus.Contains(s.sku)) continue;
             var brand = await EnsureBrandAsync(s.brand);
             var product = new Product(s.sku, brand.Id, s.model, s.size, s.price, tires.Id);
-            var imgs = System.Text.Json.JsonSerializer.Serialize(new[] { "/assets/pzero-1_80.jpg", "/assets/pzero-1_80.jpg", "/assets/pzero-1_80.jpg" });
+            var imgs = System.Text.Json.JsonSerializer.Serialize(new[] {
+                "/assets/product/fallback/default-tire.jpg",
+                "/assets/product/fallback/default-tire.jpg",
+                "/assets/product/fallback/default-tire.jpg"
+            });
             typeof(Product).GetProperty(nameof(Product.ImagesJson))?.SetValue(product, imgs);
             db.Products.Add(product);
             var type = s.size.Contains("R") && s.size.Contains("70") ? "CAMIONETA" : "AUTO";
@@ -122,7 +126,7 @@ public static class DataSeeder
             if (existingSkus.Contains(r.sku)) continue;
             var brand = await EnsureBrandAsync(r.brand);
             var product = new Product(r.sku, brand.Id, r.model, r.size, r.price, rims.Id);
-            typeof(Product).GetProperty(nameof(Product.ImagesJson))?.SetValue(product, System.Text.Json.JsonSerializer.Serialize(new[] { "/assets/pzero-1_80.jpg" }));
+            typeof(Product).GetProperty(nameof(Product.ImagesJson))?.SetValue(product, System.Text.Json.JsonSerializer.Serialize(new[] { "/assets/product/fallback/default-tire.jpg" }));
             db.Products.Add(product);
             db.RimSpecs.Add(new RimSpecs(product.Id, r.dia, r.width, r.pattern, r.offset, r.cbore, r.material, r.finish));
             db.Inventory.Add(new InventoryItem(product.Id, r.stock));
@@ -156,7 +160,11 @@ public static class DataSeeder
         var productsNoImages = await db.Products.Where(p => p.ImagesJson == null).ToListAsync();
         foreach (var p in productsNoImages)
         {
-            var imgs = System.Text.Json.JsonSerializer.Serialize(new[] { "/assets/pzero-1_80.jpg", "/assets/pzero-1_80.jpg", "/assets/pzero-1_80.jpg" });
+            var imgs = System.Text.Json.JsonSerializer.Serialize(new[] {
+                "/assets/product/fallback/default-tire.jpg",
+                "/assets/product/fallback/default-tire.jpg",
+                "/assets/product/fallback/default-tire.jpg"
+            });
             typeof(Product).GetProperty(nameof(Product.ImagesJson))?.SetValue(p, imgs);
         }
         if (productsNoImages.Count > 0) await db.SaveChangesAsync();

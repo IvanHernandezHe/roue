@@ -93,7 +93,12 @@ internal static class SeedData
                 size = tire.Size,
                 category = "llantas",
                 price = tire.Price,
-                images = new[] { "/assets/pzero-1_80.jpg", "/assets/pzero-1_80.jpg", "/assets/pzero-1_80.jpg" },
+                images = new[]
+                {
+                    "/assets/product/fallback/default-tire.jpg",
+                    "/assets/product/fallback/default-tire.jpg",
+                    "/assets/product/fallback/default-tire.jpg"
+                },
                 specs = new ProductSpecs
                 {
                     kind = "tire",
@@ -128,7 +133,7 @@ internal static class SeedData
                 size = rim.Size,
                 category = "rines",
                 price = rim.Price,
-                images = new[] { "/assets/pzero-1_80.jpg" },
+                images = new[] { "/assets/product/fallback/default-tire.jpg" },
                 specs = new ProductSpecs
                 {
                     kind = "rim",

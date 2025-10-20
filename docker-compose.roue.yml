@@ -1,5 +1,7 @@
 name: roue
 services:
+  # To expose the stack on your intranet, copy .env.intranet.example to .env.intranet
+  # (or .env) and set PUBLIC_WEB_ORIGIN to the host you will share.
   postgres:
     image: postgres:16-alpine
     container_name: roue-postgres
@@ -43,10 +45,14 @@ services:
       Database__ResetOnStart: "false"
 
       Payments__Provider: Stripe
-      Stripe__ApiKey:
-      Stripe__PublishableKey:
+      Stripe__ApiKey: ${STRIPE__APIKEY:-}
+      Stripe__PublishableKey: ${STRIPE__PUBLISHABLEKEY:-}
       # With frontend decoupled, Stripe should return to the web app origin
-      Stripe__ReturnUrlBase: http://localhost:4200
+      Stripe__ReturnUrlBase: ${PUBLIC_WEB_ORIGIN:-http://localhost:4200}
+      Cors__Origins__0: ${PUBLIC_WEB_ORIGIN:-http://localhost:4200}
+      Cors__Origins__1: http://localhost:4200
+      Auth__ResetPasswordUrl: ${PUBLIC_WEB_ORIGIN:-http://localhost:4200}/auth
+      Auth__ConfirmEmailUrl: ${PUBLIC_WEB_ORIGIN:-http://localhost:4200}/auth
 
       # (opcionales / redundantes, puedes limpiarlos si no se usan)
       DATABASE_HOST: postgres

@@ -8,15 +8,30 @@ import { ThemeService } from '../../../core/theme.service';
   imports: [RouterLink],
   styles: [`
     footer { width: 100%; }
-    .footer a { color: rgba(255,255,255,.88); text-decoration: none; transition: color .18s ease, opacity .18s ease; }
+    .footer {
+      background: var(--brand-cream);
+      color: var(--brand-ink-soft);
+      border-top: 1px solid var(--brand-border);
+    }
+    .footer a { color: inherit; text-decoration: none; transition: color var(--transition-base); }
     .footer a:hover,
-    .footer a:focus { color: #fff; opacity: 1; text-decoration: underline; }
-    .footer h6 { letter-spacing: .08em; text-transform: uppercase; font-weight: 700; font-size: .8rem; margin-bottom: 1rem; }
-    .muted { color: rgba(255,255,255,.65); }
+    .footer a:focus { color: var(--brand-primary); text-decoration: underline; }
+    .footer h6 { letter-spacing: .08em; text-transform: uppercase; font-weight: 700; font-size: .78rem; margin-bottom: 1rem; }
+    .muted { color: var(--brand-muted); }
     .theme-toggle { align-items: center; display: flex; gap: .5rem; }
-    .btn-outline-light { border-radius: 999px; border: 1.5px solid rgba(255,255,255,.35); }
+    .btn-outline-light {
+      border-radius: var(--brand-radius-sm);
+      border: 1px solid var(--brand-border);
+      background: var(--brand-cloud);
+      color: var(--brand-ink);
+      transition: background var(--transition-base), color var(--transition-base), border-color var(--transition-base);
+    }
     .btn-outline-light:hover,
-    .btn-outline-light:focus { background: rgba(255,255,255,.12); color: #fff; border-color: rgba(255,255,255,.65); }
+    .btn-outline-light:focus {
+      background: var(--surface-subtle);
+      border-color: var(--brand-primary);
+      color: var(--brand-primary);
+    }
   `],
   template: `
   <footer class="footer bg-dark text-light mt-5">

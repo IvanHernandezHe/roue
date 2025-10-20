@@ -26,7 +26,7 @@ import { CartStore } from '../../state/cart.store';
               <tr *ngFor="let w of list">
                 <td>
                   <div class="d-flex align-items-center gap-2">
-                    <img [src]="w.imageUrl || '/assets/pzero-1_80.jpg'" [alt]="w.productName" class="cart-thumb" loading="lazy"/>
+                    <img [src]="w.imageUrl || '/assets/product/fallback/default-tire.jpg'" [alt]="w.productName" class="cart-thumb" loading="lazy"/>
                     <div>
                       <a [routerLink]="['/product', w.productId]" class="link-underline link-underline-opacity-0">{{ w.productName }}</a>
                       <small class="text-muted d-block">SKU {{ w.productSku }}</small>
@@ -50,7 +50,7 @@ import { CartStore } from '../../state/cart.store';
             <div class="col-12" *ngFor="let w of list">
               <div class="card p-2">
                 <div class="d-flex gap-2 align-items-center">
-                  <img [src]="w.imageUrl || '/assets/pzero-1_80.jpg'" [alt]="w.productName" class="cart-thumb" style="width:64px;height:64px" loading="lazy"/>
+                  <img [src]="w.imageUrl || '/assets/product/fallback/default-tire.jpg'" [alt]="w.productName" class="cart-thumb" style="width:64px;height:64px" loading="lazy"/>
                   <div class="flex-grow-1">
                     <a [routerLink]="['/product', w.productId]" class="fw-semibold text-decoration-none">{{ w.productName }}</a>
                     <div class="small text-muted">SKU {{ w.productSku }}</div>

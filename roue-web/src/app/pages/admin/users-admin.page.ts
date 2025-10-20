@@ -11,10 +11,25 @@ import { AuthStore } from '../../state/auth.store';
   styles: [`
     :host { display: block; }
     .users-admin h2 { font-family: var(--font-display); }
-    .users-admin .card { border-radius: 1rem; border: 1px solid rgba(0,0,0,.07); box-shadow: 0 4px 24px rgba(15,23,42,.05); }
-    .users-admin .control-surface { background: linear-gradient(180deg, rgba(248, 249, 252, 0.8), #ffffff); }
-    .users-admin .filter-chip { border: 1px solid rgba(0,0,0,.08); border-radius: 999px; padding: .25rem .9rem; background: transparent; color: #4b5563; font-weight: 600; }
-    .users-admin .filter-chip.active { background: #111827; color: #fff; border-color: #111827; }
+    .users-admin .card {
+      border-radius: var(--brand-radius-lg);
+      border: 1px solid var(--brand-border);
+      box-shadow: var(--shadow-soft);
+      background: linear-gradient(180deg, #ffffff 0%, #f4f6fb 100%);
+    }
+    .users-admin .control-surface { background: var(--brand-cloud); }
+    .users-admin .filter-chip {
+      border: 1px solid var(--brand-border);
+      border-radius: var(--brand-radius-sm);
+      padding: .25rem .9rem;
+      background: #ffffff;
+      color: var(--brand-ink-soft);
+      font-weight: 600;
+      transition: border-color .18s ease, background .18s ease, color .18s ease, box-shadow var(--transition-base);
+      box-shadow: var(--shadow-soft);
+    }
+    .users-admin .filter-chip:hover { border-color: color-mix(in srgb, var(--brand-primary) 35%, var(--brand-border)); color: var(--brand-primary); box-shadow: var(--shadow-hover); }
+    .users-admin .filter-chip.active { background: rgba(236, 242, 255, 0.75); color: var(--brand-primary); border-color: color-mix(in srgb, var(--brand-primary) 45%, var(--brand-border)); }
     .users-admin .user-grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; }
     @media (min-width: 992px) { .users-admin .user-grid { grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); } }
     table { margin: 0; }
@@ -27,9 +42,19 @@ import { AuthStore } from '../../state/auth.store';
     .status-dot.idle { background: #f59e0b; }
     .detail-layout { display: flex; flex-direction: column; gap: 1.25rem; }
     .detail-header { display: flex; flex-direction: column; gap: .35rem; }
-    .tag { display: inline-flex; align-items: center; gap: .35rem; border-radius: 999px; padding: .35rem .8rem; font-size: .8rem; background: rgba(15,23,42,.08); color: #1f2937; }
-    .tag.success { background: rgba(34,197,94,.12); color: #15803d; }
-    .tag.warning { background: rgba(245,158,11,.15); color: #b45309; }
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: .35rem;
+      border-radius: var(--brand-radius-sm);
+      padding: .35rem .8rem;
+      font-size: .8rem;
+      background: rgba(236, 242, 255, 0.7);
+      color: #1f2937;
+      border: 1px solid var(--brand-border);
+    }
+    .tag.success { background: rgba(34,197,94,.1); color: #15803d; }
+    .tag.warning { background: rgba(245,158,11,.12); color: #b45309; }
     .tag.danger { background: rgba(239,68,68,.12); color: #b91c1c; }
     .actions-grid { display: grid; gap: .6rem; }
     @media (min-width: 576px) { .actions-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }

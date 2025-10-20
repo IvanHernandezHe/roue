@@ -17,10 +17,10 @@ import { ApiService } from '../../core/api.service';
     .profile-container { display: grid; gap: 1.8rem; }
     .profile-shell {
       border-radius: var(--brand-radius-lg);
-      border: 1.5px solid var(--brand-border);
-      background: rgba(255,255,255,.94);
-      box-shadow: var(--shadow-soft);
+      border: 1px solid var(--brand-border);
+      background: linear-gradient(180deg, #ffffff 0%, #f4f6fb 100%);
       overflow: hidden;
+      box-shadow: var(--shadow-soft);
     }
     .profile-header {
       display: flex;
@@ -28,15 +28,15 @@ import { ApiService } from '../../core/api.service';
       align-items: center;
       gap: 1rem;
       padding: 1.6rem 1.8rem;
-      background: linear-gradient(120deg, color-mix(in srgb, var(--brand-primary) 8%, #ffffff), rgba(255,255,255,.96));
-      border-bottom: 1.5px solid var(--brand-border);
+      background: var(--brand-cream);
+      border-bottom: 1px solid var(--brand-border);
     }
     .profile-meta small { color: var(--brand-muted); }
     .profile-tabs {
       display: flex;
       gap: .4rem;
       padding: .6rem 1.6rem 0;
-      border-bottom: 1.5px solid var(--brand-border);
+      border-bottom: 1px solid var(--brand-border);
       flex-wrap: wrap;
     }
     .tab-btn {
@@ -46,14 +46,13 @@ import { ApiService } from '../../core/api.service';
       font-weight: 600;
       color: var(--brand-muted);
       border-bottom: 3px solid transparent;
-      border-radius: .4rem .4rem 0 0;
       transition: color .18s ease, border-color .18s ease, background .18s ease;
     }
     .tab-btn:hover { color: var(--brand-primary); }
     .tab-btn.active {
       color: var(--brand-primary);
       border-color: var(--brand-primary);
-      background: rgba(15,82,186,.08);
+      background: var(--surface-subtle);
     }
     .profile-body {
       padding: 1.8rem;
@@ -62,36 +61,37 @@ import { ApiService } from '../../core/api.service';
     }
     .section-card {
       border-radius: var(--brand-radius-md);
-      border: 1.5px solid var(--brand-border);
-      background: var(--brand-cloud);
+      border: 1px solid var(--brand-border);
+      background: linear-gradient(180deg, #ffffff 0%, #f5f6fb 100%);
       padding: 1.4rem 1.6rem;
-      box-shadow: 0 12px 32px rgba(15,26,67,.08);
+      box-shadow: var(--shadow-soft);
     }
     .pref-group {
       border-radius: var(--brand-radius-md);
-      border: 1.5px solid var(--brand-border);
+      border: 1px solid var(--brand-border);
       padding: 1.1rem;
-      background: rgba(255,255,255,.98);
-      box-shadow: 0 10px 24px rgba(15,26,67,.08);
+      background: linear-gradient(180deg, #ffffff 0%, #f5f6fb 100%);
+      box-shadow: var(--shadow-soft);
     }
     .pref-title { font-weight: 700; letter-spacing: .02em; margin-bottom: .4rem; }
     .address-card {
-      border: 1.5px solid var(--brand-border);
+      border: 1px solid var(--brand-border);
       border-radius: var(--brand-radius-md);
       padding: 1.1rem;
-      background: rgba(255,255,255,.96);
-      box-shadow: 0 12px 28px rgba(15,26,67,.06);
+      background: linear-gradient(180deg, #ffffff 0%, #f4f6fb 100%);
+      box-shadow: var(--shadow-soft);
     }
     .address-card.is-default {
       border-color: var(--brand-primary);
-      box-shadow: 0 16px 36px rgba(15,82,186,.18);
+      background: var(--surface-subtle);
     }
     .orders-table table {
-      background: rgba(255,255,255,.96);
+      background: var(--brand-cloud);
       border-radius: var(--brand-radius-md);
       overflow: hidden;
+      box-shadow: var(--shadow-soft);
     }
-    .orders-table thead { background: color-mix(in srgb, var(--brand-primary) 6%, #ffffff); }
+    .orders-table thead { background: var(--surface-subtle); }
     .orders-table th { font-weight: 600; color: var(--brand-muted); }
     .summary-banner {
       display: grid;
@@ -103,9 +103,9 @@ import { ApiService } from '../../core/api.service';
       align-items: center;
       gap: .35rem;
       padding: .35rem .8rem;
-      border-radius: 999px;
-      border: 1.5px solid var(--brand-border);
-      background: rgba(255,255,255,.92);
+      border-radius: var(--brand-radius-sm);
+      border: 1px solid var(--brand-border);
+      background: #ffffff;
       font-weight: 600;
       letter-spacing: .04em;
       color: var(--brand-primary-dark);
@@ -113,11 +113,12 @@ import { ApiService } from '../../core/api.service';
     .form-label { font-weight: 600; }
     .form-control, .form-select {
       border-radius: var(--brand-radius-sm);
-      border: 1.5px solid var(--brand-border);
+      border: 1px solid var(--brand-border);
+      box-shadow: inset 0 1px 2px rgba(16, 22, 34, 0.05);
     }
     .form-control:focus, .form-select:focus {
       border-color: var(--brand-primary);
-      box-shadow: 0 0 0 .2rem color-mix(in srgb, var(--brand-primary) 18%, transparent);
+      box-shadow: 0 0 0 4px rgba(29, 111, 200, 0.12);
       background: #fff;
     }
     .btn-outline-danger {

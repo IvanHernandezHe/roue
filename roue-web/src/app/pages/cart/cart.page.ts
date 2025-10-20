@@ -18,66 +18,70 @@ import { forkJoin, switchMap } from 'rxjs';
   <section class="container my-4">
     <h2>Carrito</h2>
     <!-- Coupon -->
-    <div class="row g-2 align-items-center mb-3">
-      <div class="col-12 col-md-6 d-flex gap-2">
-        <input class="form-control" placeholder="Cupón de descuento" [(ngModel)]="coupon" name="coupon"/>
-        <button class="btn btn-outline-dark" (click)="applyCoupon()">Aplicar</button>
-        <button class="btn btn-outline-secondary" *ngIf="cart.coupon()" (click)="removeCoupon()">Quitar</button>
+    <div class="row g-2 align-items-center mb-3 cart-coupon-row">
+      <div class="col-12 col-md-6 d-flex flex-column flex-sm-row gap-2">
+        <input class="form-control flex-grow-1" placeholder="Cupón de descuento" [(ngModel)]="coupon" name="coupon"/>
+        <button class="btn btn-outline-dark w-100 w-sm-auto" (click)="applyCoupon()">Aplicar</button>
+        <button class="btn btn-outline-secondary w-100 w-sm-auto" *ngIf="cart.coupon()" (click)="removeCoupon()">Quitar</button>
       </div>
       <div class="col-12 col-md-6 text-md-end" *ngIf="cart.coupon() as c">
         <small class="text-muted">Cupón aplicado: <strong>{{ c.code }}</strong></small>
       </div>
     </div>
-    <table class="table align-middle" *ngIf="cart.items().length; else empty">
-      <thead><tr><th>Producto</th><th style="width: 200px;">Cantidad</th><th>Importe</th><th></th></tr></thead>
-      <tbody>
-        <tr *ngFor="let i of cart.items()">
-          <td>
-            <div class="d-flex align-items-center gap-2">
-              <img [src]="i.imageUrl || '/assets/pzero-1_80.jpg'" [alt]="i.name" class="cart-thumb" loading="lazy"/>
-              <div>
-                {{ i.name }}
-                <small class="text-muted d-block">SKU {{ i.sku }}</small>
-                <small class="text-muted" *ngIf="i.stock !== undefined">Quedan {{ i.stock }}</small>
-              </div>
-            </div>
-          </td>
-          <td>
-            <div class="btn-group" role="group" aria-label="cantidad">
-              <button class="btn btn-outline-secondary" (click)="dec(i.productId)">−</button>
-              <button class="btn btn-light" disabled>{{ i.qty }}</button>
-              <button class="btn btn-outline-secondary" (click)="inc(i.productId)" [disabled]="i.stock && i.qty >= i.stock">+</button>
-            </div>
-          </td>
-          <td>{{ (i.price * i.qty) | currency:'MXN' }}</td>
-          <td><button class="btn btn-sm btn-outline-danger" (click)="remove(i.productId)">Quitar</button></td>
-        </tr>
-      </tbody>
-    </table>
+    <ng-container *ngIf="cart.items().length; else empty">
+      <div class="table-responsive cart-table-wrapper">
+        <table class="table align-middle cart-table">
+          <thead><tr><th>Producto</th><th style="width: 200px;">Cantidad</th><th>Importe</th><th></th></tr></thead>
+          <tbody>
+            <tr *ngFor="let i of cart.items()">
+              <td>
+                <div class="d-flex align-items-center gap-2">
+                  <img [src]="i.imageUrl || '/assets/product/fallback/default-tire.jpg'" [alt]="i.name" class="cart-thumb" loading="lazy"/>
+                  <div>
+                    {{ i.name }}
+                    <small class="text-muted d-block">SKU {{ i.sku }}</small>
+                    <small class="text-muted" *ngIf="i.stock !== undefined">Quedan {{ i.stock }}</small>
+                  </div>
+                </div>
+              </td>
+              <td data-label="Cantidad">
+                <div class="btn-group cart-qty-group" role="group" aria-label="cantidad">
+                  <button class="btn btn-outline-secondary" (click)="dec(i.productId)">−</button>
+                  <button class="btn btn-light" disabled>{{ i.qty }}</button>
+                  <button class="btn btn-outline-secondary" (click)="inc(i.productId)" [disabled]="i.stock && i.qty >= i.stock">+</button>
+                </div>
+              </td>
+              <td data-label="Importe">{{ (i.price * i.qty) | currency:'MXN' }}</td>
+              <td data-label="Acciones" class="text-end text-md-start"><button class="btn btn-sm btn-outline-danger cart-remove-btn" (click)="remove(i.productId)">Quitar</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </ng-container>
     <ng-template #empty>
       <div class="alert alert-info">Tu carrito está vacío.</div>
     </ng-template>
 
-    <div class="d-flex justify-content-between align-items-center mt-3 gap-2">
-      <div>
+    <div class="d-flex flex-column flex-lg-row justify-content-between align-items-stretch align-items-lg-center mt-3 gap-3 cart-summary">
+      <div class="cart-totals">
         <div><strong>Subtotal: {{ cart.subtotal() | currency:'MXN' }}</strong></div>
         <div *ngIf="cart.estimateDiscount() > 0" class="text-success">Descuento estimado: −{{ cart.estimateDiscount() | currency:'MXN' }}</div>
         <div>Total estimado: <strong>{{ (cart.subtotal() - cart.estimateDiscount()) | currency:'MXN' }}</strong></div>
       </div>
-      <div class="d-flex gap-2">
-        <button class="btn btn-outline-danger" (click)="clearConfirm()" [disabled]="cart.items().length===0">Vaciar</button>
-        <a class="btn btn-dark" routerLink="/checkout" [class.disabled]="cart.items().length===0">Ir a pagar</a>
+      <div class="d-flex flex-column flex-sm-row gap-2 cart-summary-actions">
+        <button class="btn btn-outline-danger w-100 w-sm-auto" (click)="clearConfirm()" [disabled]="cart.items().length===0">Vaciar</button>
+        <a class="btn btn-dark w-100 w-sm-auto" routerLink="/checkout" [class.disabled]="cart.items().length===0">Ir a pagar</a>
       </div>
     </div>
   </section>
 
   <!-- Saved for later -->
   <section class="container mb-5" *ngIf="auth.isAuthenticated()">
-    <div class="d-flex justify-content-between align-items-center">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3 mb-3">
       <h3 class="h5 m-0">Guardados para después</h3>
-      <div class="d-flex gap-2">
-        <button class="btn btn-sm btn-outline-dark" (click)="moveAllSavedToCart()" [disabled]="saved.length===0">Mover todos</button>
-        <button class="btn btn-sm btn-outline-secondary" (click)="clearAllSaved()" [disabled]="saved.length===0">Quitar todos</button>
+      <div class="d-flex flex-column flex-sm-row gap-2 w-100 w-sm-auto saved-actions">
+        <button class="btn btn-sm btn-outline-dark w-100 w-sm-auto" (click)="moveAllSavedToCart()" [disabled]="saved.length===0">Mover todos</button>
+        <button class="btn btn-sm btn-outline-secondary w-100 w-sm-auto" (click)="clearAllSaved()" [disabled]="saved.length===0">Quitar todos</button>
       </div>
     </div>
     <div *ngIf="saved.length; else noneSaved">
@@ -88,7 +92,7 @@ import { forkJoin, switchMap } from 'rxjs';
             <tr *ngFor="let w of saved">
               <td>
                 <div class="d-flex align-items-center gap-2">
-                  <img [src]="w.imageUrl || '/assets/pzero-1_80.jpg'" [alt]="w.productName" class="cart-thumb" loading="lazy"/>
+                  <img [src]="w.imageUrl || '/assets/product/fallback/default-tire.jpg'" [alt]="w.productName" class="cart-thumb" loading="lazy"/>
                   <div>
                     <a [routerLink]="['/product', w.productId]" class="link-underline link-underline-opacity-0">{{ w.productName }}</a>
                     <small class="text-muted d-block">SKU {{ w.productSku }}</small>

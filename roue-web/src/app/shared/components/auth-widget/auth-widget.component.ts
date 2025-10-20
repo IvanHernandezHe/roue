@@ -15,29 +15,104 @@ type AuthMode = 'login' | 'register' | 'forgot' | 'reset' | 'confirm';
   selector: 'app-auth-widget',
   imports: [FormsModule, NgIf, NgClass],
   styles: [`
-    .auth-card { border-radius: 1.25rem; border: 1px solid rgba(15,23,42,.08); box-shadow: 0 18px 36px rgba(15,23,42,.08); backdrop-filter: blur(12px); }
-    .mode-tabs { display: inline-flex; border-radius: 999px; background: rgba(15,23,42,.06); padding: .35rem; }
-    .mode-btn { border: 0; background: transparent; padding: .45rem 1.4rem; border-radius: 999px; font-weight: 600; color: #64748b; transition: all .18s ease; }
-    .mode-btn.active { background: #111827; color: #fff; box-shadow: 0 6px 16px rgba(15,23,42,.25); }
-    .form-floating > label { color: #6b7280; }
-    .form-floating > .form-control { border-radius: .85rem; background: rgba(248,249,252,.84); border: 1px solid rgba(15,23,42,.08); }
-    .form-floating > .form-control:focus { background: #fff; border-color: rgba(59,130,246,.35); box-shadow: none; }
-    .input-affix { position: absolute; top: 50%; right: .9rem; transform: translateY(-50%); border: none; background: transparent; color: #6b7280; }
-    .input-affix:hover { color: #111827; }
+    .auth-card {
+      border-radius: var(--brand-radius-lg);
+      border: 1px solid var(--brand-border);
+      background: linear-gradient(180deg, #ffffff 0%, #f4f6fb 100%);
+      box-shadow: var(--shadow-soft);
+    }
+    .mode-tabs {
+      display: inline-flex;
+      gap: .25rem;
+      background: rgba(236, 242, 255, 0.6);
+      padding: .35rem;
+      border-radius: var(--brand-radius-sm);
+    }
+    .mode-btn {
+      border: 0;
+      background: transparent;
+      padding: .45rem 1.2rem;
+      border-radius: var(--brand-radius-sm);
+      font-weight: 600;
+      color: var(--brand-muted);
+      transition: background var(--transition-base), color var(--transition-base);
+    }
+    .mode-btn.active {
+      background: #ffffff;
+      color: var(--brand-ink);
+      border-bottom: 2px solid var(--brand-primary);
+    }
+    .form-floating > label { color: var(--brand-muted); }
+    .form-floating > .form-control {
+      border-radius: var(--brand-radius-sm);
+      background: #ffffff;
+      border: 1px solid var(--brand-border);
+      box-shadow: inset 0 1px 2px rgba(16, 22, 34, 0.05);
+    }
+    .form-floating > .form-control:focus {
+      background: #ffffff;
+      border-color: var(--brand-primary);
+      box-shadow: 0 0 0 4px rgba(29, 111, 200, 0.12);
+    }
+    .input-affix {
+      position: absolute;
+      top: 50%;
+      right: .9rem;
+      transform: translateY(-50%);
+      border: none;
+      background: transparent;
+      color: var(--brand-muted);
+    }
+    .input-affix:hover { color: var(--brand-ink); }
     .meta-row { display: flex; flex-direction: column; gap: .4rem; }
-    .access-link { background: transparent; border: none; padding: 0; color: var(--jdm-red); font-weight: 600; }
-    .divider { display: flex; align-items: center; gap: .75rem; color: #94a3b8; font-size: .85rem; }
-    .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: rgba(148, 163, 184, .35); }
-    .social-btn { border-radius: .9rem; border: 1px solid rgba(15,23,42,.12); background: #fff; padding: .65rem 1rem; font-weight: 600; display: inline-flex; justify-content: center; align-items: center; gap: .6rem; color: #111827; }
+    .access-link { background: transparent; border: none; padding: 0; color: var(--brand-primary); font-weight: 600; }
+    .divider { display: flex; align-items: center; gap: .75rem; color: var(--brand-muted); font-size: .85rem; }
+    .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--brand-border); }
+    .social-btn {
+      border-radius: var(--brand-radius-sm);
+      border: 1px solid var(--brand-border);
+      background: #ffffff;
+      padding: .65rem 1rem;
+      font-weight: 600;
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      gap: .6rem;
+      color: var(--brand-ink);
+      transition: border-color var(--transition-base), background var(--transition-base), color var(--transition-base);
+    }
+    .social-btn:hover:not(:disabled) {
+      border-color: var(--brand-primary);
+      background: var(--surface-subtle);
+      color: var(--brand-primary);
+    }
     .social-btn:disabled { opacity: .6; }
     .status { min-height: 1.5rem; font-size: .9rem; }
-    .logged-card { border-radius: 1rem; background: rgba(15,23,42,.04); border: 1px solid rgba(15,23,42,.08); }
-    :host-context([data-bs-theme="dark"]) .auth-card { background: rgba(17,24,39,.78); border-color: rgba(255,255,255,.08); box-shadow: 0 18px 38px rgba(0,0,0,.45); }
-    :host-context([data-bs-theme="dark"]) .mode-btn { color: #cbd5f5; }
-    :host-context([data-bs-theme="dark"]) .mode-btn.active { background: #fff; color: #0f172a; }
-    :host-context([data-bs-theme="dark"]) .form-floating > .form-control { background: rgba(15,23,42,.55); border-color: rgba(148,163,184,.25); color: #f8fafc; }
-    :host-context([data-bs-theme="dark"]) .form-floating > .form-control:focus { background: rgba(15,23,42,.85); border-color: rgba(59,130,246,.55); }
-    :host-context([data-bs-theme="dark"]) .social-btn { background: rgba(15,23,42,.65); color: #e2e8f0; border-color: rgba(148,163,184,.25); }
+    .logged-card {
+      border-radius: var(--brand-radius-lg);
+      background: linear-gradient(180deg, #ffffff 0%, #f4f6fb 100%);
+      border: 1px solid var(--brand-border);
+      box-shadow: var(--shadow-soft);
+    }
+    :host-context([data-bs-theme="dark"]) .auth-card {
+      background: var(--brand-cloud);
+      border-color: var(--brand-border);
+    }
+    :host-context([data-bs-theme="dark"]) .mode-btn { color: var(--brand-muted); }
+    :host-context([data-bs-theme="dark"]) .mode-btn.active { background: var(--brand-cloud); color: var(--brand-ink); }
+    :host-context([data-bs-theme="dark"]) .form-floating > .form-control {
+      background: var(--brand-cloud);
+      border-color: var(--brand-border);
+      color: var(--brand-ink);
+    }
+    :host-context([data-bs-theme="dark"]) .form-floating > .form-control:focus {
+      border-color: var(--brand-primary);
+    }
+    :host-context([data-bs-theme="dark"]) .social-btn {
+      background: var(--brand-cloud);
+      color: var(--brand-ink);
+      border-color: var(--brand-border);
+    }
   `],
   template: `
   <div class="auth-card p-4 p-lg-5">

@@ -14,24 +14,29 @@ import { LucideAngularModule } from 'lucide-angular';
   imports: [CurrencyPipe, RouterLink, NgIf, NgClass, LucideAngularModule],
   styles: [`
     .card {
-      border-radius: var(--brand-radius-lg, 26px);
-      border: 1.5px solid var(--brand-border, #d9dde7);
-      background: var(--brand-cloud, #fff);
-      padding: .6rem;
+      border-radius: var(--brand-radius-md);
+      border: 1px solid var(--brand-border);
+      background: linear-gradient(180deg, #ffffff 0%, #f7f8fb 100%);
+      padding: 1rem;
       display: flex;
       flex-direction: column;
-      gap: .75rem;
+      gap: .85rem;
+      box-shadow: var(--shadow-soft);
+      transition: transform var(--transition-base), box-shadow var(--transition-base), border-color var(--transition-base);
+      overflow: hidden;
     }
     .card:hover {
-      transform: translateY(-6px);
-      border-color: var(--brand-primary, #0f52ba);
-      box-shadow: 0 26px 52px rgba(15, 82, 186, .18);
+      border-color: color-mix(in srgb, var(--brand-primary) 35%, var(--brand-border));
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-hover);
     }
     .media {
       position: relative;
       overflow: hidden;
-      border-radius: calc(var(--brand-radius-lg, 26px) - 8px);
-      background: linear-gradient(165deg, color-mix(in srgb, var(--brand-primary, #0f52ba) 6%, #ffffff) 0%, #f9fbff 100%);
+      border: 1px solid var(--brand-border);
+      border-radius: var(--brand-radius-sm);
+      background: linear-gradient(135deg, #ffffff 0%, #f0f3f9 100%);
+      box-shadow: inset 0 1px 2px rgba(16, 22, 34, 0.05);
     }
     .media::before {
       content: '';
@@ -43,21 +48,31 @@ import { LucideAngularModule } from 'lucide-angular';
       inset: 0;
       width: 100%;
       height: 100%;
-      object-fit: contain;
-      padding: 1.1rem;
-      transition: transform .35s ease, opacity .25s ease;
-      transform: scale(.96);
+      object-fit: cover;
+      transition: transform .25s ease, opacity .35s ease, filter .45s ease;
+      will-change: transform, opacity, filter;
+      transform: scale(1);
+      opacity: 0;
+      filter: blur(10px);
     }
-    .card:hover .media img { transform: scale(1); }
-    .media img.loading { opacity: 0; }
+    .card:hover .media img { transform: scale(1.01); }
+    .media img.loading {
+      opacity: 0;
+      filter: blur(10px);
+      transform: scale(1.04);
+    }
+    .media img:not(.loading) {
+      opacity: 1;
+      filter: blur(0);
+    }
     .media .img-loader {
       position: absolute;
       inset: 0;
-      margin: .9rem;
-      border-radius: 1.3rem;
-      background: linear-gradient(120deg, rgba(215,219,232,.6) 0%, rgba(229,233,247,.25) 45%, rgba(255,255,255,.4) 70%);
+      margin: .75rem;
+      border-radius: var(--brand-radius-sm);
+      background: linear-gradient(120deg, rgba(209,213,219,.6) 0%, rgba(236,239,244,.3) 50%, rgba(255,255,255,.45) 100%);
       background-size: 200% 100%;
-      animation: shimmer 1.2s ease-in-out infinite;
+      animation: shimmer 1.1s ease-in-out infinite;
     }
     .brand-model {
       display: -webkit-box;
@@ -71,18 +86,44 @@ import { LucideAngularModule } from 'lucide-angular';
     .price {
       font-size: 1.2rem;
       font-weight: 700;
-      color: var(--brand-primary, #0f52ba);
+      color: var(--brand-primary);
     }
     .category-badge {
       position: absolute;
-      top: .75rem;
-      left: .75rem;
-      background: rgba(255,255,255,.82);
-      border: 1px solid color-mix(in srgb, var(--brand-primary, #0f52ba) 25%, #ffffff);
-      backdrop-filter: blur(6px);
+      top: .9rem;
+      left: .9rem;
+      background: rgba(255,255,255,0.92);
+      border: 1px solid color-mix(in srgb, var(--brand-border) 65%, transparent);
+      border-radius: var(--brand-radius-sm);
+      box-shadow: 0 4px 12px -8px rgba(16, 22, 34, 0.4);
+      padding: .35rem .7rem;
+      font-weight: 600;
+      letter-spacing: .05em;
+    }
+    :host-context([data-bs-theme='dark']) .card {
+      background: linear-gradient(180deg, rgba(20, 29, 46, 0.92) 0%, rgba(18, 25, 40, 0.88) 100%);
+      border-color: color-mix(in srgb, var(--brand-border) 60%, transparent);
+      box-shadow: 0 18px 42px -30px rgba(0,0,0,.8);
+    }
+    :host-context([data-bs-theme='dark']) .card:hover {
+      border-color: color-mix(in srgb, var(--brand-primary) 35%, var(--brand-border));
+      box-shadow: 0 26px 52px -32px rgba(15, 30, 60, .85);
     }
     :host-context([data-bs-theme='dark']) .media {
-      background: linear-gradient(165deg, rgba(15,82,186,.18) 0%, rgba(7,16,36,.85) 100%);
+      background: rgba(26, 34, 52, 0.95);
+      border-color: color-mix(in srgb, var(--brand-border) 60%, transparent);
+    }
+    :host-context([data-bs-theme='dark']) .media img:not(.loading) {
+      opacity: 1;
+      filter: blur(0);
+    }
+    :host-context([data-bs-theme='dark']) .media .img-loader {
+      background: linear-gradient(120deg, rgba(46,58,82,.6) 0%, rgba(46,58,82,.35) 50%, rgba(100,116,139,.25) 100%);
+    }
+    :host-context([data-bs-theme='dark']) .category-badge {
+      background: rgba(18, 26, 44, 0.95);
+      border-color: color-mix(in srgb, var(--brand-border) 60%, transparent);
+      color: var(--brand-ink);
     }
     .actions {
       display: flex;
@@ -98,25 +139,26 @@ import { LucideAngularModule } from 'lucide-angular';
       gap: .45rem;
     }
     .btn-fav {
-      border: 1.5px solid var(--brand-border, #d9dde7);
-      background: var(--brand-cloud, #fff);
-      color: var(--brand-ink-soft, #2f3344);
+      border: 1px solid var(--brand-border);
+      background: #ffffff;
+      color: var(--brand-ink-soft);
+      transition: border-color var(--transition-base), color var(--transition-base), background var(--transition-base), box-shadow var(--transition-base);
     }
     .btn-fav:hover,
     .btn-fav:focus {
-      border-color: var(--brand-primary, #0f52ba);
-      color: var(--brand-primary, #0f52ba);
-      background: color-mix(in srgb, var(--brand-primary, #0f52ba) 12%, #ffffff);
-      box-shadow: 0 16px 28px rgba(15, 82, 186, .16);
+      border-color: color-mix(in srgb, var(--brand-primary) 45%, var(--brand-border));
+      color: var(--brand-primary);
+      background: rgba(236, 244, 255, 0.5);
+      box-shadow: 0 12px 28px -20px rgba(13, 28, 54, 0.42);
     }
-    .stock-badge { align-self: flex-start; letter-spacing: .05em; border: 1.5px solid transparent; }
-    .stock-low { background: rgba(255, 99, 99, .15); color: #c22222; border-color: rgba(255, 99, 99, .4); }
-    .stock-mid { background: rgba(255, 184, 77, .18); color: #c2640e; border-color: rgba(255, 184, 77, .42); }
-    .stock-high { background: rgba(38, 170, 120, .18); color: #0f8b55; border-color: rgba(38, 170, 120, .38); }
+    .stock-badge { align-self: flex-start; letter-spacing: .05em; border: 1px solid transparent; }
+    .stock-low { background: rgba(255, 99, 99, .12); color: #b61a1a; border-color: rgba(255, 99, 99, .3); }
+    .stock-mid { background: rgba(255, 184, 77, .16); color: #a3540a; border-color: rgba(255, 184, 77, .35); }
+    .stock-high { background: rgba(38, 170, 120, .16); color: #0c7847; border-color: rgba(38, 170, 120, .32); }
     @keyframes shimmer { 0% { background-position: -180% 0; } 100% { background-position: 180% 0; } }
     .media .img-loader { background-size: 200% 100%; }
     :host-context([data-bs-theme='dark']) .media .img-loader {
-      background: linear-gradient(120deg, rgba(30,41,59,.7) 0%, rgba(30,41,59,.45) 40%, rgba(100,116,139,.25) 70%);
+      background: linear-gradient(120deg, rgba(30,41,59,.6) 0%, rgba(30,41,59,.35) 50%, rgba(100,116,139,.25) 100%);
     }
     @media (max-width: 575.98px) {
       .actions { flex-direction: column; }
@@ -124,8 +166,8 @@ import { LucideAngularModule } from 'lucide-angular';
   `],
   template: `
   <div class="card h-100 position-relative">
-    <span *ngIf="product?.category" class="badge rounded-pill text-bg-light position-absolute category-badge">{{ product!.category }}</span>
-    <a [routerLink]="['/product', product!.id]" class="media d-block" (mouseenter)="startHover()" (mouseleave)="stopHover()" (focus)="startHover()" (blur)="stopHover()">
+    <span *ngIf="(product?.category || '').trim().length" class="badge rounded-pill text-bg-light position-absolute category-badge">{{ product!.category }}</span>
+    <a [routerLink]="['/product', product!.id]" class="media d-block" (mouseenter)="startHover()" (mouseleave)="stopHover()" (focus)="startHover()" (blur)="stopHover()" (pointerdown)="onPointerDown($event)" (touchstart)="onTouchStart()">
       <img [src]="currentImage" [class.loading]="imageLoading" (load)="onImageLoad()" [attr.decoding]="'async'" loading="lazy" alt="{{product!.brand}} {{product!.modelName}}" />
       <div class="img-loader" *ngIf="imageLoading"></div>
     </a>
@@ -163,9 +205,10 @@ export class ProductCardComponent implements OnChanges, OnDestroy {
   #wishlist = inject(WishlistStore);
   #toast = inject(ToastService);
   #router = inject(Router);
-  private readonly fallbackImage = '/assets/pzero-1_80.jpg';
+  private readonly fallbackImage = '/assets/product/fallback/default-tire.jpg';
   private hoverTimer: any = null;
   private loadedImages = new Set<string>();
+  private static activeTouchCard: ProductCardComponent | null = null; // ensure only one touch carousel runs
   imageIndex = 0;
   currentImage = this.fallbackImage;
   imageLoading = true;
@@ -191,6 +234,19 @@ export class ProductCardComponent implements OnChanges, OnDestroy {
 
   ngOnDestroy(): void {
     this.clearHoverTimer();
+    if (ProductCardComponent.activeTouchCard === this) {
+      ProductCardComponent.activeTouchCard = null;
+    }
+  }
+
+  onPointerDown(event: PointerEvent) {
+    if (event.pointerType !== 'touch') return;
+    this.activateTouchCarousel();
+  }
+
+  onTouchStart() {
+    if (typeof window !== 'undefined' && 'PointerEvent' in window) return;
+    this.activateTouchCarousel();
   }
 
   startHover() {
@@ -224,10 +280,22 @@ export class ProductCardComponent implements OnChanges, OnDestroy {
   private setImage(index: number) {
     const imgs = this.gallery();
     const clamped = (index >= 0 && index < imgs.length) ? index : 0;
+    const nextSrc = imgs[clamped] ?? this.fallbackImage;
+    if (nextSrc === this.currentImage) {
+      this.imageIndex = clamped;
+      return;
+    }
+
     this.imageIndex = clamped;
-    const src = imgs[clamped] ?? this.fallbackImage;
-    this.currentImage = src;
-    this.imageLoading = !this.loadedImages.has(src);
+    const alreadyLoaded = this.loadedImages.has(nextSrc);
+    this.imageLoading = true;
+    this.currentImage = nextSrc;
+
+    if (alreadyLoaded) {
+      requestAnimationFrame(() => {
+        this.imageLoading = false;
+      });
+    }
   }
 
   private gallery(): string[] {
@@ -239,6 +307,25 @@ export class ProductCardComponent implements OnChanges, OnDestroy {
     if (this.hoverTimer) {
       clearInterval(this.hoverTimer);
       this.hoverTimer = null;
+    }
+  }
+
+  private activateTouchCarousel() {
+    if (ProductCardComponent.activeTouchCard && ProductCardComponent.activeTouchCard !== this) {
+      ProductCardComponent.activeTouchCard.stopTouchAutoScroll();
+    }
+    ProductCardComponent.activeTouchCard = this;
+    this.startTouchAutoScroll();
+  }
+
+  private startTouchAutoScroll() {
+    this.startHover();
+  }
+
+  private stopTouchAutoScroll() {
+    this.stopHover();
+    if (ProductCardComponent.activeTouchCard === this) {
+      ProductCardComponent.activeTouchCard = null;
     }
   }
 

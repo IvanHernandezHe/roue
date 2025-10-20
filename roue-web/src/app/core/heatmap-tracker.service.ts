@@ -18,14 +18,39 @@ interface PendingEvent {
 
 const HEATMAP_SESSION_KEY = 'roue-heatmap-session';
 
-function ensureSessionId(): string {
-  if (typeof window === 'undefined') return crypto.randomUUID();
-  let value = localStorage.getItem(HEATMAP_SESSION_KEY);
-  if (!value) {
-    value = crypto.randomUUID();
-    localStorage.setItem(HEATMAP_SESSION_KEY, value);
+function generateId(): string {
+  const scope = typeof globalThis !== 'undefined' ? globalThis : (typeof window !== 'undefined' ? window : undefined);
+  const native = scope?.crypto;
+  if (native?.randomUUID) {
+    return native.randomUUID();
   }
-  return value;
+  if (native?.getRandomValues) {
+    const buffer = native.getRandomValues(new Uint8Array(16));
+    buffer[6] = (buffer[6] & 0x0f) | 0x40;
+    buffer[8] = (buffer[8] & 0x3f) | 0x80;
+    const segments = [
+      buffer.slice(0, 4),
+      buffer.slice(4, 6),
+      buffer.slice(6, 8),
+      buffer.slice(8, 10),
+      buffer.slice(10, 16)
+    ];
+    return segments.map((segment) => Array.from(segment).map((b) => b.toString(16).padStart(2, '0')).join('')).join('-');
+  }
+  return `hm-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 11)}`;
+}
+
+function ensureSessionId(): string {
+  if (typeof window === 'undefined') return generateId();
+  try {
+    const existing = localStorage.getItem(HEATMAP_SESSION_KEY);
+    if (existing) return existing;
+    const created = generateId();
+    localStorage.setItem(HEATMAP_SESSION_KEY, created);
+    return created;
+  } catch {
+    return generateId();
+  }
 }
 
 @Injectable({ providedIn: 'root' })

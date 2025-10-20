@@ -198,6 +198,62 @@ import { Component } from '@angular/core';
         </div>
       </section>
 
+      <section class="map-section py-5 bg-body">
+        <div class="container">
+          <div class="row justify-content-center mb-4 mb-lg-5 text-center text-lg-start">
+            <div class="col-lg-8">
+              <span class="sticker sticker-red mb-3 d-inline-flex align-items-center gap-2">
+                <span class="badge-dot"></span>
+                Sucursales
+              </span>
+              <h2 class="section-title display-6 mb-3">Encuentra tu sucursal más cercana</h2>
+              <p class="text-muted mb-0">
+                Nuestra base de operaciones se localiza al sur de Monterrey con cobertura metropolitana y envíos
+                nacionales. Visítanos para asesoría especializada o agenda una cita con nuestros técnicos.
+              </p>
+            </div>
+          </div>
+          <div class="map-toolbar rounded-4 shadow-sm mb-3 mb-lg-4">
+            <div class="toolbar-location">
+              <strong>Av. Eugenio Garza Sada #4446 Las Brisas, Monterrey, N.L.</strong>
+              <span class="toolbar-meta">Lunes a sábado · 09:00 a 19:00 h</span>
+            </div>
+            <div class="toolbar-actions">
+              <a class="btn btn-sm btn-outline-secondary" href="tel:+528112345678">Llamar</a>
+              <a class="btn btn-sm btn-primary" target="_blank" rel="noopener" href="https://maps.google.com/?q=Av.+Eugenio+Garza+Sada+4446+Las+Brisas,+Monterrey,+NL">
+                Abrir en Google Maps
+              </a>
+            </div>
+          </div>
+          <div class="map-frame shadow-lg">
+            <iframe
+              title="Ubicación Roue Performance Monterrey"
+              loading="lazy"
+              allowfullscreen
+              referrerpolicy="no-referrer-when-downgrade"
+              src="https://maps.google.com/maps?q=Av.%20Eugenio%20Garza%20Sada%204446%20Las%20Brisas,%20Monterrey%20NL&z=13&output=embed">
+            </iframe>
+            <div class="map-info-card">
+              <h3 class="h6 mb-1 text-uppercase">Roue Performance · Matriz</h3>
+              <p class="mb-2 small text-muted">
+                Atención personalizada, montaje certificado y almacén con inventario inmediato.
+              </p>
+              <ul class="list-unstyled mb-3 small text-muted">
+                <li>• Estacionamiento y sala de espera climatizada</li>
+                <li>• Montaje y balanceo especializado en llantas premium</li>
+                <li>• Rutas de entrega express área metropolitana</li>
+              </ul>
+              <div class="d-flex gap-2 flex-wrap">
+                <a class="btn btn-sm btn-outline-primary" target="_blank" rel="noopener" href="https://maps.google.com/?daddr=Av.+Eugenio+Garza+Sada+4446+Las+Brisas,+Monterrey,+NL">
+                  Obtener indicaciones
+                </a>
+                <a class="btn btn-sm btn-light" href="mailto:hola@roue.mx">Agendar visita</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section class="py-5">
         <div class="container">
           <div class="cta-banner rounded-4 p-4 p-lg-5 text-white overflow-hidden position-relative">
@@ -228,26 +284,18 @@ import { Component } from '@angular/core';
     :host { display: block; }
 
     .nosotros-hero {
-      background: linear-gradient(135deg, rgba(217, 66, 66, 0.92), rgba(11, 11, 11, 0.95)),
-                  radial-gradient(850px 520px at 15% -10%, rgba(61, 255, 181, 0.25), transparent 65%);
+      background: var(--brand-primary-dark);
+      color: #fff;
     }
-    .hero-accent {
-      position: absolute;
-      inset: auto 0 -120px 0;
-      height: 240px;
-      background: radial-gradient(60% 60% at 50% 0%, rgba(255, 255, 255, 0.25), transparent);
-      opacity: 0.7;
-      pointer-events: none;
-    }
+    .hero-accent { display: none; }
 
     .stat-card {
       min-width: 160px;
       padding: 1.25rem;
-      border-radius: 1rem;
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.16);
-      backdrop-filter: blur(10px);
-      box-shadow: 0 18px 36px rgba(0, 0, 0, 0.22);
+      border-radius: var(--brand-radius-md);
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      backdrop-filter: blur(8px);
     }
     .stat-number {
       display: block;
@@ -257,16 +305,18 @@ import { Component } from '@angular/core';
     }
     .stat-label {
       display: block;
-      color: rgba(255, 255, 255, 0.7);
+      color: rgba(255, 255, 255, 0.75);
       font-size: 0.9rem;
       line-height: 1.3;
     }
 
     .image-frame {
       position: relative;
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid rgba(0, 0, 0, 0.06);
+      border-radius: var(--brand-radius-lg);
+      background: var(--brand-cloud);
+      border: 1px solid var(--brand-border);
       overflow: hidden;
+      box-shadow: var(--shadow-soft);
     }
     .image-frame img {
       position: absolute;
@@ -283,18 +333,20 @@ import { Component } from '@angular/core';
       justify-content: center;
       text-align: center;
       padding: 1.5rem;
-      border: 2px dashed rgba(217, 66, 66, 0.55);
-      color: rgba(217, 66, 66, 0.8);
-      background: rgba(255, 255, 255, 0.55);
+      border: 1px dashed var(--brand-primary);
+      color: var(--brand-primary);
+      background: var(--brand-cloud);
       text-transform: uppercase;
       font-size: 0.75rem;
       letter-spacing: 0.08em;
       font-weight: 700;
+      border-radius: var(--brand-radius-md);
     }
     .image-slot-light {
-      background: rgba(12, 12, 12, 0.75);
-      border-color: rgba(255, 255, 255, 0.35);
-      color: rgba(255, 255, 255, 0.65);
+      background: var(--surface-subtle);
+      border-color: var(--brand-border);
+      color: var(--brand-ink-soft);
+      border-radius: var(--brand-radius-md);
     }
     .placeholder-text { max-width: 18ch; }
 
@@ -307,102 +359,246 @@ import { Component } from '@angular/core';
 
     .story-timeline {
       position: relative;
-      padding-left: 2.5rem;
+      padding-left: 2rem;
       margin-top: 2rem;
     }
     .story-timeline::before {
-      content: "";
+      content: '';
       position: absolute;
-      left: 1.2rem;
+      left: 0.8rem;
       top: 0.2rem;
       bottom: 0.2rem;
       width: 2px;
-      background: linear-gradient(180deg, rgba(217, 66, 66, 0.75), transparent);
+      background: var(--brand-border);
     }
-    .timeline-item { position: relative; padding-bottom: 1.75rem; }
+    .timeline-item { position: relative; padding-bottom: 1.5rem; }
     .timeline-item:last-child { padding-bottom: 0; }
     .timeline-item::before {
-      content: "";
+      content: '';
       position: absolute;
-      left: -1.3rem;
-      top: 0.35rem;
-      width: 0.85rem;
-      height: 0.85rem;
-      border-radius: 50%;
-      background: var(--jdm-red);
-      box-shadow: 0 0 0 6px rgba(217, 66, 66, 0.2);
+      left: -1.1rem;
+      top: 0.3rem;
+      width: 0.8rem;
+      height: 0.8rem;
+      border-radius: var(--brand-radius-sm);
+      background: var(--brand-primary);
     }
     .timeline-year {
       font-family: var(--font-display);
-      font-size: 1.2rem;
+      font-size: 1.1rem;
       letter-spacing: 0.08em;
       text-transform: uppercase;
-      color: var(--jdm-red);
+      color: var(--brand-primary);
       margin-bottom: 0.25rem;
     }
     .timeline-copy {
       font-size: 0.95rem;
-      color: rgba(0, 0, 0, 0.72);
+      color: var(--brand-ink-soft);
       margin-bottom: 0;
     }
 
     .value-card {
-      padding: 2.25rem 2rem;
-      border-radius: 1.25rem;
-      border: 1px solid rgba(217, 66, 66, 0.18);
-      background: linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.65));
-      box-shadow: 0 14px 32px rgba(0, 0, 0, 0.08);
+      padding: 1.8rem 1.6rem;
+      border-radius: var(--brand-radius-lg);
+      border: 1px solid var(--brand-border);
+      background: linear-gradient(180deg, #ffffff 0%, #f4f6fb 100%);
+      box-shadow: var(--shadow-soft);
     }
     .value-label {
       display: inline-flex;
       width: 44px;
       height: 44px;
-      border-radius: 12px;
+      border-radius: var(--brand-radius-sm);
       align-items: center;
       justify-content: center;
       margin-bottom: 1rem;
-      background: rgba(217, 66, 66, 0.15);
-      color: var(--jdm-red);
+      background: var(--surface-subtle);
+      color: var(--brand-primary);
       font-weight: 700;
       letter-spacing: 0.06em;
     }
 
     .team-section {
-      background: radial-gradient(1200px 680px at 15% 20%, rgba(217, 66, 66, 0.1), transparent 60%),
-                  var(--off-white);
+      background: var(--brand-cream);
     }
     .team-card {
-      padding: 1.75rem;
-      border-radius: 1.25rem;
-      background: #fff;
-      border: 1px solid rgba(0, 0, 0, 0.05);
-      box-shadow: 0 20px 34px rgba(0, 0, 0, 0.08);
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      padding: 1.5rem;
+      border-radius: var(--brand-radius-lg);
+      background: linear-gradient(180deg, #ffffff 0%, #f4f6fb 100%);
+      border: 1px solid var(--brand-border);
+      box-shadow: var(--shadow-soft);
+      transition: border-color var(--transition-base), background var(--transition-base), box-shadow var(--transition-base), transform var(--transition-base);
     }
     .team-card:hover {
-      transform: translateY(-6px);
-      box-shadow: 0 28px 44px rgba(0, 0, 0, 0.12);
+      border-color: color-mix(in srgb, var(--brand-primary) 35%, var(--brand-border));
+      background: #ffffff;
+      box-shadow: var(--shadow-hover);
+      transform: translateY(-4px);
     }
     .team-photo {
-      border-radius: 1rem;
+      border-radius: var(--brand-radius-md);
+      border: 1px solid var(--brand-border);
       overflow: hidden;
     }
 
-    .cta-banner {
-      background: linear-gradient(120deg, rgba(11, 11, 11, 0.95), rgba(217, 66, 66, 0.85));
-      box-shadow: 0 22px 45px rgba(0, 0, 0, 0.28);
+    .map-section .badge-dot {
+      display: inline-flex;
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: #fff;
+      box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.35);
     }
-    .cta-overlay {
+    .map-toolbar {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      padding: 1.2rem 1.5rem;
+      background: linear-gradient(120deg, var(--brand-accent) 0%, color-mix(in srgb, var(--brand-accent) 45%, #ffffff) 92%);
+      border: 1px solid color-mix(in srgb, var(--brand-accent) 45%, #000000);
+      border-radius: var(--brand-radius-lg);
+      color: #fff;
+    }
+    .map-toolbar .toolbar-location {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+    .map-toolbar .toolbar-location strong {
+      font-size: 1rem;
+      letter-spacing: 0.02em;
+    }
+    .map-toolbar .toolbar-meta {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      opacity: 0.85;
+    }
+    .map-toolbar .toolbar-actions {
+      display: inline-flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+    .map-toolbar .btn {
+      border-radius: var(--brand-radius-sm);
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .map-toolbar .btn-outline-secondary {
+      color: #fff;
+      border-color: rgba(255, 255, 255, 0.6);
+    }
+    .map-toolbar .btn-outline-secondary:hover {
+      color: var(--brand-primary-dark);
+      background: #fff;
+      border-color: #fff;
+    }
+
+    .map-frame {
+      position: relative;
+      border-radius: var(--brand-radius-lg);
+      overflow: hidden;
+      border: 1px solid var(--brand-border);
+      background: var(--brand-cloud);
+      height: clamp(320px, 55vh, 540px);
+    }
+    .map-frame iframe {
       position: absolute;
-      inset: -20%;
-      background: radial-gradient(45% 45% at 85% 20%, rgba(61, 255, 181, 0.35), transparent 60%);
-      opacity: 0.5;
-      pointer-events: none;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      filter: saturate(1.05);
     }
+    .map-info-card {
+      position: absolute;
+      bottom: clamp(1rem, 3vw, 1.6rem);
+      left: clamp(1rem, 3vw, 1.6rem);
+      max-width: min(320px, 80%);
+      background: rgba(255, 255, 255, 0.94);
+      border-radius: var(--brand-radius-md);
+      border: 1px solid color-mix(in srgb, var(--brand-border) 65%, transparent);
+      box-shadow: 0 22px 48px -26px rgba(12, 22, 40, 0.55);
+      padding: 1.1rem 1.2rem;
+      backdrop-filter: blur(8px);
+    }
+    .map-info-card .btn {
+      font-weight: 600;
+      letter-spacing: 0.04em;
+    }
+
+    :host-context([data-bs-theme='dark']) .map-section {
+      background: var(--brand-cloud) !important;
+    }
+    :host-context([data-bs-theme='dark']) .map-toolbar {
+      background: linear-gradient(120deg, rgba(31, 67, 115, 0.92) 0%, rgba(13, 32, 60, 0.95) 100%);
+      border-color: rgba(19, 46, 86, 0.6);
+      color: var(--brand-cream);
+    }
+    :host-context([data-bs-theme='dark']) .map-toolbar .btn-outline-secondary {
+      color: var(--brand-cream);
+      border-color: rgba(255, 255, 255, 0.5);
+    }
+    :host-context([data-bs-theme='dark']) .map-toolbar .btn-outline-secondary:hover {
+      color: var(--brand-primary-dark);
+      background: #fff;
+      border-color: #fff;
+    }
+    :host-context([data-bs-theme='dark']) .map-frame {
+      border-color: rgba(32, 54, 86, 0.8);
+      background: rgba(18, 30, 48, 0.95);
+    }
+    :host-context([data-bs-theme='dark']) .map-info-card {
+      background: rgba(17, 26, 42, 0.92);
+      color: var(--brand-cream);
+      border-color: rgba(74, 93, 124, 0.55);
+    }
+    :host-context([data-bs-theme='dark']) .map-info-card .btn-light {
+      background: rgba(239, 242, 248, 0.92);
+      color: var(--brand-primary-dark);
+      border: none;
+    }
+
+    .cta-banner {
+      background: var(--brand-primary-dark);
+      color: #fff;
+      position: relative;
+    }
+    .cta-overlay { display: none; }
 
     @media (max-width: 991.98px) {
       .stat-card { flex: 1 1 150px; }
-      .story-timeline { padding-left: 2rem; }
+      .story-timeline { padding-left: 1.6rem; }
+      .map-toolbar {
+        padding: 1rem 1.25rem;
+      }
+      .map-toolbar .toolbar-actions {
+        width: 100%;
+        justify-content: flex-start;
+      }
+      .map-frame {
+        height: clamp(280px, 48vh, 440px);
+      }
+    }
+
+    @media (max-width: 575.98px) {
+      .map-toolbar {
+        gap: 0.75rem;
+      }
+      .map-toolbar .toolbar-actions {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .map-toolbar .btn {
+        width: 100%;
+        justify-content: center;
+      }
+      .map-info-card {
+        position: static;
+        max-width: 100%;
+        margin: 0.75rem;
+      }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -411,65 +607,29 @@ import { Component } from '@angular/core';
     }
 
     :host-context([data-bs-theme="dark"]) .nosotros-hero {
-      background: linear-gradient(135deg, rgba(217, 66, 66, 0.88), rgba(0, 0, 0, 0.95)),
-                  radial-gradient(800px 480px at 12% -12%, rgba(61, 255, 181, 0.18), transparent 70%);
-    }
-    :host-context([data-bs-theme="dark"]) .hero-accent {
-      opacity: 0.45;
-      background: radial-gradient(60% 60% at 50% 0%, rgba(61, 255, 181, 0.28), transparent);
+      background: var(--brand-primary-dark);
     }
     :host-context([data-bs-theme="dark"]) .stat-card {
-      background: rgba(255, 255, 255, 0.04);
-      border-color: rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.35);
     }
     :host-context([data-bs-theme="dark"]) .timeline-copy {
-      color: rgba(232, 232, 232, 0.82);
+      color: var(--brand-ink);
     }
     :host-context([data-bs-theme="dark"]) .story-timeline::before {
-      background: linear-gradient(180deg, rgba(217, 66, 66, 0.55), transparent);
+      background: var(--brand-border);
     }
-    :host-context([data-bs-theme="dark"]) .timeline-item::before {
-      box-shadow: 0 0 0 6px rgba(217, 66, 66, 0.35);
-    }
-    :host-context([data-bs-theme="dark"]) .value-card {
-      background: linear-gradient(180deg, rgba(35, 35, 35, 0.95), rgba(25, 25, 25, 0.92));
-      border-color: rgba(217, 66, 66, 0.25);
-      box-shadow: 0 16px 44px rgba(0, 0, 0, 0.35);
-    }
-    :host-context([data-bs-theme="dark"]) .value-card p {
-      color: rgba(232, 232, 232, 0.78) !important;
-    }
-    :host-context([data-bs-theme="dark"]) .value-label {
-      background: rgba(217, 66, 66, 0.32);
-      color: #fff;
-    }
-    :host-context([data-bs-theme="dark"]) .team-section {
-      background: radial-gradient(1200px 680px at 15% 20%, rgba(217, 66, 66, 0.22), transparent 65%),
-                  rgba(10, 10, 10, 0.95);
-    }
-    :host-context([data-bs-theme="dark"]) .team-card {
-      background: rgba(20, 20, 20, 0.95);
-      border-color: rgba(255, 255, 255, 0.05);
+    :host-context([data-bs-theme="dark"]) .value-card,
+    :host-context([data-bs-theme="dark"]) .team-card,
+    :host-context([data-bs-theme="dark"]) .image-frame,
+    :host-context([data-bs-theme="dark"]) .image-slot,
+    :host-context([data-bs-theme="dark"]) .image-slot-light {
+      background: var(--brand-cloud);
+      border-color: var(--brand-border);
+      color: var(--brand-ink);
     }
     :host-context([data-bs-theme="dark"]) .team-card:hover {
-      box-shadow: 0 32px 46px rgba(0, 0, 0, 0.5);
-    }
-    :host-context([data-bs-theme="dark"]) .team-card .text-muted {
-      color: rgba(232, 232, 232, 0.7) !important;
-    }
-    :host-context([data-bs-theme="dark"]) .image-frame {
-      background: rgba(255, 255, 255, 0.04);
-      border-color: rgba(255, 255, 255, 0.08);
-    }
-    :host-context([data-bs-theme="dark"]) .image-slot {
-      background: rgba(12, 12, 12, 0.75);
-      border-color: rgba(217, 66, 66, 0.55);
-      color: rgba(255, 255, 255, 0.7);
-    }
-    :host-context([data-bs-theme="dark"]) .image-slot-light {
-      background: rgba(12, 12, 12, 0.9);
-      border-color: rgba(255, 255, 255, 0.25);
-      color: rgba(255, 255, 255, 0.78);
+      border-color: var(--brand-primary);
     }
     `
   ]

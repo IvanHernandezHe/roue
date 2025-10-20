@@ -92,7 +92,7 @@ export class ProductAssetsService {
     let s = src.trim();
     if (!s) return null;
     s = s.replace(/\\/g, '/');
-    if (/pzero-1_80\.jpg$/i.test(s)) return null;
+    if (/\/product\/fallback\//i.test(s) || /pzero-1_80\.jpg$/i.test(s)) return null;
     if (s.startsWith('http://') || s.startsWith('https://')) return s;
     if (s.startsWith('/assets/')) return this.#collapseSlashes(s);
     if (s.startsWith('assets/')) return this.#collapseSlashes('/' + s);
