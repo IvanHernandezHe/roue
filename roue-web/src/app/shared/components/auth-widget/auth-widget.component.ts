@@ -1,6 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { NgIf, NgClass } from '@angular/common';
+import { CommonModule, NgIf, NgClass } from '@angular/common';
 import { AuthService } from '../../../core/auth.service';
 import { AuthStore } from '../../../state/auth.store';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -13,7 +13,7 @@ type AuthMode = 'login' | 'register' | 'forgot' | 'reset' | 'confirm';
 @Component({
   standalone: true,
   selector: 'app-auth-widget',
-  imports: [FormsModule, NgIf, NgClass],
+  imports: [CommonModule, FormsModule, NgIf, NgClass],
   styles: [`
     .auth-card {
       border-radius: var(--brand-radius-lg);
@@ -134,11 +134,15 @@ type AuthMode = 'login' | 'register' | 'forgot' | 'reset' | 'confirm';
             <label for="authEmail">Correo electrónico</label>
           </div>
           <div class="form-floating position-relative">
-            <input class="form-control" [type]="passwordVisible ? 'text' : 'password'" id="authPassword" placeholder="Tu contraseña" [(ngModel)]="password" name="password" minlength="6" required [disabled]="loading" autocomplete="current-password" aria-required="true" />
+            <input class="form-control" [type]="passwordVisible ? 'text' : 'password'" id="authPassword" placeholder="Tu contraseña" [(ngModel)]="password" name="password" minlength="6" required [disabled]="loading" [attr.autocomplete]="mode==='register' ? 'new-password' : 'current-password'" aria-required="true" />
             <label for="authPassword">Contraseña</label>
             <button type="button" class="input-affix" (click)="togglePasswordVisibility()" [attr.aria-label]="passwordVisible ? 'Ocultar contraseña' : 'Mostrar contraseña'">
               <span class="small">{{ passwordVisible ? 'Ocultar' : 'Ver' }}</span>
             </button>
+          </div>
+          <div class="form-floating" *ngIf="mode==='register'">
+            <input class="form-control" [type]="passwordVisible ? 'text' : 'password'" id="authPasswordConfirm" placeholder="Confirmar contraseña" [(ngModel)]="confirmPassword" name="confirmPassword" minlength="6" required [disabled]="loading" autocomplete="new-password" aria-required="true" />
+            <label for="authPasswordConfirm">Confirmar contraseña</label>
           </div>
           <div class="form-check text-start small" *ngIf="mode==='register'">
             <input class="form-check-input" type="checkbox" id="marketingOptIn" [(ngModel)]="marketingOptIn" name="marketingOptIn" [disabled]="loading" />
@@ -148,6 +152,14 @@ type AuthMode = 'login' | 'register' | 'forgot' | 'reset' | 'confirm';
           </div>
           <div class="meta-row">
             <button class="access-link align-self-start" type="button" (click)="setMode('forgot')">¿Olvidaste tu contraseña?</button>
+          </div>
+          <div class="alert alert-warning small mb-0" *ngIf="mode==='login' && pendingConfirmEmail">
+            <div class="fw-semibold mb-1">Tu correo aún no está confirmado.</div>
+            <p class="mb-2">Busca el mensaje de verificación en tu bandeja o solicita un nuevo enlace.</p>
+            <button class="btn btn-sm btn-outline-dark" type="button" (click)="resendPendingConfirmation()" [disabled]="resendBusy">
+              <span *ngIf="resendBusy" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+              Reenviar confirmación
+            </button>
           </div>
           <button class="btn btn-dark btn-lg w-100" type="submit" [disabled]="loading">
             <span *ngIf="loading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
@@ -256,6 +268,7 @@ export class AuthWidgetComponent implements OnInit {
   mode: AuthMode = 'login';
   email = '';
   password = '';
+  confirmPassword = '';
   marketingOptIn = true;
   passwordVisible = false;
   loading = false;
@@ -269,6 +282,7 @@ export class AuthWidgetComponent implements OnInit {
   resendBusy = false;
   confirming = false;
   confirmHandled = false;
+  pendingConfirmEmail: string | null = null;
 
   resetToken = '';
   resetPassword = '';
@@ -320,6 +334,9 @@ export class AuthWidgetComponent implements OnInit {
     }
     if (mode === 'login') {
       this.password = '';
+      this.confirmPassword = '';
+    } else {
+      this.pendingConfirmEmail = null;
     }
     if (mode === 'reset' && !this.resetToken) {
       this.status = 'El enlace de restablecimiento no es válido. Solicita uno nuevo.';
@@ -333,19 +350,47 @@ export class AuthWidgetComponent implements OnInit {
   onSubmit(e: Event) {
     e.preventDefault();
     if (this.mode !== 'login' && this.mode !== 'register') return;
+    if (this.mode === 'register' && this.password !== this.confirmPassword) {
+      this.error = 'Las contraseñas no coinciden.';
+      return;
+    }
     this.error = '';
     this.loading = true;
     const { email, password } = this;
     const done = () => (this.loading = false);
     if (this.mode === 'login') {
       this.#pendingMarketingOptIn = null;
-      this.#api.login(email, password).subscribe({ next: () => this.#afterAuthWithCart(done), error: (err) => { this.error = this.#msg(err); done(); } });
+      this.#api.login(email, password).subscribe({
+        next: () => {
+          this.pendingConfirmEmail = null;
+          this.status = '';
+          this.error = '';
+          this.#afterAuthWithCart(done);
+        },
+        error: (err) => {
+          const msg = this.#msg(err);
+          if (typeof msg === 'string' && msg.toLowerCase().includes('confirm')) {
+            this.pendingConfirmEmail = email;
+            this.statusKind = 'info';
+            this.status = 'Debes confirmar tu correo antes de iniciar sesión. Revisa tu bandeja o solicita un nuevo enlace.';
+            this.error = '';
+          } else {
+            this.pendingConfirmEmail = null;
+            this.error = msg;
+          }
+          done();
+        }
+      });
     } else {
-      this.#pendingMarketingOptIn = this.marketingOptIn;
+      this.#pendingMarketingOptIn = null;
       this.#api.register(email, password).subscribe({
         next: () => {
           this.#api.sendConfirmation(email).subscribe({ error: () => {} });
-          this.#api.login(email, password).subscribe({ next: () => this.#afterAuthWithCart(done), error: (err) => { this.error = this.#msg(err); done(); } });
+          this.pendingConfirmEmail = email;
+          this.statusKind = 'success';
+          this.status = 'Cuenta creada. Revisa tu correo y confirma tu cuenta antes de iniciar sesión.';
+          this.setMode('login', false);
+          done();
         },
         error: (err) => { this.error = this.#msg(err); this.#pendingMarketingOptIn = null; done(); }
       });
@@ -432,8 +477,13 @@ export class AuthWidgetComponent implements OnInit {
     });
   }
 
-  resendConfirmation() {
-    const email = this.auth.user()?.email;
+  resendPendingConfirmation() {
+    if (!this.pendingConfirmEmail) return;
+    this.resendConfirmation(this.pendingConfirmEmail);
+  }
+
+  resendConfirmation(emailOverride?: string) {
+    const email = emailOverride ?? this.auth.user()?.email ?? this.pendingConfirmEmail ?? this.email;
     if (!email || this.resendBusy) return;
     this.resendBusy = true;
     this.#api.sendConfirmation(email).subscribe({
@@ -490,6 +540,8 @@ export class AuthWidgetComponent implements OnInit {
   }
 
   #finishAuth(done: () => void) {
+    this.password = '';
+    this.confirmPassword = '';
     done();
     const url = this.returnUrl && this.returnUrl.startsWith('/') ? this.returnUrl : '/perfil';
     this.#router.navigateByUrl(url);

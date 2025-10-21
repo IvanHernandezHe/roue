@@ -132,17 +132,21 @@ import { LucideAngularModule } from 'lucide-angular';
     .brand-row {
       display: flex;
       align-items: center;
-      gap: .5rem;
+      gap: .65rem;
+    }
+    .brand-logo-frame {
+      width: 92px;
+      height: 36px;
+      flex: 0 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     .brand-logo {
-      width: 36px;
-      height: 36px;
-      border-radius: var(--brand-radius-sm);
-      border: 1px solid color-mix(in srgb, var(--brand-border) 60%, transparent);
-      background: #ffffff;
-      padding: .25rem;
+      max-width: 100%;
+      max-height: 100%;
+      display: block;
       object-fit: contain;
-      box-shadow: inset 0 1px 2px rgba(16, 22, 34, 0.05);
     }
     .brand-name {
       font-weight: 600;
@@ -235,10 +239,6 @@ import { LucideAngularModule } from 'lucide-angular';
       color: var(--brand-ink);
       border-color: color-mix(in srgb, var(--brand-border) 60%, transparent);
     }
-    :host-context([data-bs-theme='dark']) .brand-logo {
-      background: rgba(26, 34, 52, 0.85);
-      border-color: color-mix(in srgb, var(--brand-border) 55%, transparent);
-    }
     :host-context([data-bs-theme='dark']) .size-chip {
       background: rgba(26, 34, 52, 0.8);
       border-color: color-mix(in srgb, var(--brand-border) 60%, transparent);
@@ -301,7 +301,9 @@ import { LucideAngularModule } from 'lucide-angular';
     </a>
     <div class="card-body d-flex flex-column">
       <div class="brand-row">
-        <img *ngIf="brandLogo" [src]="brandLogo!" [alt]="product!.brand" class="brand-logo" loading="lazy"/>
+        <div *ngIf="brandLogo" class="brand-logo-frame">
+          <img [src]="brandLogo!" [alt]="product!.brand" class="brand-logo" loading="lazy"/>
+        </div>
         <span class="brand-name">{{ product!.brand }}</span>
       </div>
       <h5 class="card-title brand-model mb-1">

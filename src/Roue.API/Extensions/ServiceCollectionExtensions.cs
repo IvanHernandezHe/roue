@@ -67,6 +67,21 @@ public static class ServiceCollectionExtensions
             .AddEntityFrameworkStores<AppDbContext>()
             .AddDefaultTokenProviders();
 
+        services.Configure<IdentityOptions>(options =>
+        {
+            options.Password.RequiredLength = int.TryParse(cfg["Auth:Password:RequiredLength"], out var len) ? Math.Max(6, len) : 8;
+            options.Password.RequireDigit = !bool.TryParse(cfg["Auth:Password:RequireDigit"], out var requireDigit) || requireDigit;
+            options.Password.RequireLowercase = !bool.TryParse(cfg["Auth:Password:RequireLowercase"], out var requireLower) || requireLower;
+            options.Password.RequireUppercase = bool.TryParse(cfg["Auth:Password:RequireUppercase"], out var requireUpper) && requireUpper;
+            options.Password.RequireNonAlphanumeric = bool.TryParse(cfg["Auth:Password:RequireNonAlphanumeric"], out var requireSpecial) && requireSpecial;
+            options.Password.RequiredUniqueChars = int.TryParse(cfg["Auth:Password:RequiredUniqueChars"], out var unique) ? Math.Max(1, unique) : 1;
+
+            options.User.RequireUniqueEmail = true;
+
+            options.SignIn.RequireConfirmedEmail = !bool.TryParse(cfg["Auth:RequireConfirmedEmail"], out var requireConfirmedEmail) || requireConfirmedEmail;
+            options.SignIn.RequireConfirmedAccount = options.SignIn.RequireConfirmedEmail;
+        });
+
         services.AddHttpContextAccessor();
         services.AddScoped<IAuditLogger, AuditLogger>();
         services.AddScoped<IActivityTracker, ActivityTracker>();

@@ -26,7 +26,8 @@ export class AuthService {
   }
 
   register(email: string, password: string) {
-    return this.#http.post(`${this.#base}/register?useCookies=true`, { email, password }, { withCredentials: true });
+    const body = { email, password, confirmPassword: password };
+    return this.#http.post(`${this.#base}/register?useCookies=true`, body, { withCredentials: true });
   }
 
   login(email: string, password: string) {
