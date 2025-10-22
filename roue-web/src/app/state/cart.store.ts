@@ -47,6 +47,7 @@ export class CartStore {
   #productsApi = inject(ApiService);
   #assets = inject(ProductAssetsService);
   #imgLookupPending = new Set<string>();
+  #lastAuthIdentity: string | null = null;
 
   constructor() {
     effect(() => {
@@ -59,9 +60,17 @@ export class CartStore {
     });
     effect(() => {
       const authUser = this.#auth.user();
-      if (!authUser) {
+      if (authUser) {
+        this.#lastAuthIdentity = authUser.id ?? authUser.email ?? '__auth';
+        return;
+      }
+      const hadAuth = this.#lastAuthIdentity !== null;
+      if (hadAuth) {
+        this.#resetAfterSignOut();
+      } else {
         this.#api.forget();
       }
+      this.#lastAuthIdentity = null;
     });
   }
 
@@ -88,8 +97,18 @@ export class CartStore {
         }
       });
     } else {
-      this.#addLocal(p, qty);
-      this.#toast.success('Producto agregado al carrito');
+      const changed = this.#addLocal(p, qty);
+      if (changed) {
+        this.#toast.success('Producto agregado al carrito');
+      }
+      this.#api.add(p.id, qty).subscribe({
+        next: (res) => this.replaceFromServer(res),
+        error: () => {
+          if (changed) {
+            this.#toast.info('Guardado en este dispositivo. Se sincronizará cuando la conexión se restablezca.');
+          }
+        }
+      });
     }
   }
   remove(id: string) {
@@ -102,7 +121,11 @@ export class CartStore {
         },
         error: () => { this.#removeLocal(id); if (removed) this.#toast.showWithAction('Producto quitado', 'Deshacer', () => this.#undoRemove(removed)); }
       });
-    } else { this.#removeLocal(id); if (removed) this.#toast.showWithAction('Producto quitado', 'Deshacer', () => this.#undoRemove(removed)); }
+    } else {
+      this.#removeLocal(id);
+      if (removed) this.#toast.showWithAction('Producto quitado', 'Deshacer', () => this.#undoRemove(removed));
+      this.#api.remove(id).subscribe({ next: (res) => this.replaceFromServer(res), error: () => {} });
+    }
   }
   clear() {
     if (this.#auth.isAuthenticated()) {
@@ -110,10 +133,18 @@ export class CartStore {
         next: (res) => { this.replaceFromServer(res); this.#toast.info('Carrito vaciado'); },
         error: () => { this.#items.set([]); this.#setOrigin('local'); this.#toast.info('Carrito vaciado'); }
       });
-    } else { this.#items.set([]); this.#setOrigin('local'); this.#toast.info('Carrito vaciado'); }
+    } else {
+      this.#items.set([]);
+      this.#setOrigin('local');
+      this.#toast.info('Carrito vaciado');
+      this.#api.clear().subscribe({ next: (res) => this.replaceFromServer(res), error: () => {} });
+    }
   }
 
   replaceFromServer(dto: CartDto) {
+    if (!this.#shouldAcceptServerSnapshot(dto)) {
+      return;
+    }
     const items = dto.items.map(i => ({ productId: i.productId, name: i.name, sku: i.sku, price: i.price, qty: i.qty, stock: (i as any).stock, imageUrl: (i as any).imageUrl ?? null }));
     this.#items.set(items);
     this.#api.remember(dto.id);
@@ -129,37 +160,31 @@ export class CartStore {
       this.#toast.warning('Alcanzaste las existencias disponibles');
       return;
     }
-    if (this.#auth.isAuthenticated()) {
-      const curr = this.#items().find(i => i.productId === id)?.qty ?? 0;
-      const next = curr + by;
-      this.#setQtyLocal(id, next);
-      this.#scheduleSetQtyServer(id, next);
-    } else {
-      this.#incrementLocal(id, by);
-    }
+    const currQty = currItem?.qty ?? 0;
+    const desired = currQty + by;
+    this.#setQtyLocal(id, desired);
+    const updated = this.#items().find(i => i.productId === id);
+    const target = updated?.qty ?? desired;
+    this.#scheduleSetQtyServer(id, target);
   }
 
   decrement(id: string, by = 1) {
     if (by <= 0) return;
-    if (this.#auth.isAuthenticated()) {
-      const curr = this.#items().find(i => i.productId === id)?.qty ?? 0;
-      const next = Math.max(0, curr - by);
-      this.#setQtyLocal(id, next);
-      this.#scheduleSetQtyServer(id, next);
-    } else {
-      this.#decrementLocal(id, by);
-    }
+    const curr = this.#items().find(i => i.productId === id)?.qty ?? 0;
+    const next = Math.max(0, curr - by);
+    this.#setQtyLocal(id, next);
+    const updated = this.#items().find(i => i.productId === id);
+    const target = updated?.qty ?? next;
+    this.#scheduleSetQtyServer(id, target);
   }
 
   setQty(id: string, qty: number) {
     if (!Number.isFinite(qty) || qty < 1) { this.remove(id); return; }
-    if (this.#auth.isAuthenticated()) {
-      const q = Math.floor(qty);
-      this.#setQtyLocal(id, q);
-      this.#scheduleSetQtyServer(id, q);
-    } else {
-      this.#setQtyLocal(id, Math.floor(qty));
-    }
+    const q = Math.floor(qty);
+    this.#setQtyLocal(id, q);
+    const updated = this.#items().find(i => i.productId === id);
+    const target = updated?.qty ?? q;
+    this.#scheduleSetQtyServer(id, target);
   }
 
   isServerSynced(): boolean {
@@ -181,6 +206,23 @@ export class CartStore {
     }
   }
 
+  #resetAfterSignOut() {
+    this.#api.forget();
+    this.#items.set([]);
+    this.#coupon.set(null);
+    this.#setOrigin('local');
+    try {
+      localStorage.removeItem(this.#storageKey);
+      localStorage.removeItem(this.#couponKey);
+      localStorage.removeItem(this.#originKey);
+    } catch {}
+    for (const timer of this.#qtyTimers.values()) {
+      clearTimeout(timer);
+    }
+    this.#qtyTimers.clear();
+    this.#imgLookupPending.clear();
+  }
+
   #rehydrate(): CartItem[] {
     try {
       const raw = localStorage.getItem(this.#storageKey);
@@ -196,13 +238,15 @@ export class CartStore {
   #setOrigin(v: 'server' | 'local') { try { localStorage.setItem(this.#originKey, v); } catch {} }
 
   // Local helpers
-  #addLocal(p: Product, qty: number) {
+  #addLocal(p: Product, qty: number): boolean {
+    let changed = false;
     const exists = this.#items().find(i => i.productId === p.id);
     if (exists) {
       this.#items.update(list => list.map(i => {
         if (i.productId !== p.id) return i;
         const stock = Number.isFinite(i.stock as any) ? (i.stock as number) : Infinity;
         const nextQty = Math.min(i.qty + qty, stock);
+        if (nextQty !== i.qty) changed = true;
         if (nextQty === i.qty) this.#toast.warning('Alcanzaste las existencias disponibles');
         return { ...i, qty: nextQty };
       }));
@@ -211,8 +255,10 @@ export class CartStore {
       const firstImage = p.images && p.images.length ? p.images[0] : null;
       this.#items.update(list => [...list, { productId: p.id, name: `${p.brand} ${p.modelName} ${p.size}`, sku: p.sku, price: p.price, qty: initialQty, stock: p.stock, imageUrl: firstImage }]);
       if (initialQty < qty) this.#toast.warning('Se agregó el máximo disponible');
+      changed = initialQty > 0;
     }
     this.#setOrigin('local');
+    return changed;
   }
   #removeLocal(id: string) { this.#items.update(list => list.filter(i => i.productId !== id)); this.#setOrigin('local'); }
   #incrementLocal(id: string, by: number) { this.#items.update(list => list.map(i => i.productId === id ? { ...i, qty: i.qty + by } : i)); this.#setOrigin('local'); }
@@ -240,7 +286,10 @@ export class CartStore {
     const t = setTimeout(() => {
       this.#api.setQty(id, qty).subscribe({
         next: (res) => this.replaceFromServer(res),
-        error: () => this.#toast.warning('No se pudo actualizar la cantidad')
+        error: () => {
+          this.markLocalChanged();
+          this.#toast.warning('No se pudo actualizar la cantidad en el servidor');
+        }
       });
     }, 250);
     this.#qtyTimers.set(id, t);
@@ -280,6 +329,23 @@ export class CartStore {
 
   #rehydrateCoupon(): DiscountInfo | null {
     try { const raw = localStorage.getItem(this.#couponKey); return raw ? JSON.parse(raw) as DiscountInfo : null; } catch { return null; }
+  }
+
+  #shouldAcceptServerSnapshot(dto: CartDto): boolean {
+    if (!dto) return false;
+    if (!dto.userId) return true;
+    if (!this.#auth.isAuthenticated()) {
+      this.#api.forget();
+      return false;
+    }
+    const current = this.#auth.user();
+    const currentId = current?.id?.toLowerCase() ?? null;
+    const dtoUserId = dto.userId.toLowerCase();
+    if (currentId && dtoUserId !== currentId) {
+      this.#api.forget();
+      return false;
+    }
+    return true;
   }
 
   #undoRemove(item: CartItem) {

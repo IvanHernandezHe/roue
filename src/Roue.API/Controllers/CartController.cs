@@ -1,11 +1,11 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 using Roue.Domain.Carts;
 using Roue.Application.Interface;
 using System;
+using Roue.API.Services;
 
 namespace Roue.API.Controllers;
 
@@ -17,31 +17,20 @@ public sealed class CartController : ControllerBase
     private readonly IAuditLogger _audit;
     private readonly ICartService _svc;
     private readonly IActivityTracker _activity;
-    private const string CartCookie = "cart_id";
+    private readonly ICartSessionManager _cartSession;
 
-    public CartController(UserManager<IdentityUser<Guid>> users, IAuditLogger audit, ICartService svc, IActivityTracker activity)
+    public CartController(UserManager<IdentityUser<Guid>> users, IAuditLogger audit, ICartService svc, IActivityTracker activity, ICartSessionManager cartSession)
     {
         _users = users;
         _audit = audit;
         _svc = svc;
         _activity = activity;
+        _cartSession = cartSession;
     }
 
     private Guid EnsureCookie(Guid id)
     {
-        var isLoopback = string.Equals(Request.Host.Host, "localhost", StringComparison.OrdinalIgnoreCase)
-            || string.Equals(Request.Host.Host, "127.0.0.1", StringComparison.OrdinalIgnoreCase)
-            || string.Equals(Request.Host.Host, "::1", StringComparison.OrdinalIgnoreCase);
-        var opts = new CookieOptions
-        {
-            HttpOnly = true,
-            SameSite = SameSiteMode.None,
-            Secure = Request.IsHttps || isLoopback,
-            Expires = DateTimeOffset.UtcNow.AddDays(90),
-            Path = "/"
-        };
-        Response.Cookies.Append(CartCookie, id.ToString(), opts);
-        return id;
+        return _cartSession.StampCookie(HttpContext, id);
     }
 
     private async Task<(Guid? userId, Guid? cartId, Guid? cookieId)> ResolveIdsAsync()
@@ -53,8 +42,7 @@ public sealed class CartController : ControllerBase
             var header = headerVals.FirstOrDefault();
             if (!string.IsNullOrWhiteSpace(header) && Guid.TryParse(header, out var headerGuid)) headerId = headerGuid;
         }
-        Guid? cookieId = null;
-        if (Request.Cookies.TryGetValue(CartCookie, out var raw) && Guid.TryParse(raw, out var anonId)) cookieId = anonId;
+        Guid? cookieId = _cartSession.ReadCartId(HttpContext);
         var cartId = headerId ?? cookieId;
         return (userId, cartId, cookieId);
     }
@@ -80,7 +68,7 @@ public sealed class CartController : ControllerBase
         var (_, _, cookieId) = await ResolveIdsAsync();
         var dto = await _svc.MergeAsync(user.Id, req.Items.Select(i => (i.ProductId, i.Qty)), cookieId, HttpContext.RequestAborted);
         var sessionGuid = cookieId ?? dto.Id;
-        if (cookieId.HasValue) Response.Cookies.Delete(CartCookie);
+        if (cookieId.HasValue) _cartSession.ClearCookie(HttpContext);
         try { await _audit.LogAsync("cart.merged", subjectType: nameof(Cart), subjectId: dto.Id.ToString(), metadata: new { items = dto.Items.Count }); } catch { }
         try
         {

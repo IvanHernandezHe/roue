@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { NgFor, NgIf, AsyncPipe, SlicePipe } from '@angular/common';
+import { NgFor, NgIf, AsyncPipe, SlicePipe, NgStyle } from '@angular/common';
 import { LucideAngularModule } from 'lucide-angular';
 import { ApiService } from '../../core/api.service';
 import { FormsModule } from '@angular/forms';
@@ -10,7 +10,7 @@ import { ProductCardComponent } from '../../shared/components/product-card/produ
 
 @Component({
   standalone: true,
-  imports: [RouterLink, NgFor, NgIf, AsyncPipe, SlicePipe, ProductCardComponent, FormsModule, LucideAngularModule],
+  imports: [RouterLink, NgFor, NgIf, AsyncPipe, SlicePipe, NgStyle, ProductCardComponent, FormsModule, LucideAngularModule],
   styles: [`
     :host { display: block; overflow-x: hidden; }
 
@@ -125,29 +125,88 @@ import { ProductCardComponent } from '../../shared/components/product-card/produ
       text-transform: uppercase;
     }
 
-    .brand-logos a {
+    .brand-marquee {
+      position: relative;
+      overflow: hidden;
+      border-radius: var(--brand-radius-lg);
+      border: 1px solid var(--brand-border);
+      background: linear-gradient(90deg, rgba(255,255,255,0.85) 0%, rgba(245,247,253,0.9) 100%);
+      padding-block: clamp(18px, 3vw, 32px);
+      mask-image: linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.78) 12%, rgba(0,0,0,0.95) 88%, transparent 100%);
+      -webkit-mask-image: linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.78) 12%, rgba(0,0,0,0.95) 88%, transparent 100%);
+    }
+    .brand-marquee:hover .marquee-track,
+    .brand-marquee:focus-within .marquee-track {
+      animation-play-state: paused;
+    }
+    .marquee-track {
+      display: flex;
+      align-items: center;
+      gap: clamp(36px, 6vw, 72px);
+      width: max-content;
+      animation: marquee-scroll linear infinite;
+      will-change: transform;
+    }
+    .marquee-track.no-animation {
+      animation: none;
+    }
+    @keyframes marquee-scroll {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
+    }
+    .brand-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 0.65rem;
+    }
+    .brand-card {
+      width: clamp(120px, 14vw, 160px);
+      height: clamp(58px, 9vw, 78px);
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      width: clamp(120px, 16vw, 150px);
-      height: clamp(38px, 5vw, 48px);
-      border-radius: var(--brand-radius-sm);
-      border: 1px solid var(--brand-border);
-      background: #ffffff;
-      box-shadow: var(--shadow-soft);
-      transition: border-color var(--transition-base), color var(--transition-base), box-shadow var(--transition-base);
+      padding: clamp(12px, 2vw, 18px);
+      transition: transform var(--transition-base), filter var(--transition-base);
+      position: relative;
     }
-    .brand-logos a:hover,
-    .brand-logos a:focus-visible {
-      border-color: var(--brand-primary);
-      outline: none;
-      color: var(--brand-primary);
-      box-shadow: var(--shadow-hover);
+    .brand-card:hover,
+    .brand-card:focus-visible {
+      transform: translateY(-4px);
     }
-    .brand-logos img {
+    .brand-card:focus-visible {
+      outline: 2px solid var(--brand-primary);
+      outline-offset: 6px;
+    }
+    .brand-card img {
       width: 100%;
       height: 100%;
       object-fit: contain;
+      filter: drop-shadow(0 1px 2px rgba(15,18,30,0.06));
+    }
+    .brand-card.inactive img {
+      filter: grayscale(1) opacity(0.45);
+    }
+    .brand-caption {
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--brand-muted);
+    }
+    .brand-caption.inactive {
+      color: rgba(15, 18, 30, 0.35);
+    }
+    .brand-status {
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--brand-primary);
+    }
+    .brand-status.inactive {
+      color: rgba(15, 18, 30, 0.4);
     }
 
     .cashback {
@@ -563,23 +622,47 @@ import { ProductCardComponent } from '../../shared/components/product-card/produ
       </div>
     </div>
     <ng-container *ngIf="brandLogos.length; else brandLogosEmpty">
-      <div class="d-flex flex-wrap gap-4 align-items-center justify-content-center justify-content-lg-between">
-        <a
-          *ngFor="let brand of brandLogos; trackBy: trackBrandId"
-          [routerLink]="['/shop']"
-          [queryParams]="{ brand: brand.name }"
-          class="text-decoration-none"
-          [attr.aria-label]="'Ver llantas de ' + brand.name"
-          title="Ver en tienda"
+      <div class="brand-marquee" role="list" aria-live="polite">
+        <div
+          class="marquee-track"
+          [class.no-animation]="!marqueeActive"
+          [ngStyle]="{ 'animation-duration': marqueeDuration }"
         >
-          <img
-            [src]="brand.logoUrl || fallbackBrandLogo"
-            [attr.alt]="brand.name"
-            [attr.title]="brand.name"
-            loading="lazy"
-            (error)="onBrandImageError($event)"
-          />
-        </a>
+          <div
+            class="brand-item"
+            *ngFor="let brand of brandMarquee; let i = index; trackBy: trackMarqueeIndex"
+            role="listitem"
+          >
+            <ng-container *ngIf="brand.active; else inactiveBrand">
+              <a
+                class="brand-card"
+                [routerLink]="['/shop']"
+                [queryParams]="{ brand: brand.name }"
+                [attr.aria-label]="'Ver llantas de ' + brand.name"
+              >
+                <img
+                  [src]="brand.logoUrl || fallbackBrandLogo"
+                  [attr.alt]="brand.name"
+                  loading="lazy"
+                  (error)="onBrandImageError($event)"
+                />
+              </a>
+              <span class="brand-caption">{{ brand.name }}</span>
+            </ng-container>
+            <ng-template #inactiveBrand>
+              <div class="brand-card inactive">
+                <img
+                  [src]="brand.logoUrl || fallbackBrandLogo"
+                  [attr.alt]="brand.name + ' no disponible'"
+                  loading="lazy"
+                  (error)="onBrandImageError($event)"
+                />
+              </div>
+              <span class="brand-caption inactive">{{ brand.name }}</span>
+              <span class="brand-status inactive">No disponible por ahora</span>
+            </ng-template>
+          </div>
+        </div>
       </div>
     </ng-container>
     <ng-template #brandLogosEmpty>
@@ -691,6 +774,9 @@ export class LandingPage implements OnInit, OnDestroy {
   readonly supportPhone = '5555555555';
   readonly supportPhoneDisplay = '(55) 5555 5555';
   brandLogos: Brand[] = [];
+  brandMarquee: Brand[] = [];
+  marqueeDuration = '24s';
+  marqueeActive = false;
   readonly fallbackBrandLogo = '/assets/brand/roue-mark2.svg';
 
   // Carousel state
@@ -713,11 +799,17 @@ export class LandingPage implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.api.getBrands().subscribe({
       next: brands => {
-        this.brandLogos = brands;
-        this.brands = brands.map(b => b.name);
+        this.brandLogos = [...brands].sort((a, b) => {
+          if (a.active === b.active) return a.name.localeCompare(b.name);
+          return a.active ? -1 : 1;
+        });
+        this.brands = this.brandLogos.map(b => b.name);
+        this.#buildBrandMarquee();
       },
       error: () => {
         this.brandLogos = [];
+        this.brandMarquee = [];
+        this.marqueeActive = false;
         this.brands = [];
       }
     });
@@ -780,7 +872,7 @@ export class LandingPage implements OnInit, OnDestroy {
   }
 
   trackById(_: number, p: Product) { return p.id; }
-  trackBrandId(_: number, brand: Brand) { return brand.id; }
+  trackMarqueeIndex(index: number) { return index; }
 
   onBrandImageError(evt: Event) {
     const target = evt.target as HTMLImageElement | null;
@@ -789,6 +881,22 @@ export class LandingPage implements OnInit, OnDestroy {
       target.src = this.fallbackBrandLogo;
       return;
     }
+  }
+
+  #buildBrandMarquee() {
+    const base = this.brandLogos.filter(Boolean);
+    if (!base.length) {
+      this.brandMarquee = [];
+      this.marqueeActive = false;
+      return;
+    }
+
+    const loopSource = base.length > 1 ? [...base, ...base] : [...base];
+    this.brandMarquee = loopSource;
+
+    const durationSeconds = Math.max(16, base.length * 4);
+    this.marqueeDuration = `${durationSeconds}s`;
+    this.marqueeActive = base.length > 1;
   }
 
   onSizeSearch() {

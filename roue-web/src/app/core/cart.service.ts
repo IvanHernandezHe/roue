@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
+import { AuthStore } from '../state/auth.store';
 
 export interface CartItemDto { productId: string; qty: number; }
 export interface CartDtoItem { productId: string; name: string; sku: string; size: string; price: number; qty: number; stock?: number; }
@@ -13,6 +14,7 @@ export class CartService {
   #base = environment.apiBaseUrl + '/cart';
   #cartIdKey = 'roue_server_cart_id';
   #cartId: string | null = null;
+  #auth = inject(AuthStore);
 
   constructor() {
     try {
@@ -45,5 +47,30 @@ export class CartService {
     return headers ? { withCredentials: true, headers } : { withCredentials: true };
   }
 
-  #capture() { return tap<CartDto>((dto) => this.remember(dto?.id)); }
+  #capture() {
+    return tap<CartDto>((dto) => {
+      if (!dto) {
+        this.forget();
+        return;
+      }
+
+      const authed = this.#auth.isAuthenticated();
+      const currentUser = this.#auth.user();
+      const currentUserId = currentUser?.id?.toLowerCase() ?? null;
+
+      if (dto.userId) {
+        if (!authed) {
+          this.forget();
+          return;
+        }
+        const dtoUserId = dto.userId.toLowerCase();
+        if (currentUserId && dtoUserId !== currentUserId) {
+          this.forget();
+          return;
+        }
+      }
+
+      this.remember(dto.id);
+    });
+  }
 }

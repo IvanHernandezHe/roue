@@ -1,4 +1,6 @@
 using System;
+using System.Linq;
+using System.Security.Claims;
 using Microsoft.Extensions.Configuration;
 using Npgsql;
 using Roue.Infrastructure.Persistence;
@@ -13,9 +15,11 @@ using Roue.Infrastructure.Services;
 using Roue.Infrastructure.Logging;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Roue.API.Services;
 using Roue.Infrastructure.Inventory;
 using Roue.Infrastructure.Messaging;
 using Roue.Infrastructure.Integration;
+using Microsoft.Extensions.Logging;
 
 namespace Roue.API.Extensions;
 
@@ -87,6 +91,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IActivityTracker, ActivityTracker>();
         services.AddScoped<IInventoryService, InventoryService>();
         services.AddScoped<ICartService, CartService>();
+        services.AddSingleton<ICartSessionManager, CartSessionManager>();
         services.AddScoped<IProductQueryService, ProductQueryService>();
         services.AddScoped<IAddressService, AddressService>();
         services.AddScoped<IDiscountsService, DiscountsService>();
@@ -127,21 +132,59 @@ public static class ServiceCollectionExtensions
         {
             var sameSiteStr = cfg["Auth:CookieSameSite"] ?? "Lax"; // Lax|None|Strict
             var secureStr = cfg["Auth:CookieSecure"] ?? "Conditional"; // Always|None|Conditional
+            var domain = cfg["Auth:CookieDomain"];
+            var path = cfg["Auth:CookiePath"];
             options.Cookie.Name = ".Roue.Auth";
             options.Cookie.HttpOnly = true;
+            options.Cookie.IsEssential = true;
             options.Cookie.SameSite = sameSiteStr.Equals("None", StringComparison.OrdinalIgnoreCase) ? SameSiteMode.None
                 : sameSiteStr.Equals("Strict", StringComparison.OrdinalIgnoreCase) ? SameSiteMode.Strict
                 : SameSiteMode.Lax;
             options.Cookie.SecurePolicy = secureStr.Equals("Always", StringComparison.OrdinalIgnoreCase)
                 ? CookieSecurePolicy.Always
                 : secureStr.Equals("None", StringComparison.OrdinalIgnoreCase) ? CookieSecurePolicy.None : CookieSecurePolicy.SameAsRequest;
+            if (!string.IsNullOrWhiteSpace(domain)) options.Cookie.Domain = domain;
+            if (!string.IsNullOrWhiteSpace(path)) options.Cookie.Path = path;
+            if (int.TryParse(cfg["Auth:CookieExpirationMinutes"], out var expirationMinutes) && expirationMinutes > 0)
+            {
+                options.ExpireTimeSpan = TimeSpan.FromMinutes(expirationMinutes);
+                options.SlidingExpiration = true;
+                options.Cookie.MaxAge = TimeSpan.FromMinutes(expirationMinutes);
+            }
 
             options.Events = new CookieAuthenticationEvents
             {
                 OnSignedIn = async ctx =>
                 {
-                    var audit = ctx.HttpContext.RequestServices.GetRequiredService<IAuditLogger>();
+                    var services = ctx.HttpContext.RequestServices;
+                    var audit = services.GetRequiredService<IAuditLogger>();
                     await audit.LogAsync("auth.signed_in", subjectType: "User", subjectId: ctx.Principal?.Identity?.Name, description: "User signed in");
+
+                    var userIdClaim = ctx.Principal?.FindFirstValue(ClaimTypes.NameIdentifier)
+                                      ?? ctx.Principal?.FindFirstValue("sub")
+                                      ?? ctx.Principal?.FindFirstValue("uid");
+                    if (!Guid.TryParse(userIdClaim, out var userId)) return;
+
+                    var cartSession = services.GetRequiredService<ICartSessionManager>();
+                    var cookieCartId = cartSession.ReadCartId(ctx.HttpContext);
+                    if (!cookieCartId.HasValue) return;
+
+                    try
+                    {
+                        var cartService = services.GetRequiredService<ICartService>();
+                        var cartDto = await cartService.MergeAsync(userId, Enumerable.Empty<(Guid productId, int qty)>(), cookieCartId, ctx.HttpContext.RequestAborted);
+                        cartSession.StampCookie(ctx.HttpContext, cartDto.Id);
+                        await audit.LogAsync("cart.adopted_on_login",
+                            subjectType: nameof(Roue.Domain.Carts.Cart),
+                            subjectId: cartDto.Id.ToString(),
+                            description: "Anonymous cart merged into user cart on sign-in",
+                            metadata: new { cookieCartId = cookieCartId.Value, adoptedId = cartDto.Id });
+                    }
+                    catch (Exception ex)
+                    {
+                        var logger = services.GetService<Microsoft.Extensions.Logging.ILogger<CartSessionManager>>();
+                        logger?.LogError(ex, "Failed to adopt anonymous cart {CartId} for user {UserId}", cookieCartId, userId);
+                    }
                 },
                 OnSigningOut = async ctx =>
                 {

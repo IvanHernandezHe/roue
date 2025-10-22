@@ -516,7 +516,17 @@ export class AuthWidgetComponent implements OnInit {
   }
 
   #afterAuthWithCart(done: () => void) {
-    const items = this.#cart.items().map(i => ({ productId: i.productId, qty: i.qty }));
+    if (this.#cart.isServerSynced()) {
+      this.#cart.reload();
+      this.#syncMarketingOptIn(done);
+      return;
+    }
+    const items = this.#cart.items().map(i => ({ productId: i.productId, qty: i.qty })).filter(i => i.qty > 0);
+    if (items.length === 0) {
+      this.#cart.reload();
+      this.#syncMarketingOptIn(done);
+      return;
+    }
     this.#cartApi.merge(items).subscribe({
       next: (res) => {
         this.#cart.replaceFromServer(res);

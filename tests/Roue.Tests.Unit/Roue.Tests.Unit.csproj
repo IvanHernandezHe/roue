@@ -23,5 +23,6 @@
     <ProjectReference Include="..\..\src\Roue.Domain\Roue.Domain.csproj" />
     <ProjectReference Include="..\..\src\Roue.Application\Roue.Application.csproj" />
     <ProjectReference Include="..\..\src\Roue.Infrastructure\Roue.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\Roue.API\Roue.API.csproj" />
   </ItemGroup>
 </Project>

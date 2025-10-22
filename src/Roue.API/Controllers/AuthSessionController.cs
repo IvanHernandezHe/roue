@@ -7,6 +7,7 @@ using Microsoft.Extensions.Options;
 using Roue.Application.Interface;
 using System.Security.Claims;
 using System.Linq;
+using Roue.API.Services;
 
 namespace Roue.API.Controllers;
  
@@ -18,12 +19,14 @@ public class AuthSessionController : ControllerBase
     private readonly SignInManager<IdentityUser<Guid>> _signIn;
     private readonly IOptionsMonitor<CookieAuthenticationOptions> _cookieOptions;
     private readonly UserManager<IdentityUser<Guid>> _users;
-    public AuthSessionController(IAuditLogger audit, SignInManager<IdentityUser<Guid>> signIn, IOptionsMonitor<CookieAuthenticationOptions> cookieOptions, UserManager<IdentityUser<Guid>> users)
+    private readonly ICartSessionManager _cartSession;
+    public AuthSessionController(IAuditLogger audit, SignInManager<IdentityUser<Guid>> signIn, IOptionsMonitor<CookieAuthenticationOptions> cookieOptions, UserManager<IdentityUser<Guid>> users, ICartSessionManager cartSession)
     {
         _audit = audit;
         _signIn = signIn;
         _cookieOptions = cookieOptions;
         _users = users;
+        _cartSession = cartSession;
     }
     [HttpGet("session")]
     [AllowAnonymous]
@@ -53,8 +56,6 @@ public class AuthSessionController : ControllerBase
     {
         // Sign out of all known schemes
         await _signIn.SignOutAsync();
-        await HttpContext.SignOutAsync(IdentityConstants.ApplicationScheme);
-        await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
         await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
         await HttpContext.SignOutAsync(IdentityConstants.TwoFactorUserIdScheme);
 
@@ -66,14 +67,24 @@ public class AuthSessionController : ControllerBase
             var deleteOpts = new CookieOptions
             {
                 Path = appCookieOpts.Cookie.Path ?? "/",
-                Domain = appCookieOpts.Cookie.Domain
+                Domain = appCookieOpts.Cookie.Domain,
+                Secure = appCookieOpts.Cookie.SecurePolicy switch
+                {
+                    CookieSecurePolicy.Always => true,
+                    CookieSecurePolicy.None => false,
+                    _ => Request.IsHttps
+                },
+                SameSite = appCookieOpts.Cookie.SameSite,
+                HttpOnly = appCookieOpts.Cookie.HttpOnly,
+                Expires = DateTimeOffset.UnixEpoch
             };
             Response.Cookies.Delete(appCookieName!, deleteOpts);
         }
 
         // Also attempt to delete common defaults just in case
-        Response.Cookies.Delete(".AspNetCore.Identity.Application", new CookieOptions { Path = "/" });
-        Response.Cookies.Delete(".AspNetCore.Cookies", new CookieOptions { Path = "/" });
+        Response.Cookies.Delete(".AspNetCore.Identity.Application", new CookieOptions { Path = "/", Expires = DateTimeOffset.UnixEpoch });
+        Response.Cookies.Delete(".AspNetCore.Cookies", new CookieOptions { Path = "/", Expires = DateTimeOffset.UnixEpoch });
+        _cartSession.ClearCookie(HttpContext);
 
         await _audit.LogAsync("auth.logout", subjectType: "User", subjectId: null, description: "User logged out");
         return NoContent();

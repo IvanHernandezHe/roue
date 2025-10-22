@@ -79,9 +79,6 @@ services:
     environment:
       NODE_ENV: development
       NG_CLI_ANALYTICS: "false"
-    # Si usas `ng serve` dentro del contenedor (solo en dev):
-    profiles:
-      - dev
     ports:
       - "4200:4200"
     # IMPORTANTE: asegúrate que el comando de arranque exponga 0.0.0.0
