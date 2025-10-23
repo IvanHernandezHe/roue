@@ -85,18 +85,6 @@ export class CartStore {
 
   add(p: Product, qty = 1) {
     if (this.#auth.isAuthenticated()) {
-      this.#api.add(p.id, qty).subscribe({
-        next: (res) => {
-          this.replaceFromServer(res);
-          this.#toast.success('Producto agregado al carrito');
-        },
-        error: () => {
-          // fallback local
-          this.#addLocal(p, qty);
-          this.#toast.info('Agregado al carrito (offline)');
-        }
-      });
-    } else {
       const changed = this.#addLocal(p, qty);
       if (changed) {
         this.#toast.success('Producto agregado al carrito');
@@ -104,12 +92,23 @@ export class CartStore {
       this.#api.add(p.id, qty).subscribe({
         next: (res) => this.replaceFromServer(res),
         error: () => {
-          if (changed) {
-            this.#toast.info('Guardado en este dispositivo. Se sincronizará cuando la conexión se restablezca.');
-          }
+          this.#toast.info('Agregado al carrito (offline)');
         }
       });
+      return;
     }
+    const changed = this.#addLocal(p, qty);
+    if (changed) {
+      this.#toast.success('Producto agregado al carrito');
+    }
+    this.#api.add(p.id, qty).subscribe({
+      next: (res) => this.replaceFromServer(res),
+      error: () => {
+        if (changed) {
+          this.#toast.info('Guardado en este dispositivo. Se sincronizará cuando la conexión se restablezca.');
+        }
+      }
+    });
   }
   remove(id: string) {
     const removed = this.#items().find(i => i.productId === id);

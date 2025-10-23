@@ -172,7 +172,12 @@ export class CartPage implements OnInit {
         });
     }
   }
-  moveSavedToCart(w: WishItem) { this.#wishlist.moveToCart(w.productId, 1).subscribe({ next: () => { this.loadSaved(); this.cart.increment(w.productId, 1); }, error: () => {} }); }
+  moveSavedToCart(w: WishItem) {
+    this.#wishlist.moveToCart(w.productId, 1).subscribe({
+      next: () => { this.loadSaved(); this.cart.reload(); this.#toast.success('Movido al carrito'); },
+      error: () => {}
+    });
+  }
   removeSaved(w: WishItem) { this.#wishlist.remove(w.productId).subscribe({ next: () => this.loadSaved(), error: () => {} }); }
 
   moveAllSavedToCart() {

@@ -19,6 +19,11 @@ export class WishlistStore {
   readonly items = this.#items.asReadonly();
   readonly count = computed(() => this.#items()?.length ?? 0);
 
+  reset() {
+    this.#imgLookupPending.clear();
+    this.#items.set([]);
+  }
+
   load() {
     this.#api.list().subscribe({
       next: (l) => { this.#items.set(l); this.#enrichMissingImages(); },

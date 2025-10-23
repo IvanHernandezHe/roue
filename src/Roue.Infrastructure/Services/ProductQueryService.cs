@@ -16,7 +16,7 @@ public sealed class ProductQueryService : IProductQueryService
         var now = DateTime.UtcNow;
         var query =
             from p in _db.Products.AsNoTracking().Where(p => p.Active)
-            join br in _db.Brands.AsNoTracking() on p.BrandId equals br.Id
+            join br in _db.Brands.AsNoTracking().Where(b => b.Active) on p.BrandId equals br.Id
             join cat in _db.ProductCategories.AsNoTracking() on p.CategoryId equals cat.Id into cjoin
             from c in cjoin.DefaultIfEmpty()
             join inv in _db.Inventory.AsNoTracking() on p.Id equals inv.ProductId into invJoin
@@ -67,7 +67,7 @@ public sealed class ProductQueryService : IProductQueryService
         var now = DateTime.UtcNow;
         var row = await (
             from p in _db.Products.AsNoTracking().Where(x => x.Id == id && x.Active)
-            join br in _db.Brands.AsNoTracking() on p.BrandId equals br.Id
+            join br in _db.Brands.AsNoTracking().Where(b => b.Active) on p.BrandId equals br.Id
             join cat in _db.ProductCategories.AsNoTracking() on p.CategoryId equals cat.Id into cjoin
             from c in cjoin.DefaultIfEmpty()
             join inv in _db.Inventory.AsNoTracking() on p.Id equals inv.ProductId into invJoin

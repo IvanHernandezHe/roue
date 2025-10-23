@@ -17,7 +17,12 @@ import { WishlistStore } from '../../../state/wishlist.store';
   selector: 'app-navbar',
   imports: [RouterLink, RouterLinkActive, NgIf, NgFor, SlicePipe, FormsModule, LucideAngularModule],
   styles: [`
-    :host { display: block; }
+    :host {
+      display: block;
+      position: sticky;
+      top: 0;
+      z-index: 1050;
+    }
     nav {
       background: var(--brand-cloud);
       border-bottom: 1px solid var(--brand-border);
@@ -129,7 +134,7 @@ import { WishlistStore } from '../../../state/wishlist.store';
         </a>
         <a class="nav-icon position-relative" *ngIf="auth.isAuthenticated()" routerLink="/guardados" aria-label="Guardados">
           <lucide-icon name="heart" size="20" [strokeWidth]="2.5"></lucide-icon>
-          <span *ngIf="wishlist.count() > 0" class="badge badge-counter rounded-pill bg-secondary">{{ wishlist.count() }}</span>
+          <span *ngIf="wishlist.count() > 0" class="badge badge-counter rounded-pill bg-danger">{{ wishlist.count() }}</span>
         </a>
         <ng-container *ngIf="auth.isAuthenticated(); else guestUser">
           <div class="position-relative" #userMenuContainer>

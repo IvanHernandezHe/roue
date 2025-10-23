@@ -769,13 +769,25 @@ export class ShopPage {
     if (!normalized && normalized !== 0) {
       if (!checked) return;
     }
-    const hasValue = set.has(normalized);
+    const next = new Set<T>(set);
     if (checked) {
-      if (hasValue) return;
-      set.add(normalized);
+      if (next.has(normalized)) return;
+      next.add(normalized);
     } else {
-      if (!hasValue) return;
-      set.delete(normalized);
+      if (!next.has(normalized)) return;
+      next.delete(normalized);
+    }
+    if (set === (this.brandsSelected as unknown as Set<any>)) {
+      this.brandsSelected = next as unknown as Set<string>;
+    } else if (set === (this.typesSelected as unknown as Set<any>)) {
+      this.typesSelected = next as unknown as Set<string>;
+    } else if (set === (this.speedSelected as unknown as Set<any>)) {
+      this.speedSelected = next as unknown as Set<string>;
+    } else if (set === (this.loadSelected as unknown as Set<any>)) {
+      this.loadSelected = next as unknown as Set<string>;
+    } else {
+      set.clear();
+      next.forEach(v => set.add(v as any));
     }
     this.applyFilters('other');
   }
