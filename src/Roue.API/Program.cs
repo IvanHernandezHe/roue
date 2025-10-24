@@ -154,6 +154,7 @@ try
         }
     }
 
+
     if (serveSpa)
     {
         var indexFile = System.IO.Path.Combine(app.Environment.WebRootPath ?? string.Empty, "index.html");
