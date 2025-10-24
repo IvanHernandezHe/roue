@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
+import { CartDto } from './cart.service';
 
 export interface WishItem {
   productId: string;
@@ -21,5 +22,5 @@ export class WishlistService {
   list() { return this.#http.get<WishItem[]>(`${this.#base}`, { withCredentials: true }); }
   add(productId: string) { return this.#http.post(`${this.#base}/${productId}`, {}, { withCredentials: true }); }
   remove(productId: string) { return this.#http.delete(`${this.#base}/${productId}`, { withCredentials: true }); }
-  moveToCart(productId: string, qty = 1) { return this.#http.post(`${this.#base}/move-to-cart/${productId}?qty=${qty}`, {}, { withCredentials: true }); }
+  moveToCart(productId: string, qty = 1) { return this.#http.post<CartDto>(`${this.#base}/move-to-cart/${productId}?qty=${qty}`, {}, { withCredentials: true }); }
 }

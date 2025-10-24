@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <title>Roue – Tienda en línea próximamente</title>
+    <meta
+      name="description"
+      content="Roue prepara la mejor experiencia para comprar llantas en línea. Déjanos tu correo para avisarte del lanzamiento y acceso a promociones exclusivas."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Space+Grotesk:wght@500;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --brand-primary: #0f52ba;
+        --brand-primary-dark: #0a3a82;
+        --brand-ink: #0f121e;
+        --brand-muted: rgba(15, 18, 30, 0.62);
+        --brand-border: rgba(15, 18, 30, 0.1);
+        --radius-lg: 28px;
+        --radius-md: 18px;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: "Poppins", system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", sans-serif;
+        background: linear-gradient(145deg, #f8faff 0%, #eef4ff 100%);
+        color: var(--brand-ink);
+        min-height: 100vh;
+        display: flex;
+        align-items: stretch;
+        justify-content: center;
+        padding: clamp(1.5rem, 4vw, 3rem);
+      }
+      .shell {
+        width: min(960px, 100%);
+        background: rgba(255, 255, 255, 0.94);
+        border-radius: var(--radius-lg);
+        border: 1px solid rgba(255, 255, 255, 0.6);
+        box-shadow: 0 55px 90px -45px rgba(15, 18, 30, 0.15);
+        position: relative;
+        overflow: hidden;
+      }
+      .shell::after {
+        content: "";
+        position: absolute;
+        top: -180px;
+        right: -120px;
+        width: 420px;
+        height: 420px;
+        background: radial-gradient(
+          circle at center,
+          rgba(15, 82, 186, 0.18) 0%,
+          transparent 60%
+        );
+        z-index: 0;
+      }
+      header {
+        padding: clamp(1.5rem, 3vw, 2.5rem);
+        display: flex;
+        flex-direction: column;
+        gap: clamp(0.9rem, 3vw, 1.4rem);
+        position: relative;
+        z-index: 1;
+      }
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.6rem;
+        font-family: "Space Grotesk", sans-serif;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        font-size: 1rem;
+        color: var(--brand-primary);
+        text-transform: uppercase;
+      }
+      .brand span {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: var(--brand-primary);
+        color: #fff;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.75rem;
+      }
+      h1 {
+        font-family: "Space Grotesk", sans-serif;
+        margin: 0;
+        font-size: clamp(2.2rem, 6vw, 3.4rem);
+        line-height: 1.08;
+      }
+      .lead {
+        margin: 0;
+        font-size: clamp(1rem, 2.8vw, 1.2rem);
+        color: var(--brand-muted);
+        max-width: 36ch;
+      }
+      .highlight {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        background: rgba(15, 82, 186, 0.08);
+        color: var(--brand-primary);
+        border-radius: 999px;
+        padding: 0.4rem 0.9rem;
+        font-weight: 600;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+      }
+      .content {
+        padding: clamp(1.5rem, 3.5vw, 3rem);
+        display: grid;
+        gap: clamp(1.5rem, 3vw, 2.5rem);
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        position: relative;
+        z-index: 1;
+      }
+      .card {
+        background: rgba(255, 255, 255, 0.98);
+        border-radius: var(--radius-md);
+        border: 1px solid rgba(15, 18, 30, 0.06);
+        padding: clamp(1.4rem, 3vw, 1.8rem);
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        box-shadow: 0 18px 35px -26px rgba(15, 18, 30, 0.28);
+      }
+      .card h2 {
+        margin: 0;
+        font-size: 1.1rem;
+        font-weight: 600;
+      }
+      .card p {
+        margin: 0;
+        color: var(--brand-muted);
+        font-size: 0.95rem;
+        line-height: 1.6;
+      }
+      .icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        background: rgba(15, 82, 186, 0.12);
+        color: var(--brand-primary);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.05rem;
+      }
+      form {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+      .input-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.6rem;
+      }
+      input[type="email"] {
+        flex: 1 1 230px;
+        padding: 0.85rem 1rem;
+        border-radius: 999px;
+        border: 1px solid var(--brand-border);
+        font-size: 1rem;
+        transition: border-color 180ms ease, box-shadow 180ms ease;
+      }
+      input[type="email"]:focus-visible {
+        border-color: var(--brand-primary);
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(15, 82, 186, 0.18);
+      }
+      button[type="submit"] {
+        flex: 0 0 auto;
+        padding: 0.9rem 1.6rem;
+        border-radius: 999px;
+        border: none;
+        background: var(--brand-primary);
+        color: #fff;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        cursor: pointer;
+        transition: background 180ms ease, transform 180ms ease;
+      }
+      button[type="submit"]:hover,
+      button[type="submit"]:focus-visible {
+        background: var(--brand-primary-dark);
+        transform: translateY(-1px);
+      }
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        border: 0;
+        white-space: nowrap;
+      }
+      small {
+        color: var(--brand-muted);
+      }
+      footer {
+        padding: clamp(1rem, 3vw, 1.6rem);
+        text-align: center;
+        color: rgba(15, 18, 30, 0.45);
+        font-size: 0.85rem;
+      }
+      footer a {
+        color: var(--brand-primary);
+        font-weight: 600;
+        text-decoration: none;
+      }
+      footer a:hover,
+      footer a:focus-visible {
+        text-decoration: underline;
+      }
+      @media (max-width: 620px) {
+        header {
+          text-align: center;
+          align-items: center;
+        }
+        .lead {
+          max-width: none;
+        }
+        .shell::after {
+          top: -220px;
+          right: -220px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="shell">
+      <header>
+        <span class="brand"><span>R</span> Roue</span>
+        <span class="highlight">Próximamente</span>
+        <h1>Estamos afinando la mejor experiencia para tu próxima compra de llantas.</h1>
+        <p class="lead">
+          Falta muy poco para lanzar la nueva tienda en línea. Mientras tanto, déjanos tus datos
+          para enviarte acceso anticipado, promociones de lanzamiento y contenido para tu vehículo.
+        </p>
+      </header>
+
+      <section class="content">
+        <article class="card">
+          <span class="icon">🚗</span>
+          <h2>Selección especializada</h2>
+          <p>
+            Curamos llantas para auto, SUV y camioneta con disponibilidad inmediata, instalación a domicilio
+            y asesoría personalizada según tu estilo de manejo.
+          </p>
+        </article>
+
+        <article class="card">
+          <span class="icon">🎁</span>
+          <h2>Beneficios exclusivos</h2>
+          <p>
+            Inscríbete para recibir cupones de apertura, meses sin intereses y acceso al programa de cashback
+            que recompensará tus compras desde el primer día.
+          </p>
+        </article>
+
+        <article class="card">
+          <span class="icon">📅</span>
+          <h2>Agenda tu instalación</h2>
+          <p>
+            Serás de las primeras personas en acceder al calendario de servicios móviles para instalar,
+            balancear y alinear tus llantas sin salir de casa.
+          </p>
+        </article>
+
+        <article class="card">
+          <span class="icon">📬</span>
+          <h2>Avísame cuando abran</h2>
+          <p>
+            Déjanos tu correo y recibirás un mensaje con la fecha de apertura, catálogo destacado y un
+            regalo de bienvenida.
+          </p>
+          <form
+            action="https://example.com/form-handler"
+            method="post"
+            name="notify"
+          >
+            <div class="input-group">
+              <label class="sr-only" for="email">Correo electrónico</label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                placeholder="tu@correo.com"
+                required
+                autocomplete="email"
+              />
+              <button type="submit">Avisarme</button>
+            </div>
+            <small>
+              Sin spam. Solo te escribiremos para anunciar la apertura y ayudarte a estrenar llantas.
+            </small>
+          </form>
+        </article>
+      </section>
+
+      <footer>
+        ¿Tienes dudas? Escríbenos a
+        <a href="mailto:hola@roue.mx">hola@roue.mx</a> o envíanos un WhatsApp al
+        <a href="https://wa.me/5215555555555" target="_blank" rel="noopener">+52 1 55 5555 5555</a>.
+      </footer>
+    </main>
+  </body>
+</html>

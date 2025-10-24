@@ -52,7 +52,7 @@ import { switchMap } from 'rxjs';
     .media-shell {
       display: flex;
       gap: .75rem;
-      align-items: flex-start;
+      align-items: stretch;
     }
     .rail {
       display: none;
@@ -67,7 +67,7 @@ import { switchMap } from 'rxjs';
       flex-direction: column;
       gap: .9rem;
       min-width: 0;
-      align-items: center;
+      align-items: stretch;
     }
 
     .thumbs {
@@ -107,9 +107,8 @@ import { switchMap } from 'rxjs';
       border: 1px solid var(--brand-border);
       background: linear-gradient(135deg, #ffffff 0%, #f0f3f9 100%);
       height: var(--viewer-h);
-      width: 100%;
-      max-width: clamp(260px, 40vw, 440px);
-      margin: 0 auto;
+      width: min(100%, clamp(260px, 62vw, 560px));
+      margin: 0;
       box-shadow: var(--shadow-soft);
     }
     .simple-carousel.plain::after { display: none !important; }
@@ -153,7 +152,7 @@ import { switchMap } from 'rxjs';
     @media (max-width: 767.98px) {
       .media-shell { flex-direction: column; }
       .viewer-stage { align-items: stretch; }
-      .simple-carousel { height: auto; max-width: 100%; }
+      .simple-carousel { height: auto; max-width: 100%; margin-inline: auto; }
       .simple-item img { height: auto; }
     }
 
@@ -387,52 +386,67 @@ import { switchMap } from 'rxjs';
       .service-card:hover { transform: none !important; }
     }
 
-    :host-context([data-bs-theme='dark']) .simple-carousel,
-    :host-context([data-bs-theme='dark']) .thumb,
+    :host-context([data-bs-theme='dark']) .simple-carousel {
+      background: linear-gradient(180deg, rgba(23,24,30,.96) 0%, rgba(12,12,16,.92) 100%);
+      border-color: rgba(74, 78, 92, 0.45);
+      color: var(--brand-ink);
+    }
+    :host-context([data-bs-theme='dark']) .thumb {
+      background: rgba(15,16,22,.94);
+      border-color: rgba(70, 73, 85, 0.4);
+      color: var(--brand-ink);
+    }
+    :host-context([data-bs-theme='dark']) .thumb.active {
+      border-color: rgba(112, 118, 138, 0.7);
+      background: rgba(26, 28, 36, 0.96);
+    }
     :host-context([data-bs-theme='dark']) .detail-card,
     :host-context([data-bs-theme='dark']) .specs-card {
-      background: var(--brand-cloud);
-      border-color: var(--brand-border);
+      background: linear-gradient(190deg, rgba(20,21,28,.95) 0%, rgba(12,13,18,.9) 100%);
+      border-color: rgba(68, 72, 86, 0.45);
       color: var(--brand-ink);
     }
     :host-context([data-bs-theme='dark']) .specs-table th,
     :host-context([data-bs-theme='dark']) .specs-table td {
-      background: var(--surface-subtle);
-      border-color: var(--brand-border);
+      background: transparent;
+      border-color: rgba(70, 74, 88, 0.4);
       color: var(--brand-ink);
+    }
+    :host-context([data-bs-theme='dark']) .specs-table tr:nth-child(odd) td {
+      background: rgba(23, 24, 32, 0.75);
     }
     @media (min-width: 992px) {
       :host-context([data-bs-theme='dark']) .specs-table tr {
-        background: rgba(22, 30, 44, .9);
-        border-color: color-mix(in srgb, var(--brand-border) 60%, transparent);
+        background: rgba(24, 25, 32, 0.9);
+        border-color: rgba(82, 86, 102, 0.5);
       }
     }
     :host-context([data-bs-theme='dark']) .badge-chip {
-      background: rgba(18,26,44,.92);
-      border-color: color-mix(in srgb, var(--brand-border) 60%, transparent);
+      background: rgba(33,34,43,0.88);
+      border-color: rgba(78, 82, 98, 0.45);
       color: var(--brand-ink);
     }
     :host-context([data-bs-theme='dark']) .badge-chip.out {
-      background: rgba(104,112,125,.28);
-      border-color: rgba(104,112,125,.36);
-      color: rgba(214,218,228,.92);
+      background: rgba(97, 104, 118, 0.24);
+      border-color: rgba(116, 124, 140, 0.42);
+      color: rgba(214, 218, 228, 0.9);
     }
     :host-context([data-bs-theme='dark']) .size-chip {
-      background: rgba(26,34,52,.85);
-      border-color: color-mix(in srgb, var(--brand-border) 60%, transparent);
+      background: rgba(40, 41, 52, 0.9);
+      border-color: rgba(96, 100, 116, 0.45);
       color: var(--brand-ink);
     }
     :host-context([data-bs-theme='dark']) .usage-chip {
-      background: rgba(29,111,200,.24);
-      border-color: rgba(29,111,200,.32);
-      color: var(--brand-primary);
+      background: rgba(69, 88, 140, 0.38);
+      border-color: rgba(110, 138, 204, 0.32);
+      color: #b7c9ff;
     }
     :host-context([data-bs-theme='dark']) .brand-logo {
-      background: rgba(26,34,52,.85);
-      border-color: color-mix(in srgb, var(--brand-border) 60%, transparent);
+      background: rgba(30, 32, 40, 0.92);
+      border-color: rgba(78, 82, 100, 0.42);
     }
     :host-context([data-bs-theme='dark']) .availability-note {
-      color: color-mix(in srgb, var(--brand-ink) 75%, rgba(148,163,184,.8));
+      color: rgba(202, 209, 226, 0.84);
     }
   `],
   template: `

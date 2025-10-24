@@ -30,20 +30,21 @@
 
 body[data-bs-theme="dark"],
 [data-bs-theme="dark"] body {
-  --brand-primary: #1e4d7c;
-  --brand-primary-dark: #0b2949;
-  --brand-ink: #e3e9f4;
-  --brand-ink-soft: #c5cede;
-  --brand-muted: #8f96a7;
-  --brand-sand: #101625;
-  --brand-cream: #141c2d;
-  --brand-cloud: #161f32;
-  --brand-border: #212b3e;
-  --brand-border-strong: #2e394f;
-  --surface-base: #0b1423;
-  --surface-subtle: #101a2b;
-  --surface-contrast: #f8fafc;
+  --brand-primary: #4f7dff;
+  --brand-primary-dark: #3052d4;
+  --brand-ink: #f1f3f9;
+  --brand-ink-soft: #ccd3e4;
+  --brand-muted: #9aa3b7;
+  --brand-sand: #0f1015;
+  --brand-cream: #14161d;
+  --brand-cloud: #181a22;
+  --brand-border: #252731;
+  --brand-border-strong: #313340;
+  --surface-base: #08090d;
+  --surface-subtle: #0c0e14;
+  --surface-contrast: #f9fbff;
   color: var(--brand-ink);
+  background-color: var(--surface-base);
 }
 
 html,

@@ -208,35 +208,39 @@ import { Component } from '@angular/core';
               </span>
               <h2 class="section-title display-6 mb-3">Encuentra tu sucursal más cercana</h2>
               <p class="text-muted mb-0">
-                Nuestra base de operaciones se localiza al sur de Monterrey con cobertura metropolitana y envíos
-                nacionales. Visítanos para asesoría especializada o agenda una cita con nuestros técnicos.
+                Nuestra base de operaciones se encuentra en Apodaca con cobertura metropolitana y envíos nacionales.
+                Visítanos para asesoría especializada o agenda una cita con nuestros técnicos.
               </p>
             </div>
           </div>
           <div class="map-toolbar rounded-4 shadow-sm mb-3 mb-lg-4">
             <div class="toolbar-location">
-              <strong>Av. Eugenio Garza Sada #4446 Las Brisas, Monterrey, N.L.</strong>
+              <strong>Calle Salvador Reyes s/n · Cañada Blanca, Apodaca, N.L.</strong>
               <span class="toolbar-meta">Lunes a sábado · 09:00 a 19:00 h</span>
             </div>
             <div class="toolbar-actions">
               <a class="btn btn-sm btn-outline-secondary" href="tel:+528112345678">Llamar</a>
-              <a class="btn btn-sm btn-primary" target="_blank" rel="noopener" href="https://maps.google.com/?q=Av.+Eugenio+Garza+Sada+4446+Las+Brisas,+Monterrey,+NL">
+              <a class="btn btn-sm btn-primary" target="_blank" rel="noopener" href="https://maps.app.goo.gl/f4GqScN5AqYArLPn7">
                 Abrir en Google Maps
               </a>
             </div>
           </div>
           <div class="map-frame shadow-lg">
             <iframe
-              title="Ubicación Roue Performance Monterrey"
+              title="Ubicación Roue Performance Apodaca"
               loading="lazy"
               allowfullscreen
               referrerpolicy="no-referrer-when-downgrade"
-              src="https://maps.google.com/maps?q=Av.%20Eugenio%20Garza%20Sada%204446%20Las%20Brisas,%20Monterrey%20NL&z=13&output=embed">
+              src="https://www.google.com/maps?q=25.73029,-100.184477&z=16&output=embed">
             </iframe>
+            <div class="map-pin" aria-hidden="true">
+              <div class="map-pin-circle">R</div>
+              <div class="map-pin-tail"></div>
+            </div>
             <div class="map-info-card">
               <h3 class="h6 mb-1 text-uppercase">Roue Performance · Matriz</h3>
               <p class="mb-2 small text-muted">
-                Atención personalizada, montaje certificado y almacén con inventario inmediato.
+                Centro logístico con asesoría personalizada, montaje certificado y despacho a nivel nacional.
               </p>
               <ul class="list-unstyled mb-3 small text-muted">
                 <li>• Estacionamiento y sala de espera climatizada</li>
@@ -244,7 +248,7 @@ import { Component } from '@angular/core';
                 <li>• Rutas de entrega express área metropolitana</li>
               </ul>
               <div class="d-flex gap-2 flex-wrap">
-                <a class="btn btn-sm btn-outline-primary" target="_blank" rel="noopener" href="https://maps.google.com/?daddr=Av.+Eugenio+Garza+Sada+4446+Las+Brisas,+Monterrey,+NL">
+                <a class="btn btn-sm btn-outline-primary" target="_blank" rel="noopener" href="https://maps.app.goo.gl/f4GqScN5AqYArLPn7">
                   Obtener indicaciones
                 </a>
                 <a class="btn btn-sm btn-light" href="mailto:hola@roue.mx">Agendar visita</a>
@@ -510,6 +514,7 @@ import { Component } from '@angular/core';
       height: 100%;
       border: 0;
       filter: saturate(1.05);
+      pointer-events: none; /* keeps the embedded map static so the custom pin stays aligned */
     }
     .map-info-card {
       position: absolute;
@@ -526,6 +531,41 @@ import { Component } from '@angular/core';
     .map-info-card .btn {
       font-weight: 600;
       letter-spacing: 0.04em;
+    }
+    .map-pin {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -65%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+      pointer-events: none;
+      z-index: 3;
+    }
+    .map-pin-circle {
+      width: 52px;
+      height: 52px;
+      border-radius: 999px;
+      background: linear-gradient(160deg, var(--brand-primary) 0%, color-mix(in srgb, var(--brand-primary) 65%, #0a2f66) 100%);
+      border: 3px solid #ffffff;
+      box-shadow: 0 12px 24px -12px rgba(9, 27, 66, 0.65);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      color: #ffffff;
+      letter-spacing: 0.06em;
+    }
+    .map-pin-tail {
+      width: 0;
+      height: 0;
+      border-left: 9px solid transparent;
+      border-right: 9px solid transparent;
+      border-top: 14px solid color-mix(in srgb, var(--brand-primary) 85%, #0a2f66);
+      margin-top: -2px;
     }
 
     :host-context([data-bs-theme='dark']) .map-section {

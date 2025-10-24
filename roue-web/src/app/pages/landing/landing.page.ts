@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { NgFor, NgIf, AsyncPipe, SlicePipe, NgStyle } from '@angular/common';
+import { NgFor, NgIf, AsyncPipe, SlicePipe, NgStyle, NgClass } from '@angular/common';
 import { LucideAngularModule } from 'lucide-angular';
 import { ApiService } from '../../core/api.service';
 import { FormsModule } from '@angular/forms';
@@ -8,9 +8,34 @@ import { Product } from '../../core/models/product.model';
 import { Brand } from '../../core/models/brand.model';
 import { ProductCardComponent } from '../../shared/components/product-card/product-card.component';
 
+type SocialPlatform = 'facebook' | 'instagram';
+type SocialKind = 'post' | 'reel' | 'foto';
+
+interface SocialPost {
+  id: string;
+  platform: SocialPlatform;
+  kind: SocialKind;
+  title: string;
+  excerpt: string;
+  mediaUrl: string;
+  mediaAlt: string;
+  publishedAt: string;
+  url: string;
+  stats?: string;
+  platformLabel: string;
+  ctaLabel: string;
+}
+
+interface SocialPlatformOption {
+  id: SocialPlatform;
+  label: string;
+  helper: string;
+  link: string;
+}
+
 @Component({
   standalone: true,
-  imports: [RouterLink, NgFor, NgIf, AsyncPipe, SlicePipe, NgStyle, ProductCardComponent, FormsModule, LucideAngularModule],
+  imports: [RouterLink, NgFor, NgIf, AsyncPipe, SlicePipe, NgStyle, NgClass, ProductCardComponent, FormsModule, LucideAngularModule],
   styles: [`
     :host { display: block; overflow-x: hidden; }
 
@@ -229,6 +254,136 @@ import { ProductCardComponent } from '../../shared/components/product-card/produ
       background: var(--surface-subtle);
     }
 
+    .social-feed {
+      border-radius: var(--brand-radius-lg);
+      border: 1px solid var(--brand-border);
+      background: linear-gradient(160deg, #ffffff 0%, #f5f7ff 60%, #eef2ff 100%);
+      box-shadow: var(--shadow-soft);
+      padding: clamp(1.5rem, 3vw, 2.4rem);
+    }
+    .social-feed .platform-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.65rem;
+    }
+    .social-feed .platform-btn {
+      border-radius: 999px;
+      border: 1px solid var(--brand-border);
+      background: rgba(255, 255, 255, 0.9);
+      padding: 0.45rem 1.25rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      color: var(--brand-muted);
+      transition: transform var(--transition-base), box-shadow var(--transition-base), border-color var(--transition-base), color var(--transition-base);
+    }
+    .social-feed .platform-btn:hover,
+    .social-feed .platform-btn:focus-visible {
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-soft);
+      color: var(--brand-ink);
+    }
+    .social-feed .platform-btn.active-facebook {
+      border-color: #1877f2;
+      background: #1877f2;
+      color: #fff;
+      box-shadow: 0 8px 16px -12px #1877f2;
+    }
+    .social-feed .platform-btn.active-instagram {
+      border-color: #d6249f;
+      background: linear-gradient(135deg, #feda75 0%, #d6249f 52%, #285aeb 100%);
+      color: #fff;
+      box-shadow: 0 10px 18px -14px #d6249f;
+    }
+    .social-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: clamp(1rem, 2vw, 1.4rem);
+    }
+    .social-card {
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+      border-radius: var(--brand-radius-md);
+      border: 1px solid rgba(15, 18, 30, 0.06);
+      background: rgba(255, 255, 255, 0.94);
+      padding: clamp(0.9rem, 2vw, 1.2rem);
+      box-shadow: var(--shadow-soft);
+      position: relative;
+      height: 100%;
+    }
+    .social-card .media {
+      position: relative;
+      border-radius: var(--brand-radius-sm);
+      overflow: hidden;
+      background: var(--brand-cloud);
+      min-height: 188px;
+      display: block;
+    }
+    .social-card .media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 320ms ease;
+    }
+    .social-card:hover .media img,
+    .social-card:focus-within .media img {
+      transform: scale(1.03);
+    }
+    .social-card .media .badge {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+    }
+    .social-card .platform-tag {
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--brand-muted);
+    }
+    .social-card.facebook .platform-tag {
+      color: #1877f2;
+    }
+    .social-card.instagram .platform-tag {
+      background: linear-gradient(135deg, #feda75 0%, #d6249f 52%, #285aeb 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .social-card .title {
+      font-weight: 600;
+      font-size: 1rem;
+      color: var(--brand-ink);
+      margin: 0;
+    }
+    .social-card .excerpt {
+      font-size: 0.9rem;
+      color: var(--brand-muted);
+      margin: 0;
+    }
+    .social-card .stats {
+      font-size: 0.8rem;
+      color: rgba(15, 18, 30, 0.6);
+    }
+    .social-card .cta {
+      margin-top: auto;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-weight: 600;
+      font-size: 0.9rem;
+      text-decoration: none;
+    }
+    .social-card .cta:hover,
+    .social-card .cta:focus-visible {
+      text-decoration: underline;
+    }
+    .social-card .cta svg {
+      width: 18px;
+      height: 18px;
+    }
+
     .floating-fabs { right: 20px; bottom: 20px; }
     .fab {
       width: clamp(48px, 9vw, 58px);
@@ -332,6 +487,28 @@ import { ProductCardComponent } from '../../shared/components/product-card/produ
     }
     :host-context([data-bs-theme="dark"]) .simple-progress .fill {
       background: var(--brand-primary);
+    }
+    :host-context([data-bs-theme="dark"]) .social-feed {
+      background: rgba(15, 18, 30, 0.6);
+      border-color: rgba(255, 255, 255, 0.08);
+    }
+    :host-context([data-bs-theme="dark"]) .social-feed .platform-btn {
+      background: rgba(15, 18, 30, 0.75);
+      border-color: rgba(255, 255, 255, 0.12);
+      color: rgba(226, 232, 240, 0.7);
+    }
+    :host-context([data-bs-theme="dark"]) .social-card {
+      background: rgba(15, 18, 30, 0.55);
+      border-color: rgba(255, 255, 255, 0.08);
+    }
+    :host-context([data-bs-theme="dark"]) .social-card .title {
+      color: rgba(248, 250, 252, 0.95);
+    }
+    :host-context([data-bs-theme="dark"]) .social-card .excerpt {
+      color: rgba(226, 232, 240, 0.75);
+    }
+    :host-context([data-bs-theme="dark"]) .social-card .stats {
+      color: rgba(226, 232, 240, 0.6);
     }
   `],
   template: `
@@ -670,6 +847,79 @@ import { ProductCardComponent } from '../../shared/components/product-card/produ
     </ng-template>
   </section>
 
+  <!-- Social proof -->
+  <section class="container mb-5" aria-labelledby="social-feed-title">
+    <div class="social-feed">
+      <div class="row g-4 align-items-start">
+        <div class="col-12 col-lg-4">
+          <span class="section-eyebrow">Comunidad Roue</span>
+          <h2 id="social-feed-title" class="h4 m-0 section-title">Lo más nuevo en redes</h2>
+          <p class="text-muted mt-3">Historias reales, reseñas y tips que impulsan tu próxima compra inteligente.</p>
+          <div class="platform-controls mt-3" role="tablist" aria-label="Filtrar publicaciones por red social">
+            <button
+              type="button"
+              *ngFor="let platform of socialPlatforms"
+              class="platform-btn"
+              [ngClass]="{
+                'active-facebook': platform.id === 'facebook' && selectedSocialPlatform === 'facebook',
+                'active-instagram': platform.id === 'instagram' && selectedSocialPlatform === 'instagram'
+              }"
+              (click)="onSelectSocialPlatform(platform.id)"
+              [attr.aria-pressed]="selectedSocialPlatform === platform.id"
+            >
+              {{ platform.label }}
+            </button>
+          </div>
+          <p class="text-muted small mt-3">{{ selectedPlatformHelper }}</p>
+          <a
+            class="btn btn-dark btn-sm w-100 w-lg-auto mt-2"
+            [href]="selectedPlatformLink"
+            target="_blank"
+            rel="noopener"
+          >
+            Seguir a Roue
+          </a>
+        </div>
+        <div class="col-12 col-lg-8">
+          <div class="social-grid" role="list">
+            <article
+              *ngFor="let post of selectedSocialPosts; trackBy: trackSocialPost"
+              class="social-card"
+              [ngClass]="post.platform"
+              role="listitem"
+            >
+              <a
+                class="media"
+                [href]="post.url"
+                target="_blank"
+                rel="noopener"
+                [attr.aria-label]="post.ctaLabel"
+              >
+                <img [src]="post.mediaUrl" [alt]="post.mediaAlt" loading="lazy"/>
+                <span class="badge bg-dark text-white text-uppercase">{{ post.kind === 'reel' ? 'Reel' : (post.kind === 'foto' ? 'Foto' : 'Post') }}</span>
+              </a>
+              <span class="platform-tag">{{ post.platformLabel }}</span>
+              <h3 class="title">{{ post.title }}</h3>
+              <p class="excerpt">{{ post.excerpt }}</p>
+              <div class="stats">
+                {{ post.publishedAt }}<ng-container *ngIf="post.stats"> · {{ post.stats }}</ng-container>
+              </div>
+              <a
+                class="cta"
+                [href]="post.url"
+                target="_blank"
+                rel="noopener"
+              >
+                {{ post.ctaLabel }}
+                <lucide-icon name="external-link" size="18" [strokeWidth]="2.4" aria-hidden="true"></lucide-icon>
+              </a>
+            </article>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- Coupons / promos -->
   <section class="container mb-5">
     <div class="row g-3">
@@ -778,6 +1028,79 @@ export class LandingPage implements OnInit, OnDestroy {
   marqueeDuration = '24s';
   marqueeActive = false;
   readonly fallbackBrandLogo = '/assets/brand/roue-mark2.svg';
+  readonly socialPlatforms: SocialPlatformOption[] = [
+    {
+      id: 'facebook',
+      label: 'Facebook',
+      helper: 'Testimonios y coberturas de eventos con fotos y reseñas de la comunidad.',
+      link: 'https://www.facebook.com/roue.mx'
+    },
+    {
+      id: 'instagram',
+      label: 'Instagram',
+      helper: 'Reels cortos y fotos con ideas para tu próxima personalización.',
+      link: 'https://www.instagram.com/roue.mx'
+    }
+  ];
+  selectedSocialPlatform: SocialPlatform = 'facebook';
+  readonly socialPosts: SocialPost[] = [
+    {
+      id: 'fb-trackday',
+      platform: 'facebook',
+      kind: 'post',
+      title: 'Track day con la comunidad Roue',
+      excerpt: 'Vivimos un día completo en pista montando llantas de ultra alto desempeño con nuestros clientes VIP.',
+      mediaUrl: 'https://images.unsplash.com/photo-1525609004556-c46c7d6cf023?auto=format&fit=crop&w=720&q=80',
+      mediaAlt: 'Autos deportivos listos para salir a pista',
+      publishedAt: 'Abril 2024',
+      stats: '1.2k interacciones',
+      url: 'https://www.facebook.com/roue.mx/posts/trackday-comunidad',
+      platformLabel: 'Facebook · Evento',
+      ctaLabel: 'Ver publicación'
+    },
+    {
+      id: 'fb-reseñas',
+      platform: 'facebook',
+      kind: 'post',
+      title: 'Historias de clientes después del servicio a domicilio',
+      excerpt: 'Compartimos reseñas reales de quienes estrenaron llantas sin salir de casa.',
+      mediaUrl: 'https://images.unsplash.com/photo-1515923152115-758a1f08fcc2?auto=format&fit=crop&w=720&q=80',
+      mediaAlt: 'Cliente saludando al técnico de instalación de llantas a domicilio',
+      publishedAt: 'Marzo 2024',
+      stats: '420 comentarios',
+      url: 'https://www.facebook.com/roue.mx/posts/resenas-servicio-domicilio',
+      platformLabel: 'Facebook · Testimonio',
+      ctaLabel: 'Leer reseñas'
+    },
+    {
+      id: 'ig-reel-offroad',
+      platform: 'instagram',
+      kind: 'reel',
+      title: 'Reel: Upgrade off-road en 30 segundos',
+      excerpt: 'Paso a paso del montaje y balanceo de un set 4x4 para salir a la aventura.',
+      mediaUrl: 'https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?auto=format&fit=crop&w=720&q=80',
+      mediaAlt: 'Camioneta 4x4 en un taller cambiando llantas off-road',
+      publishedAt: 'Abril 2024',
+      stats: '34k reproducciones',
+      url: 'https://www.instagram.com/roue.mx/reels/offroad-upgrade',
+      platformLabel: 'Instagram · Reel',
+      ctaLabel: 'Ver reel'
+    },
+    {
+      id: 'ig-galeria-lujo',
+      platform: 'instagram',
+      kind: 'foto',
+      title: 'Galería: Llantas premium para tu coupé',
+      excerpt: 'Inspírate con combinaciones exclusivas de rines y llantas para autos de alto desempeño.',
+      mediaUrl: 'https://images.unsplash.com/photo-1483721310020-03333e577078?auto=format&fit=crop&w=720&q=80',
+      mediaAlt: 'Coupé deportivo con rines y llantas premium',
+      publishedAt: 'Marzo 2024',
+      stats: '2.1k me gusta',
+      url: 'https://www.instagram.com/roue.mx/p/galeria-lujo',
+      platformLabel: 'Instagram · Galería',
+      ctaLabel: 'Abrir publicación'
+    }
+  ];
 
   // Carousel state
   slides = [
@@ -866,6 +1189,27 @@ export class LandingPage implements OnInit, OnDestroy {
   years = Array.from({ length: 26 }, (_, i) => 2000 + i);
   filters: { brand?: string; year?: number; price?: string } = {};
 
+  get selectedPlatformInfo(): SocialPlatformOption | undefined {
+    return this.socialPlatforms.find(p => p.id === this.selectedSocialPlatform);
+  }
+
+  get selectedPlatformHelper(): string {
+    return this.selectedPlatformInfo?.helper ?? this.socialPlatforms[0]?.helper ?? '';
+  }
+
+  get selectedPlatformLink(): string {
+    return this.selectedPlatformInfo?.link ?? this.socialPlatforms[0]?.link ?? '#';
+  }
+
+  get selectedSocialPosts(): SocialPost[] {
+    return this.socialPosts.filter(post => post.platform === this.selectedSocialPlatform);
+  }
+
+  onSelectSocialPlatform(platform: SocialPlatform) {
+    if (this.selectedSocialPlatform === platform) return;
+    this.selectedSocialPlatform = platform;
+  }
+
   onSearch(q: string) {
     const t = (q || '').trim();
     this.products$ = this.api.getProducts(t || undefined);
@@ -873,6 +1217,7 @@ export class LandingPage implements OnInit, OnDestroy {
 
   trackById(_: number, p: Product) { return p.id; }
   trackMarqueeIndex(index: number) { return index; }
+  trackSocialPost(_: number, post: SocialPost) { return post.id; }
 
   onBrandImageError(evt: Event) {
     const target = evt.target as HTMLImageElement | null;

@@ -18,8 +18,9 @@ public sealed class WishlistController : ControllerBase
     private readonly UserManager<IdentityUser<Guid>> _users;
     private readonly IAuditLogger _audit;
     private readonly IActivityTracker _activity;
-    public WishlistController(AppDbContext db, UserManager<IdentityUser<Guid>> users, IAuditLogger audit, IActivityTracker activity)
-    { _db = db; _users = users; _audit = audit; _activity = activity; }
+    private readonly ICartService _cartService;
+    public WishlistController(AppDbContext db, UserManager<IdentityUser<Guid>> users, IAuditLogger audit, IActivityTracker activity, ICartService cartService)
+    { _db = db; _users = users; _audit = audit; _activity = activity; _cartService = cartService; }
 
     [HttpGet]
     public async Task<IActionResult> List()
@@ -109,6 +110,7 @@ public sealed class WishlistController : ControllerBase
                 metadata: new { qty = Math.Max(1, qty) });
         }
         catch { }
-        return Ok(new { message = "moved", cartId = cart.Id });
+        var dto = await _cartService.GetAsync(user.Id, null, HttpContext.RequestAborted);
+        return Ok(dto);
     }
 }

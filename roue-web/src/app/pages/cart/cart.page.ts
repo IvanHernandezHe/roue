@@ -174,7 +174,7 @@ export class CartPage implements OnInit {
   }
   moveSavedToCart(w: WishItem) {
     this.#wishlist.moveToCart(w.productId, 1).subscribe({
-      next: () => { this.loadSaved(); this.cart.reload(); this.#toast.success('Movido al carrito'); },
+      next: (res) => { this.cart.replaceFromServer(res); this.loadSaved(); this.#toast.success('Movido al carrito'); },
       error: () => {}
     });
   }
@@ -183,8 +183,16 @@ export class CartPage implements OnInit {
   moveAllSavedToCart() {
     if (!this.saved.length) return;
     forkJoin(this.saved.map(w => this.#wishlist.moveToCart(w.productId, 1))).subscribe({
-      next: () => { this.loadSaved(); this.cart.reload(); this.#toast.success('Todos movidos al carrito'); },
-      error: () => { this.loadSaved(); this.cart.reload(); this.#toast.warning('No se pudieron mover todos'); }
+      next: (responses) => {
+        const last = responses.length ? responses[responses.length - 1] : null;
+        if (last) this.cart.replaceFromServer(last);
+        this.loadSaved();
+        this.#toast.success('Todos movidos al carrito');
+      },
+      error: () => {
+        this.loadSaved();
+        this.#toast.warning('No se pudieron mover todos');
+      }
     });
   }
   clearAllSaved() {

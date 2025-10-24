@@ -41,7 +41,7 @@ export class WishlistStore {
   }
   moveToCart(productId: string, qty = 1) {
     this.#api.moveToCart(productId, qty).subscribe({
-      next: () => { this.#toast.success('Movido al carrito'); this.load(); this.#cart.reload(); },
+      next: (res) => { this.#cart.replaceFromServer(res); this.#toast.success('Movido al carrito'); this.load(); },
       error: () => this.#toast.warning('No se pudo mover')
     });
   }
@@ -50,8 +50,16 @@ export class WishlistStore {
     const list = this.#items() || [];
     if (!list.length) return;
     forkJoin(list.map(w => this.#api.moveToCart(w.productId, 1))).subscribe({
-      next: () => { this.#toast.success('Todos movidos al carrito'); this.load(); this.#cart.reload(); },
-      error: () => { this.#toast.warning('No se pudieron mover todos'); this.load(); this.#cart.reload(); }
+      next: (responses) => {
+        const last = responses.length ? responses[responses.length - 1] : null;
+        if (last) this.#cart.replaceFromServer(last);
+        this.#toast.success('Todos movidos al carrito');
+        this.load();
+      },
+      error: () => {
+        this.#toast.warning('No se pudieron mover todos');
+        this.load();
+      }
     });
   }
 
